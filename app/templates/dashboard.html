@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - RPG Tools</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #111827;
+            color: #f5f5f5;
+            position: relative;
+        }
+
+        canvas#bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            width: 100%;
+            height: 100%;
+        }
+
+        .sidebar button {
+            transition: all 0.2s ease;
+        }
+
+        .sidebar button:hover {
+            background-color: #374151;
+            box-shadow: 0 0 10px #6b7280;
+        }
+
+        /* Cards de NPC */
+        .section-card {
+            display: inline-block;
+            max-width: 340px;
+            padding: 16px;
+            border-radius: 0.75rem;
+            border: 1px solid #374151;
+            background-color: #1f2937;
+            transition: transform 0.2s ease, box-shadow 0.3s ease, background-color 0.2s ease;
+            margin: 8px;
+        }
+
+        .section-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
+            background-color: #272f3a;
+        }
+
+        /* Grid para NPCs salvos */
+        .npc-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        /* Dashboard centralizado */
+        #homeSectionContent {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 80vh;
+            text-align: center;
+        }
+
+        /* Botões principais */
+        button {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.25);
+        }
+
+        h1, h2, h3 {
+            text-shadow: 0 0 5px rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+
+<canvas id="bgCanvas"></canvas>
+
+<div class="flex">
+
+    <!-- Sidebar -->
+    <div class="w-64 bg-gray-800 p-6 min-h-screen sidebar">
+        <h2 class="text-2xl mb-8 font-bold text-yellow-400">🎲 RPG Tools</h2>
+
+        <ul class="space-y-4">
+            <li><button onclick="showSection('home')" class="w-full text-left px-2 py-2 rounded">Dashboard</button></li>
+            <li><button onclick="showSection('dice')" class="w-full text-left px-2 py-2 rounded">Dice Roller</button></li>
+            <li><button onclick="showSection('npc')" class="w-full text-left px-2 py-2 rounded">NPC Generator</button></li>
+            <li><button onclick="showSection('myNpcs')" class="w-full text-left px-2 py-2 rounded">My NPCs</button></li>
+            <li><button onclick="logout()" class="w-full text-left text-red-400 px-2 py-2 rounded">Logout</button></li>
+        </ul>
+    </div>
+
+    <!-- Content -->
+    <div class="flex-1 p-10">
+
+        <div id="homeSection">
+            <div id="homeSectionContent">
+                <h1 class="text-5xl mb-4 font-bold text-yellow-400">Welcome to RPG Tools</h1>
+                <p id="userInfo" class="text-xl text-gray-300"></p>
+            </div>
+        </div>
+
+        <div id="diceSection" class="hidden">
+            <h1 class="text-3xl mb-4 font-bold text-purple-400">Dice Roller</h1>
+            <input id="diceInput" type="text" placeholder="2d20+5"
+                class="p-2 rounded bg-gray-700 mr-2 text-white">
+            <button onclick="rollDice()" class="bg-purple-600 px-4 py-2 rounded hover:bg-purple-500 transition">Roll</button>
+            <div id="diceResult" class="mt-4"></div>
+        </div>
+
+        <div id="npcSection" class="hidden">
+            <h1 class="text-3xl mb-4 font-bold text-green-400">NPC Generator</h1>
+            <button onclick="generateNPC()" class="bg-green-600 px-4 py-2 rounded hover:bg-green-500 transition">Generate</button>
+            <button onclick="saveNPC()" class="bg-blue-600 px-4 py-2 rounded ml-2 hover:bg-blue-500 transition">Save NPC</button>
+            <div id="npcResult" class="mt-6"></div>
+        </div>
+
+        <div id="myNpcsSection" class="hidden">
+            <h1 class="text-3xl mb-4 font-bold text-yellow-400">My NPCs</h1>
+            <div id="myNpcsList" class="npc-grid"></div>
+        </div>
+
+    </div>
+</div>
+
+<script src="/static/script.js"></script>
+<script src="/static/auth.js"></script>
+<script>
+    // Fundo interativo minimalista
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    let w = canvas.width = window.innerWidth;
+    let h = canvas.height = window.innerHeight;
+    const particles = [];
+
+    for(let i=0; i<60; i++){
+        particles.push({
+            x: Math.random()*w,
+            y: Math.random()*h,
+            size: 2 + Math.random()*2,
+            dx: (Math.random()-0.5)/2,
+            dy: (Math.random()-0.5)/2
+        });
+    }
+
+    window.addEventListener('resize', () => {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+    });
+
+    window.addEventListener('mousemove', e => {
+        particles.forEach(p => {
+            p.x += (e.clientX - w/2)/200;
+            p.y += (e.clientY - h/2)/200;
+        });
+    });
+
+    function animate() {
+        ctx.clearRect(0,0,w,h);
+        particles.forEach(p => {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+            ctx.fillStyle = 'rgba(255,255,255,0.05)';
+            ctx.fill();
+        });
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+</script>
+</body>
+</html>

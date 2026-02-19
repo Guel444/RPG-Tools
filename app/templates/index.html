@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>RPG Tools</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+
+<div class="container mx-auto p-8">
+    <h1 class="text-4xl font-bold mb-8 text-center">🎲 RPG Tools</h1>
+
+    <div class="grid md:grid-cols-2 gap-8">
+
+        <!-- Dice Roller -->
+        <div class="bg-gray-800 p-6 rounded-2xl shadow-xl">
+            <h2 class="text-2xl mb-4">Dice Roll</h2>
+            <input id="diceInput" type="text" placeholder="Ex: 2d20+5"
+                class="w-full p-2 rounded bg-gray-700 mb-4 text-white">
+            <button onclick="rollDice()"
+                class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded w-full">
+                Roll
+            </button>
+            <div id="diceResult" class="mt-4 text-lg"></div>
+        </div>
+
+        <!-- NPC Generator -->
+        <div class="bg-gray-800 p-6 rounded-2xl shadow-xl">
+            <h2 class="text-2xl mb-4">NPC Generator</h2>
+            <button onclick="generateNPC()"
+                class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded w-full">
+                Generate NPC
+            </button>
+            <div id="npcResult" class="mt-4"></div>
+        </div>
+
+    </div>
+</div>
+
+<script src="/static/script.js"></script>
+
+</body>
+</html>
