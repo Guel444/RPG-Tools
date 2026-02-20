@@ -4,37 +4,374 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - RPG Tools</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --gold: #c9a84c;
+            --gold-light: #e8c97a;
+            --dark: #0d0d0f;
+            --dark-2: #141418;
+            --dark-3: #1c1c22;
+            --dark-4: #252530;
+            --text: #e8e0d0;
+            --text-muted: #8a8070;
+        }
+
+        body {
+            background: var(--dark);
+            color: var(--text);
+            font-family: 'Crimson Text', serif;
+            min-height: 100vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                radial-gradient(ellipse at 20% 50%, rgba(201,168,76,0.04) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 50%, rgba(192,57,43,0.04) 0%, transparent 60%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .page-wrapper {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 32px;
+            animation: fadeDown 0.6s ease both;
+        }
+
+        .logo-icon {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 0 20px rgba(201,168,76,0.5));
+        }
+
+        .logo h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--gold);
+            letter-spacing: 4px;
+            text-shadow: 0 0 30px rgba(201,168,76,0.3);
+        }
+
+        .logo p {
+            font-size: 14px;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            margin-top: 4px;
+        }
+
+        .card {
+            background: var(--dark-2);
+            border: 1px solid rgba(201,168,76,0.2);
+            border-radius: 4px;
+            padding: 40px;
+            position: relative;
+            animation: fadeUp 0.6s ease 0.1s both;
+            box-shadow:
+                0 0 0 1px rgba(201,168,76,0.05),
+                0 20px 60px rgba(0,0,0,0.5),
+                inset 0 1px 0 rgba(201,168,76,0.1);
+        }
+
+        .card::before, .card::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: var(--gold);
+            border-style: solid;
+            opacity: 0.4;
+        }
+        .card::before { top: 8px; left: 8px; border-width: 2px 0 0 2px; }
+        .card::after { bottom: 8px; right: 8px; border-width: 0 2px 2px 0; }
+
+        .card-title {
+            font-family: 'Cinzel', serif;
+            font-size: 20px;
+            color: var(--gold);
+            letter-spacing: 3px;
+            margin-bottom: 28px;
+            text-align: center;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(201,168,76,0.3));
+        }
+        .divider::after { background: linear-gradient(to left, transparent, rgba(201,168,76,0.3)); }
+        .divider span { color: var(--gold); font-size: 16px; opacity: 0.6; }
+
+        .field { margin-bottom: 20px; }
+
+        label {
+            display: block;
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        input {
+            width: 100%;
+            background: var(--dark-3);
+            border: 1px solid rgba(201,168,76,0.15);
+            border-radius: 2px;
+            padding: 12px 16px;
+            color: var(--text);
+            font-family: 'Crimson Text', serif;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus {
+            border-color: rgba(201,168,76,0.5);
+            box-shadow: 0 0 0 3px rgba(201,168,76,0.05);
+        }
+
+        input::placeholder { color: var(--text-muted); opacity: 0.5; }
+
+        .role-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .role-option {
+            border: 1px solid rgba(201,168,76,0.15);
+            border-radius: 2px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--dark-3);
+        }
+
+        .role-option:hover {
+            border-color: rgba(201,168,76,0.4);
+            background: var(--dark-4);
+        }
+
+        .role-option.selected {
+            border-color: var(--gold);
+            background: rgba(201,168,76,0.08);
+            box-shadow: 0 0 10px rgba(201,168,76,0.1);
+        }
+
+        .role-option .role-icon { font-size: 24px; display: block; margin-bottom: 4px; }
+        .role-option .role-name {
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+        }
+        .role-option.selected .role-name { color: var(--gold); }
+
+        button.btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, #b8912a, #c9a84c, #b8912a);
+            background-size: 200% 100%;
+            border: none;
+            border-radius: 2px;
+            padding: 14px;
+            color: var(--dark);
+            font-family: 'Cinzel', serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+        }
+
+        button.btn-primary:hover {
+            background-position: 100% 0;
+            box-shadow: 0 0 20px rgba(201,168,76,0.3);
+            transform: translateY(-1px);
+        }
+
+        .error-msg {
+            font-size: 14px;
+            color: #e74c3c;
+            margin-top: 16px;
+            text-align: center;
+            display: none;
+            padding: 8px;
+            background: rgba(192,57,43,0.08);
+            border: 1px solid rgba(192,57,43,0.2);
+            border-radius: 2px;
+        }
+
+        .footer-text {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 16px;
+            color: var(--text-muted);
+            animation: fadeUp 0.6s ease 0.2s both;
+        }
+
+        .footer-text a {
+            color: var(--gold);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .footer-text a:hover { color: var(--gold-light); }
+
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
-<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
+<body>
 
-<div class="bg-gray-800 p-8 rounded-2xl shadow-xl w-96">
-    <h1 class="text-3xl mb-6 text-center">Register</h1>
+<canvas id="bgCanvas"></canvas>
 
-    <input id="email" type="email" placeholder="Email"
-        class="w-full p-2 mb-4 rounded bg-gray-700">
+<div class="page-wrapper">
+    <div class="container">
+        <div class="logo">
+            <span class="logo-icon">🎲</span>
+            <h1>RPG TOOLS</h1>
+            <p>CREATE YOUR CHARACTER</p>
+        </div>
 
-    <input id="password" type="password" placeholder="Password"
-        class="w-full p-2 mb-4 rounded bg-gray-700">
+        <div class="card">
+            <h2 class="card-title">NEW ADVENTURER</h2>
+            <div class="divider"><span>✦</span></div>
 
-    <select id="role" class="w-full p-2 mb-4 rounded bg-gray-700">
-        <option value="PLAYER">PLAYER</option>
-        <option value="MASTER">MASTER</option>
-    </select>
+            <div class="field">
+                <label>Email</label>
+                <input id="email" type="email" placeholder="your@email.com" autocomplete="email">
+            </div>
 
-    <button onclick="registerUser()"
-        class="bg-purple-600 hover:bg-purple-700 w-full py-2 rounded">
-        Register
-    </button>
+            <div class="field">
+                <label>Password</label>
+                <input id="password" type="password" placeholder="••••••••" autocomplete="new-password">
+            </div>
 
-    <p class="mt-4 text-sm text-center">
-        Already have an account?
-        <a href="/login" class="text-purple-400">Login</a>
-    </p>
+            <div class="field">
+                <label>Choose your class</label>
+                <div class="role-grid">
+                    <div class="role-option selected" onclick="selectRole('PLAYER')" id="role-PLAYER">
+                        <span class="role-icon">⚔️</span>
+                        <span class="role-name">PLAYER</span>
+                    </div>
+                    <div class="role-option" onclick="selectRole('MASTER')" id="role-MASTER">
+                        <span class="role-icon">📖</span>
+                        <span class="role-name">MASTER</span>
+                    </div>
+                </div>
+                <input type="hidden" id="role" value="PLAYER">
+            </div>
 
-    <p id="error" class="text-red-400 mt-4 text-sm"></p>
+            <button class="btn-primary" onclick="registerUser()">Begin Your Journey</button>
+
+            <p id="error" class="error-msg"></p>
+        </div>
+
+        <p class="footer-text">
+            Already an adventurer? <a href="/login">Enter the realm</a>
+        </p>
+    </div>
 </div>
 
 <script src="/static/auth.js?v=3"></script>
+<script>
+    function selectRole(role) {
+        document.querySelectorAll('.role-option').forEach(el => el.classList.remove('selected'));
+        document.getElementById('role-' + role).classList.add('selected');
+        document.getElementById('role').value = role;
+    }
+
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    let w = canvas.width = window.innerWidth;
+    let h = canvas.height = window.innerHeight;
+
+    const particles = Array.from({length: 40}, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        size: 0.5 + Math.random() * 1.5,
+        dx: (Math.random() - 0.5) * 0.3,
+        dy: -0.1 - Math.random() * 0.3,
+        opacity: 0.1 + Math.random() * 0.3
+    }));
+
+    window.addEventListener('resize', () => {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+    });
+
+    (function animate() {
+        ctx.clearRect(0, 0, w, h);
+        particles.forEach(p => {
+            p.x += p.dx;
+            p.y += p.dy;
+            if (p.y < 0) { p.y = h; p.x = Math.random() * w; }
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(201,168,76,${p.opacity})`;
+            ctx.fill();
+        });
+        requestAnimationFrame(animate);
+    })();
+
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') registerUser(); });
+
+    // Mostrar erro visualmente
+    const errorEl = document.getElementById('error');
+    const observer = new MutationObserver(() => {
+        errorEl.style.display = errorEl.textContent.trim() ? 'block' : 'none';
+    });
+    observer.observe(errorEl, { childList: true, subtree: true, characterData: true });
+</script>
 </body>
 </html>

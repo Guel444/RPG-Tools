@@ -49,6 +49,7 @@ class NPC(Base):
     class_name = Column(String, nullable=False)
     trait = Column(String, nullable=False)
     goal = Column(String, nullable=False)
+    backstory = Column(Text, nullable=True)  # novo campo
 
-    owner_id = Column(String, ForeignKey("users.id"))  # String para combinar com User.id
+    owner_id = Column(String, ForeignKey("users.id"))
     owner = relationship("User", back_populates="npcs")

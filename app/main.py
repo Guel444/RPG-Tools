@@ -40,7 +40,7 @@ def get_current_user(
 @app.post("/register")
 def register(request: RegisterRequest, db: Session = Depends(get_db)):
     if db.query(User).filter(User.email == request.email).first():
-        return JSONResponse(content={"success": False, "detail": "Email já registrado"})
+        return JSONResponse(content={"success": False, "detail": "Email already registered"})
 
     role = Role.MASTER if request.role == "MASTER" else Role.PLAYER
 
@@ -59,10 +59,10 @@ def register(request: RegisterRequest, db: Session = Depends(get_db)):
 def login(request: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == request.email).first()
     if not user or not auth.verify_password(request.password, user.password):
-        return JSONResponse(content={"success": False, "detail": "Credenciais inválidas"})
+        return JSONResponse(content={"success": False, "detail": "Invalid credentials"})
 
     token = auth.create_access_token({"sub": user.id})
-    return JSONResponse(content={"success": True, "detail": "Login realizado", "access_token": token})
+    return JSONResponse(content={"success": True, "detail": "Login successful", "access_token": token})
 
 
 # -------------------------------
@@ -136,6 +136,7 @@ def save_npc(
             class_name=npc_data.class_name,
             trait=npc_data.trait,
             goal=npc_data.goal,
+            backstory=npc_data.backstory,
             owner_id=current_user.id
         )
         db.add(new_npc)
@@ -162,22 +163,23 @@ def save_npc(
 def my_npcs(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     npcs = db.query(NPC).filter(NPC.owner_id == current_user.id).all()
     npc_list = [{
-        "id": n.id,
-        "name": n.name,
-        "race": n.race,
-        "class_name": n.class_name,
-        "trait": n.trait,
-        "goal": n.goal
-    } for n in npcs]
-    return JSONResponse(content={"success": True, "detail": "NPCs carregados", "data": npc_list})
+    "id": n.id,
+    "name": n.name,
+    "race": n.race,
+    "class_name": n.class_name,
+    "trait": n.trait,
+    "goal": n.goal,
+    "backstory": n.backstory
+} for n in npcs]
+    return JSONResponse(content={"success": True, "detail": "NPCs loaded", "data": npc_list})
 
 
 @app.delete("/npc/{npc_id}")
 def delete_npc(npc_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     npc_to_delete = db.query(NPC).filter(NPC.id == npc_id, NPC.owner_id == current_user.id).first()
     if not npc_to_delete:
-        return JSONResponse(content={"success": False, "detail": "NPC não encontrado ou sem permissão"})
+        return JSONResponse(content={"success": False, "detail": "NPC not found or no permission"})
 
     db.delete(npc_to_delete)
     db.commit()
-    return JSONResponse(content={"success": True, "detail": "NPC deletado com sucesso"})
+    return JSONResponse(content={"success": True, "detail": "NPC deleted successfully"})

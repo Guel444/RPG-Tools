@@ -12,7 +12,11 @@ let currentNPC = null;
 // Dice Roller
 // -----------------------------
 async function rollDice() {
-    const expression = document.getElementById("diceInput").value;
+    const expression = document.getElementById("diceInput").value.trim();
+    if (!expression) return;
+
+    const resultEl = document.getElementById("diceResult");
+
     try {
         const response = await fetch("/roll", {
             method: "POST",
@@ -23,17 +27,26 @@ async function rollDice() {
             body: JSON.stringify({ expression })
         });
         const data = await response.json();
+
         if (!response.ok || data.detail) {
-            let msg = data.detail || "Erro ao rolar dado";
+            let msg = data.detail || "Error rolling dice";
             if (typeof msg === "object") msg = JSON.stringify(msg);
-            alert(msg);
+            toast.error(msg);
             return;
         }
-        document.getElementById("diceResult").innerHTML =
-            `🎲 ${data.rolls.join(", ")} | Total: ${data.total}`;
+
+        const rollsStr = data.rolls.join(" + ");
+        const modStr = data.modifier !== 0 ? ` ${data.modifier > 0 ? '+' : ''}${data.modifier}` : '';
+
+        resultEl.innerHTML = `
+            <div class="dice-rolls">${expression} → [ ${rollsStr} ]${modStr}</div>
+            <div class="dice-total">${data.total}</div>
+        `;
+        resultEl.classList.add("visible");
+
     } catch (err) {
         console.error(err);
-        alert("Erro ao rolar o dado.");
+        toast.error("Connection error.");
     }
 }
 
@@ -41,6 +54,9 @@ async function rollDice() {
 // NPC
 // -----------------------------
 async function generateNPC() {
+    const resultEl = document.getElementById("npcResult");
+    resultEl.innerHTML = `<div style="color:var(--text-muted);font-style:italic;padding:12px">Summoning adventurer...</div>`;
+
     try {
         const response = await fetch("/npc", {
             headers: { "Authorization": `Bearer ${getToken()}` }
@@ -48,59 +64,95 @@ async function generateNPC() {
         const data = await response.json();
 
         if (!response.ok || !data.success) {
-            let msg = data.detail || "Erro ao gerar NPC";
+            let msg = data.detail || "Error generating NPC";
             if (typeof msg === "object") msg = JSON.stringify(msg);
-            alert(msg);
+            toast.error(msg);
+            resultEl.innerHTML = '';
             return;
         }
 
         currentNPC = data.data;
+        renderNPC(currentNPC, "npcResult");
 
-        document.getElementById("npcResult").innerHTML = `
-            <div class="section-card hover-glow">
-                <h3 class="text-2xl font-bold text-yellow-400 mb-2">${currentNPC.name}</h3>
-                <p><strong>Race:</strong> ${currentNPC.race}</p>
-                <p><strong>Class:</strong> ${currentNPC.class}</p>
-                <p><strong>Trait:</strong> ${currentNPC.trait}</p>
-                <p><strong>Goal:</strong> ${currentNPC.goal}</p>
-            </div>
-        `;
     } catch (err) {
         console.error(err);
-        alert("Erro ao gerar NPC.");
+        toast.error("Connection error.");
     }
+}
+
+function renderNPC(npc, containerId) {
+    const el = document.getElementById(containerId);
+    el.innerHTML = `
+        <div class="npc-card">
+            <div class="npc-name">${npc.name}</div>
+            <div class="npc-grid">
+                <div class="npc-field">
+                    <label>Race</label>
+                    <span>${npc.race}</span>
+                </div>
+                <div class="npc-field">
+                    <label>Class</label>
+                    <span>${npc.class || npc.class_name}</span>
+                </div>
+                <div class="npc-field">
+                    <label>Trait</label>
+                    <span>${npc.trait}</span>
+                </div>
+                <div class="npc-field">
+                    <label>Goal</label>
+                    <span>${npc.goal}</span>
+                </div>
+            </div>
+            ${npc.backstory ? `<div class="npc-backstory">"${npc.backstory}"</div>` : ''}
+        </div>
+    `;
 }
 
 async function saveNPC() {
     if (!currentNPC) {
-        alert("Gere um NPC primeiro!");
+        toast.info("Generate an NPC first!");
         return;
     }
     try {
+        const payload = {
+            name: currentNPC.name,
+            race: currentNPC.race,
+            class_name: currentNPC.class || currentNPC.class_name,
+            trait: currentNPC.trait,
+            goal: currentNPC.goal,
+            backstory: currentNPC.backstory || null
+        };
+
         const response = await fetch("/npc/save", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${getToken()}`
             },
-            body: JSON.stringify(currentNPC)
+            body: JSON.stringify(payload)
         });
         const data = await response.json();
+
         if (!response.ok || !data.success) {
-            let msg = data.detail || "Erro ao salvar NPC";
+            let msg = data.detail || "Error saving NPC";
             if (typeof msg === "object") msg = JSON.stringify(msg);
-            alert(msg);
+            toast.error(msg);
             return;
         }
-        alert("NPC salvo com sucesso!");
-        showMyNPCs();
+
+        toast.success("NPC saved successfully!");
+        showSection('myNpcs');
+
     } catch (err) {
         console.error(err);
-        alert("Erro ao salvar NPC.");
+        toast.error("Connection error.");
     }
 }
 
 async function showMyNPCs() {
+    const container = document.getElementById("myNpcsList");
+    container.innerHTML = `<div style="color:var(--text-muted);font-style:italic;padding:20px">Loading your adventurers...</div>`;
+
     try {
         const response = await fetch("/npc/my", {
             headers: { "Authorization": `Bearer ${getToken()}` }
@@ -108,38 +160,100 @@ async function showMyNPCs() {
         const data = await response.json();
 
         if (!response.ok || !data.success) {
-            let msg = data.detail || "Erro ao carregar NPCs";
+            let msg = data.detail || "Error loading NPCs";
             if (typeof msg === "object") msg = JSON.stringify(msg);
-            alert(msg);
+            toast.error(msg);
             return;
         }
 
         const npcs = data.data;
-        const container = document.getElementById("myNpcsList");
-        container.innerHTML = "";
+
+        if (npcs.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <span class="empty-icon">📜</span>
+                    <p>No adventurers saved yet.<br>Generate and save your first NPC!</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = `<div class="my-npcs-grid"></div>`;
+        const grid = container.querySelector('.my-npcs-grid');
 
         npcs.forEach(npc => {
-            const npcDiv = document.createElement("div");
-            npcDiv.className = "section-card hover-glow";
-            npcDiv.innerHTML = `
-                <h3 class="text-xl font-bold text-yellow-400 mb-1">${npc.name}</h3>
-                <p><strong>Race:</strong> ${npc.race}</p>
-                <p><strong>Class:</strong> ${npc.class_name}</p>
-                <p><strong>Trait:</strong> ${npc.trait}</p>
-                <p><strong>Goal:</strong> ${npc.goal}</p>
-                <button onclick="deleteNPC(${npc.id})" class="bg-red-500 px-2 py-1 rounded mt-2 hover:bg-red-400 transition">
-                    Excluir
-                </button>
+            const card = document.createElement("div");
+            card.className = "saved-npc-card";
+            card.innerHTML = `
+                <button class="delete-btn" onclick="deleteNPC(${npc.id})">✕ DELETE</button>
+                <div class="npc-name">${npc.name}</div>
+                <div class="npc-grid">
+                    <div class="npc-field">
+                        <label>Race</label>
+                        <span>${npc.race}</span>
+                    </div>
+                    <div class="npc-field">
+                        <label>Class</label>
+                        <span>${npc.class_name}</span>
+                    </div>
+                    <div class="npc-field">
+                        <label>Trait</label>
+                        <span>${npc.trait}</span>
+                    </div>
+                    <div class="npc-field">
+                        <label>Goal</label>
+                        <span>${npc.goal}</span>
+                    </div>
+                </div>
+                ${npc.backstory ? `<div class="npc-backstory">"${npc.backstory}"</div>` : ''}
             `;
-            container.appendChild(npcDiv);
+            grid.appendChild(card);
         });
+
     } catch (err) {
         console.error(err);
-        alert("Erro ao carregar NPCs.");
+        toast.error("Connection error.");
     }
 }
 
 async function deleteNPC(id) {
+    async function deleteNPC(id) {
+    toast.info("Click again to confirm deletion.");
+    
+    const btn = document.querySelector(`button[onclick="deleteNPC(${id})"]`);
+    if (btn) {
+        btn.textContent = "✕ CONFIRM";
+        btn.style.color = "#e74c3c";
+        btn.style.borderColor = "#e74c3c";
+        btn.onclick = async () => {
+            try {
+                const response = await fetch(`/npc/${id}`, {
+                    method: "DELETE",
+                    headers: { "Authorization": `Bearer ${getToken()}` }
+                });
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    let msg = data.detail || "Error deleting NPC";
+                    if (typeof msg === "object") msg = JSON.stringify(msg);
+                    toast.error(msg);
+                    return;
+                }
+
+                toast.success("NPC deleted.");
+                showMyNPCs();
+
+            } catch (err) {
+                console.error(err);
+                toast.error("Connection error.");
+            }
+        };
+
+        // Cancela após 3 segundos se não confirmar
+        setTimeout(() => showMyNPCs(), 3000);
+    }
+}
+
     try {
         const response = await fetch(`/npc/${id}`, {
             method: "DELETE",
@@ -147,26 +261,20 @@ async function deleteNPC(id) {
         });
         const data = await response.json();
 
-        let msg = data.detail || "Erro ao deletar NPC";
-        if (typeof msg === "object") msg = JSON.stringify(msg);
-        alert(msg);
+        if (!response.ok || !data.success) {
+            let msg = data.detail || "Error deleting NPC";
+            if (typeof msg === "object") msg = JSON.stringify(msg);
+            toast.error(msg);
+            return;
+        }
 
+        toast.success("NPC deleted.");
         showMyNPCs();
+
     } catch (err) {
         console.error(err);
-        alert("Erro ao deletar NPC.");
+        toast.error("Connection error.");
     }
-}
-
-// -----------------------------
-// Seções do dashboard
-// -----------------------------
-function showSection(section) {
-    const sections = ["home", "dice", "npc", "myNpcs"];
-    sections.forEach(s => document.getElementById(s + "Section").classList.add("hidden"));
-    document.getElementById(section + "Section").classList.remove("hidden");
-
-    if (section === "myNpcs") showMyNPCs();
 }
 
 // -----------------------------
