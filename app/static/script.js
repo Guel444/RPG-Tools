@@ -7,6 +7,8 @@ function getToken() {
 }
 
 let currentNPC = null;
+const rollHistory = [];
+const MAX_HISTORY = 10;
 
 // -----------------------------
 // Dice Roller
@@ -44,10 +46,36 @@ async function rollDice() {
         `;
         resultEl.classList.add("visible");
 
+        // Adicionar ao histórico
+        rollHistory.unshift({ expression, rolls: data.rolls, modifier: data.modifier, total: data.total });
+        if (rollHistory.length > MAX_HISTORY) rollHistory.pop();
+        renderHistory();
+
     } catch (err) {
         console.error(err);
         toast.error("Connection error.");
     }
+}
+
+function renderHistory() {
+    const el = document.getElementById("rollHistory");
+    if (!el) return;
+
+    if (rollHistory.length === 0) {
+        el.innerHTML = '<div class="history-empty">No rolls yet this session</div>';
+        return;
+    }
+
+    el.innerHTML = rollHistory.map((r, i) => {
+        const modStr = r.modifier !== 0 ? ` ${r.modifier > 0 ? '+' : ''}${r.modifier}` : '';
+        return `
+            <div class="history-item ${i === 0 ? 'latest' : ''}">
+                <span class="history-expr">${r.expression}</span>
+                <span class="history-rolls">[${r.rolls.join(', ')}]${modStr}</span>
+                <span class="history-total">${r.total}</span>
+            </div>
+        `;
+    }).join('');
 }
 
 // -----------------------------
@@ -216,65 +244,109 @@ async function showMyNPCs() {
     }
 }
 
-async function deleteNPC(id) {
-    async function deleteNPC(id) {
-    toast.info("Click again to confirm deletion.");
-    
-    const btn = document.querySelector(`button[onclick="deleteNPC(${id})"]`);
-    if (btn) {
-        btn.textContent = "✕ CONFIRM";
-        btn.style.color = "#e74c3c";
-        btn.style.borderColor = "#e74c3c";
-        btn.onclick = async () => {
-            try {
-                const response = await fetch(`/npc/${id}`, {
-                    method: "DELETE",
-                    headers: { "Authorization": `Bearer ${getToken()}` }
-                });
-                const data = await response.json();
+function deleteNPC(id) {
+    showConfirm("Are you sure you want to delete this NPC?", async () => {
+        try {
+            const response = await fetch(`/npc/${id}`, {
+                method: "DELETE",
+                headers: { "Authorization": `Bearer ${getToken()}` }
+            });
+            const data = await response.json();
 
-                if (!response.ok || !data.success) {
-                    let msg = data.detail || "Error deleting NPC";
-                    if (typeof msg === "object") msg = JSON.stringify(msg);
-                    toast.error(msg);
-                    return;
-                }
-
-                toast.success("NPC deleted.");
-                showMyNPCs();
-
-            } catch (err) {
-                console.error(err);
-                toast.error("Connection error.");
+            if (!response.ok || !data.success) {
+                let msg = data.detail || "Error deleting NPC";
+                if (typeof msg === "object") msg = JSON.stringify(msg);
+                toast.error(msg);
+                return;
             }
-        };
 
-        // Cancela após 3 segundos se não confirmar
-        setTimeout(() => showMyNPCs(), 3000);
-    }
+            toast.success("NPC deleted.");
+            showMyNPCs();
+
+        } catch (err) {
+            console.error(err);
+            toast.error("Connection error.");
+        }
+    });
 }
 
-    try {
-        const response = await fetch(`/npc/${id}`, {
-            method: "DELETE",
-            headers: { "Authorization": `Bearer ${getToken()}` }
-        });
-        const data = await response.json();
+// Modal de confirmação
+function showConfirm(message, onConfirm) {
+    // Remove modal existente se houver
+    const existing = document.getElementById('confirm-modal');
+    if (existing) existing.remove();
 
-        if (!response.ok || !data.success) {
-            let msg = data.detail || "Error deleting NPC";
-            if (typeof msg === "object") msg = JSON.stringify(msg);
-            toast.error(msg);
-            return;
-        }
+    const modal = document.createElement('div');
+    modal.id = 'confirm-modal';
+    modal.style.cssText = `
+        position: fixed; inset: 0; z-index: 99999;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+        animation: fadeIn 0.2s ease;
+    `;
 
-        toast.success("NPC deleted.");
-        showMyNPCs();
+    modal.innerHTML = `
+        <div style="
+            background: #141418;
+            border: 1px solid rgba(201,168,76,0.3);
+            border-radius: 4px;
+            padding: 32px;
+            max-width: 360px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            animation: fadeUp 0.2s ease;
+        ">
+            <div style="font-size: 32px; margin-bottom: 16px;">💀</div>
+            <h3 style="font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 2px; color: #c9a84c; margin-bottom: 12px;">CONFIRM ACTION</h3>
+            <p style="color: #8a8070; font-size: 16px; margin-bottom: 28px; line-height: 1.5;">${message}</p>
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button onclick="document.getElementById('confirm-modal').remove()" style="
+                    background: none;
+                    border: 1px solid rgba(201,168,76,0.2);
+                    border-radius: 2px;
+                    padding: 10px 24px;
+                    color: #8a8070;
+                    font-family: 'Cinzel', serif;
+                    font-size: 11px;
+                    letter-spacing: 2px;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                " onmouseover="this.style.borderColor='rgba(201,168,76,0.5)';this.style.color='#e8e0d0'"
+                   onmouseout="this.style.borderColor='rgba(201,168,76,0.2)';this.style.color='#8a8070'">
+                    CANCEL
+                </button>
+                <button id="confirm-btn" style="
+                    background: linear-gradient(135deg, #8b1a1a, #c0392b);
+                    border: none;
+                    border-radius: 2px;
+                    padding: 10px 24px;
+                    color: white;
+                    font-family: 'Cinzel', serif;
+                    font-size: 11px;
+                    letter-spacing: 2px;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                " onmouseover="this.style.boxShadow='0 0 15px rgba(192,57,43,0.4)'"
+                   onmouseout="this.style.boxShadow='none'">
+                    DELETE
+                </button>
+            </div>
+        </div>
+    `;
 
-    } catch (err) {
-        console.error(err);
-        toast.error("Connection error.");
-    }
+    document.body.appendChild(modal);
+
+    // Fechar ao clicar fora
+    modal.addEventListener('click', e => {
+        if (e.target === modal) modal.remove();
+    });
+
+    document.getElementById('confirm-btn').addEventListener('click', () => {
+        modal.remove();
+        onConfirm();
+    });
 }
 
 // -----------------------------
