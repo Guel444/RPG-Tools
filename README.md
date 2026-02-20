@@ -18,7 +18,7 @@
 
 <br />
 
-[Features](#-features) · [Tech Stack](#-tech-stack) · [Roadmap](#-roadmap) · [Contributing](#-contributing) · [Support the Project](#-supporting)
+[Features](#-features) · [Tech Stack](#-tech-stack) · [Roadmap](#-roadmap) · [Contributing](#-contributing) · [Support the Project](#-support-the-project)
 
 
 <br />
