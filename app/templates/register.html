@@ -2,13 +2,14 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - RPG Tools</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
 
 <div class="bg-gray-800 p-8 rounded-2xl shadow-xl w-96">
-    <h1 class="text-3xl mb-6 text-center">Create Account</h1>
+    <h1 class="text-3xl mb-6 text-center">Register</h1>
 
     <input id="email" type="email" placeholder="Email"
         class="w-full p-2 mb-4 rounded bg-gray-700">
@@ -16,8 +17,13 @@
     <input id="password" type="password" placeholder="Password"
         class="w-full p-2 mb-4 rounded bg-gray-700">
 
+    <select id="role" class="w-full p-2 mb-4 rounded bg-gray-700">
+        <option value="PLAYER">PLAYER</option>
+        <option value="MASTER">MASTER</option>
+    </select>
+
     <button onclick="registerUser()"
-        class="bg-green-600 hover:bg-green-700 w-full py-2 rounded">
+        class="bg-purple-600 hover:bg-purple-700 w-full py-2 rounded">
         Register
     </button>
 
@@ -29,6 +35,6 @@
     <p id="error" class="text-red-400 mt-4 text-sm"></p>
 </div>
 
-<script src="/static/auth.js"></script>
+<script src="/static/auth.js?v=3"></script>
 </body>
 </html>

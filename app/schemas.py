@@ -1,5 +1,21 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional, List
+
+# ---------------------------
+# Autenticação
+# ---------------------------
+class RegisterRequest(BaseModel):
+    email: EmailStr
+    password: str
+    role: str = "PLAYER"
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
 
 # ---------------------------
 # Dice Roller
@@ -34,6 +50,7 @@ class NPCCreate(BaseModel):
     class_name: str
     trait: str
     goal: str
+    backstory: Optional[str] = None
 
 class NPCResponse(NPCCreate):
     id: int

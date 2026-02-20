@@ -1,17 +1,14 @@
-# app/main.py
-
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
-from typing import List
 
 from .database import Base, engine, get_db
 from . import auth, dice, npc
 from .models import User, Role, NPC
+from .schemas import RegisterRequest, LoginRequest, RollRequest, RollResponse, NPCCreate
 
 # -------------------------------
 # Inicialização do app e DB
@@ -24,28 +21,6 @@ security = HTTPBearer()
 
 
 # -------------------------------
-# Pydantic Models
-# -------------------------------
-class RegisterRequest(BaseModel):
-    email: str
-    password: str
-    role: str  # "PLAYER" ou "MASTER"
-
-class LoginRequest(BaseModel):
-    email: str
-    password: str
-
-class RollRequest(BaseModel):
-    expression: str
-
-class RollResponse(BaseModel):
-    expression: str
-    rolls: List[int]
-    modifier: int
-    total: int
-
-
-# -------------------------------
 # Dependência: Usuário atual
 # -------------------------------
 def get_current_user(
@@ -55,7 +30,7 @@ def get_current_user(
     payload = auth.decode_token(credentials.credentials)
     user = db.query(User).filter(User.id == payload["sub"]).first()
     if not user:
-        raise HTTPException(status_code=401, detail="User not found")
+        raise HTTPException(status_code=401, detail="Usuário não encontrado")
     return user
 
 
@@ -66,11 +41,13 @@ def get_current_user(
 def register(request: RegisterRequest, db: Session = Depends(get_db)):
     if db.query(User).filter(User.email == request.email).first():
         return JSONResponse(content={"success": False, "detail": "Email já registrado"})
-    
+
+    role = Role.MASTER if request.role == "MASTER" else Role.PLAYER
+
     user = User(
         email=request.email,
         password=auth.hash_password(request.password),
-        role=request.role,
+        role=role,
     )
     db.add(user)
     db.commit()
@@ -83,11 +60,14 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == request.email).first()
     if not user or not auth.verify_password(request.password, user.password):
         return JSONResponse(content={"success": False, "detail": "Credenciais inválidas"})
-    
+
     token = auth.create_access_token({"sub": user.id})
     return JSONResponse(content={"success": True, "detail": "Login realizado", "access_token": token})
 
 
+# -------------------------------
+# Páginas HTML
+# -------------------------------
 @app.get("/login", response_class=HTMLResponse)
 def login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
@@ -104,6 +84,10 @@ def dashboard_page(request: Request):
 def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
+
+# -------------------------------
+# Usuário atual
+# -------------------------------
 @app.get("/me")
 def me(current_user: User = Depends(get_current_user)):
     return JSONResponse(content={
@@ -140,17 +124,18 @@ def create_npc(current_user: User = Depends(get_current_user)):
 
 
 @app.post("/npc/save")
-def save_npc(npc_data: dict,
-             db: Session = Depends(get_db),
-             current_user: User = Depends(get_current_user)):
-    
+def save_npc(
+    npc_data: NPCCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     try:
         new_npc = NPC(
-            name=npc_data["name"],
-            race=npc_data["race"],
-            class_name=npc_data["class"],
-            trait=npc_data["trait"],
-            goal=npc_data["goal"],
+            name=npc_data.name,
+            race=npc_data.race,
+            class_name=npc_data.class_name,
+            trait=npc_data.trait,
+            goal=npc_data.goal,
             owner_id=current_user.id
         )
         db.add(new_npc)
@@ -192,7 +177,7 @@ def delete_npc(npc_id: int, db: Session = Depends(get_db), current_user: User = 
     npc_to_delete = db.query(NPC).filter(NPC.id == npc_id, NPC.owner_id == current_user.id).first()
     if not npc_to_delete:
         return JSONResponse(content={"success": False, "detail": "NPC não encontrado ou sem permissão"})
-    
+
     db.delete(npc_to_delete)
     db.commit()
     return JSONResponse(content={"success": True, "detail": "NPC deletado com sucesso"})
