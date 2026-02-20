@@ -18,7 +18,8 @@
 
 <br />
 
-[Features](#-features) · [Tech Stack](#-tech-stack) · [Roadmap](#-roadmap) · [Contributing](#-contributing)
+[Features](#-features) · [Tech Stack](#-tech-stack) · [Roadmap](#-roadmap) · [Contributing](#-contributing) · [Support the Project](#-supporting)
+
 
 <br />
 
@@ -98,6 +99,24 @@ Please make sure to follow the [code of conduct](CODE_OF_CONDUCT.md) and write c
 ## 📄 License
 
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+
+<br />
+
+---
+
+## 💖 Support the Project
+
+If RPG Tools has been useful to you and you'd like to support its development, consider making a donation. Every contribution helps keep the dice rolling!
+
+<div align="center">
+
+<br />
+
+[![Donate with Pix](https://img.shields.io/badge/Donate-Pix-32BCAD?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSJ3aGl0ZSIgZD0iTTI0Mi40IDEzOC40bC0xMTcgMTE3IDExNyAxMTcgMTE3LTExN3oiLz48L3N2Zz4=)](https://linkpix.pro/Rpg_Tools/Campos_Dos_Goyt/3a00958a-66bf-49e6-9789-b640b35a0d6b/_/_/2935)
+
+**Any amount is welcome and deeply appreciated!** 🎲
+
+</div>
 
 <br />
 
