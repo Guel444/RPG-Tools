@@ -1,27 +1,17 @@
-// -----------------------------
-// auth.js - Login/Register
-// -----------------------------
-
-function saveToken(token) {
-    localStorage.setItem("token", token);
+function displayError(msg) {
+    if (typeof msg === "object") msg = JSON.stringify(msg);
+    const el = document.getElementById("error");
+    if (el) el.textContent = msg;
 }
 
-function getToken() {
-    return localStorage.getItem("token");
-}
-
-function logout() {
-    localStorage.removeItem("token");
-    window.location.href = "/login";
-}
-
-// -----------------------------
-// Login
-// -----------------------------
 async function login() {
-    const email = document.getElementById("email").value;
+    const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
-    const errorElem = document.getElementById("error");
+
+    if (!email || !password) {
+        displayError("Please fill in all fields.");
+        return;
+    }
 
     try {
         const response = await fetch("/login", {
@@ -29,63 +19,60 @@ async function login() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password })
         });
-
         const data = await response.json();
 
         if (!response.ok || !data.success) {
-            let message = data.detail || "Erro ao autenticar";
-            if (typeof message === "object") message = JSON.stringify(message);
-            errorElem.innerText = message;
+            displayError(data.detail || "Login failed.");
             return;
         }
 
-        saveToken(data.access_token);
+        localStorage.setItem("token", data.access_token);
         window.location.href = "/dashboard";
     } catch (err) {
-        console.error(err);
-        errorElem.innerText = "Erro ao conectar com o servidor";
+        displayError("Connection error.");
     }
 }
 
-// -----------------------------
-// Registro
-// -----------------------------
 async function registerUser() {
-    const email = document.getElementById("email").value;
+    const username = document.getElementById("username").value.trim();
+    const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
-    const errorElem = document.getElementById("error");
+    const role = document.getElementById("role").value;
+
+    if (!username || !email || !password) {
+        displayError("Please fill in all fields.");
+        return;
+    }
+
+    if (username.length < 3) {
+        displayError("Username must be at least 3 characters.");
+        return;
+    }
 
     try {
         const response = await fetch("/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password, role: "PLAYER" })
+            body: JSON.stringify({ username, email, password, role })
         });
-
         const data = await response.json();
 
         if (!response.ok || !data.success) {
-            let message = data.detail || "Erro ao registrar usuário";
-            if (typeof message === "object") message = JSON.stringify(message);
-            errorElem.innerText = message;
+            displayError(data.detail || "Registration failed.");
             return;
         }
 
-        alert(data.detail || "Conta criada com sucesso!");
         window.location.href = "/login";
     } catch (err) {
-        console.error(err);
-        errorElem.innerText = "Erro ao conectar com o servidor";
+        displayError("Connection error.");
     }
 }
 
-// -----------------------------
-// Checa autenticação
-// -----------------------------
-async function checkAuth() {
-    const token = getToken();
+// Mostrar username no dashboard
+async function loadUserInfo() {
+    const token = localStorage.getItem("token");
     if (!token) {
-        logout();
+        window.location.href = "/login";
         return;
     }
 
@@ -93,29 +80,24 @@ async function checkAuth() {
         const response = await fetch("/me", {
             headers: { "Authorization": `Bearer ${token}` }
         });
-        if (!response.ok) {
-            logout();
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            window.location.href = "/login";
             return;
         }
-        const userData = await response.json();
-        const infoElem = document.getElementById("userInfo");
-        if (infoElem && userData.data) {
-            infoElem.innerText = `Logged as ${userData.data.email} (${userData.data.role})`;
+
+        const el = document.getElementById("userInfo");
+        if (el) {
+            const roleIcon = data.data.role === "MASTER" ? "📖" : "⚔️";
+            el.innerHTML = `${roleIcon} <strong style="color:var(--text)">${data.data.username || data.data.email}</strong>`;
         }
     } catch (err) {
-        console.error(err);
-        logout();
+        window.location.href = "/login";
     }
 }
 
-// Redireciona se já estiver logado
-if (window.location.pathname === "/login" && getToken()) {
-    window.location.href = "/dashboard";
+// Chamar ao carregar o dashboard
+if (document.getElementById("userInfo") !== null) {
+    loadUserInfo();
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-    const publicPages = ["/login", "/register"];
-    if (!publicPages.includes(window.location.pathname)) {
-        checkAuth();
-    }
-});

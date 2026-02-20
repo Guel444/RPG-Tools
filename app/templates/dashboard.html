@@ -42,10 +42,7 @@
         /* ── SIDEBAR ── */
         .sidebar {
             width: 240px;
-            height: 100vh;
-            position: sticky;
-            top: 0;
-            overflow-y: auto;
+            min-height: 100vh;
             background: var(--dark-2);
             border-right: 1px solid rgba(201,168,76,0.12);
             display: flex;
@@ -137,16 +134,15 @@
         }
 
         #userInfo {
-            font-size: 13px;
+            font-size: 15px;
             color: var(--text-muted);
             padding: 8px 12px;
-            font-style: italic;
+            font-family: 'Cinzel', serif;
         }
 
         /* ── MAIN ── */
         .main {
             flex: 1;
-            height: 100vh;
             overflow-y: auto;
             position: relative;
             z-index: 5;
@@ -379,13 +375,16 @@
         .saved-npc-card .npc-name { font-size: 18px; margin-bottom: 12px; }
         .saved-npc-card .npc-grid { margin-bottom: 12px; }
 
-        .delete-btn {
+        .npc-card-actions {
             position: absolute;
             top: 12px; right: 12px;
+            display: flex;
+            gap: 6px;
+        }
+
+        .delete-btn, .edit-btn {
             background: none;
-            border: 1px solid rgba(192,57,43,0.3);
             border-radius: 2px;
-            color: rgba(192,57,43,0.6);
             font-size: 12px;
             padding: 4px 8px;
             cursor: pointer;
@@ -394,7 +393,17 @@
             letter-spacing: 1px;
         }
 
+        .delete-btn {
+            border: 1px solid rgba(192,57,43,0.3);
+            color: rgba(192,57,43,0.6);
+        }
         .delete-btn:hover { background: rgba(192,57,43,0.1); color: #e74c3c; border-color: #e74c3c; }
+
+        .edit-btn {
+            border: 1px solid rgba(201,168,76,0.2);
+            color: rgba(201,168,76,0.5);
+        }
+        .edit-btn:hover { background: rgba(201,168,76,0.08); color: #c9a84c; border-color: #c9a84c; }
 
         /* ── BUTTONS ── */
         .btn {
@@ -551,8 +560,8 @@
 </div>
 
 <script src="/static/toast.js?v=1"></script>
-<script src="/static/script.js?v=7"></script>
-<script src="/static/auth.js?v=3"></script>
+<script src="/static/script.js?v=8"></script>
+<script src="/static/auth.js?v=4"></script>
 <script>
     function showSection(section) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));

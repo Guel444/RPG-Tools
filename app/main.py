@@ -10,10 +10,6 @@ from . import auth, dice, npc
 from .models import User, Role, NPC
 from .schemas import RegisterRequest, LoginRequest, RollRequest, RollResponse, NPCCreate
 
-# -------------------------------
-# Inicialização do app e DB
-# -------------------------------
-Base.metadata.create_all(bind=engine)
 app = FastAPI(title="RPG Tools")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
@@ -30,7 +26,7 @@ def get_current_user(
     payload = auth.decode_token(credentials.credentials)
     user = db.query(User).filter(User.id == payload["sub"]).first()
     if not user:
-        raise HTTPException(status_code=401, detail="Usuário não encontrado")
+        raise HTTPException(status_code=401, detail="User not found")
     return user
 
 
@@ -42,9 +38,13 @@ def register(request: RegisterRequest, db: Session = Depends(get_db)):
     if db.query(User).filter(User.email == request.email).first():
         return JSONResponse(content={"success": False, "detail": "Email already registered"})
 
+    if db.query(User).filter(User.username == request.username).first():
+        return JSONResponse(content={"success": False, "detail": "Username already taken"})
+
     role = Role.MASTER if request.role == "MASTER" else Role.PLAYER
 
     user = User(
+        username=request.username,
         email=request.email,
         password=auth.hash_password(request.password),
         role=role,
@@ -52,14 +52,14 @@ def register(request: RegisterRequest, db: Session = Depends(get_db)):
     db.add(user)
     db.commit()
     db.refresh(user)
-    return JSONResponse(content={"success": True, "detail": "Usuário criado com sucesso"})
+    return JSONResponse(content={"success": True, "detail": "Account created successfully"})
 
 
 @app.post("/login")
 def login(request: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == request.email).first()
     if not user or not auth.verify_password(request.password, user.password):
-        return JSONResponse(content={"success": False, "detail": "Invalid credentials"})
+        return JSONResponse(content={"success": False, "detail": "Invalid email or password"})
 
     token = auth.create_access_token({"sub": user.id})
     return JSONResponse(content={"success": True, "detail": "Login successful", "access_token": token})
@@ -92,8 +92,8 @@ def home(request: Request):
 def me(current_user: User = Depends(get_current_user)):
     return JSONResponse(content={
         "success": True,
-        "detail": "Usuário autenticado",
-        "data": {"email": current_user.email, "role": current_user.role.value}
+        "detail": "Authenticated",
+        "data": {"username": current_user.username, "email": current_user.email, "role": current_user.role.value}
     })
 
 
@@ -120,7 +120,7 @@ def roll(request: RollRequest):
 @app.get("/npc")
 def create_npc(current_user: User = Depends(get_current_user)):
     npc_data = npc.generate_npc()
-    return JSONResponse(content={"success": True, "detail": "NPC gerado", "data": npc_data})
+    return JSONResponse(content={"success": True, "detail": "NPC generated", "data": npc_data})
 
 
 @app.post("/npc/save")
@@ -145,33 +145,70 @@ def save_npc(
 
         return JSONResponse(content={
             "success": True,
-            "detail": "NPC salvo com sucesso",
+            "detail": "NPC saved successfully",
             "data": {
                 "id": new_npc.id,
                 "name": new_npc.name,
                 "race": new_npc.race,
                 "class_name": new_npc.class_name,
                 "trait": new_npc.trait,
-                "goal": new_npc.goal
+                "goal": new_npc.goal,
+                "backstory": new_npc.backstory
             }
         })
     except Exception as e:
-        return JSONResponse(content={"success": False, "detail": f"Erro ao salvar NPC: {e}"})
+        return JSONResponse(content={"success": False, "detail": f"Error saving NPC: {e}"})
 
 
 @app.get("/npc/my")
 def my_npcs(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     npcs = db.query(NPC).filter(NPC.owner_id == current_user.id).all()
     npc_list = [{
-    "id": n.id,
-    "name": n.name,
-    "race": n.race,
-    "class_name": n.class_name,
-    "trait": n.trait,
-    "goal": n.goal,
-    "backstory": n.backstory
-} for n in npcs]
+        "id": n.id,
+        "name": n.name,
+        "race": n.race,
+        "class_name": n.class_name,
+        "trait": n.trait,
+        "goal": n.goal,
+        "backstory": n.backstory
+    } for n in npcs]
     return JSONResponse(content={"success": True, "detail": "NPCs loaded", "data": npc_list})
+
+
+@app.put("/npc/{npc_id}")
+def update_npc(
+    npc_id: int,
+    npc_data: NPCCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    npc_to_update = db.query(NPC).filter(NPC.id == npc_id, NPC.owner_id == current_user.id).first()
+    if not npc_to_update:
+        return JSONResponse(content={"success": False, "detail": "NPC not found or no permission"})
+
+    npc_to_update.name = npc_data.name
+    npc_to_update.race = npc_data.race
+    npc_to_update.class_name = npc_data.class_name
+    npc_to_update.trait = npc_data.trait
+    npc_to_update.goal = npc_data.goal
+    npc_to_update.backstory = npc_data.backstory
+
+    db.commit()
+    db.refresh(npc_to_update)
+
+    return JSONResponse(content={
+        "success": True,
+        "detail": "NPC updated successfully",
+        "data": {
+            "id": npc_to_update.id,
+            "name": npc_to_update.name,
+            "race": npc_to_update.race,
+            "class_name": npc_to_update.class_name,
+            "trait": npc_to_update.trait,
+            "goal": npc_to_update.goal,
+            "backstory": npc_to_update.backstory
+        }
+    })
 
 
 @app.delete("/npc/{npc_id}")

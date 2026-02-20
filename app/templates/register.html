@@ -288,6 +288,11 @@
             <div class="divider"><span>✦</span></div>
 
             <div class="field">
+                <label>Username</label>
+                <input id="username" type="text" placeholder="your adventurer name" autocomplete="username">
+            </div>
+
+            <div class="field">
                 <label>Email</label>
                 <input id="email" type="email" placeholder="your@email.com" autocomplete="email">
             </div>
@@ -323,7 +328,7 @@
     </div>
 </div>
 
-<script src="/static/auth.js?v=3"></script>
+<script src="/static/auth.js?v=4"></script>
 <script>
     function selectRole(role) {
         document.querySelectorAll('.role-option').forEach(el => el.classList.remove('selected'));

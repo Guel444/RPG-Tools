@@ -5,6 +5,7 @@ from typing import Optional, List
 # Autenticação
 # ---------------------------
 class RegisterRequest(BaseModel):
+    username: str
     email: EmailStr
     password: str
     role: str = "PLAYER"

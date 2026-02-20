@@ -213,7 +213,10 @@ async function showMyNPCs() {
             const card = document.createElement("div");
             card.className = "saved-npc-card";
             card.innerHTML = `
-                <button class="delete-btn" onclick="deleteNPC(${npc.id})">✕ DELETE</button>
+                <div class="npc-card-actions">
+                    <button class="edit-btn" onclick="editNPC(${npc.id}, '${npc.name}', '${npc.race}', '${npc.class_name}', '${npc.trait}', '${npc.goal}', \`${npc.backstory || ''}\`)">✎ EDIT</button>
+                    <button class="delete-btn" onclick="deleteNPC(${npc.id})">✕ DELETE</button>
+                </div>
                 <div class="npc-name">${npc.name}</div>
                 <div class="npc-grid">
                     <div class="npc-field">
@@ -355,4 +358,122 @@ function showConfirm(message, onConfirm) {
 function logoutDashboard() {
     localStorage.removeItem("token");
     window.location.href = "/login";
+}
+
+// -----------------------------
+// Editar NPC
+// -----------------------------
+function editNPC(id, name, race, class_name, trait, goal, backstory) {
+    const existing = document.getElementById('edit-modal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'edit-modal';
+    modal.style.cssText = `
+        position: fixed; inset: 0; z-index: 99999;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+    `;
+
+    modal.innerHTML = `
+        <div style="
+            background: #141418;
+            border: 1px solid rgba(201,168,76,0.3);
+            border-radius: 4px;
+            padding: 32px;
+            max-width: 480px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            max-height: 90vh;
+            overflow-y: auto;
+        ">
+            <h3 style="font-family:'Cinzel',serif;font-size:14px;letter-spacing:3px;color:#c9a84c;margin-bottom:24px;text-align:center;">EDIT ADVENTURER</h3>
+
+            ${editField('Name', 'edit-name', name)}
+            ${editField('Race', 'edit-race', race)}
+            ${editField('Class', 'edit-class', class_name)}
+            ${editField('Trait', 'edit-trait', trait)}
+            ${editField('Goal', 'edit-goal', goal)}
+            ${editField('Backstory', 'edit-backstory', backstory, true)}
+
+            <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:24px;">
+                <button onclick="document.getElementById('edit-modal').remove()" style="
+                    background:none;border:1px solid rgba(201,168,76,0.2);border-radius:2px;
+                    padding:10px 20px;color:#8a8070;font-family:'Cinzel',serif;
+                    font-size:11px;letter-spacing:2px;cursor:pointer;
+                ">CANCEL</button>
+                <button onclick="saveEditNPC(${id})" style="
+                    background:linear-gradient(135deg,#b8912a,#c9a84c);border:none;border-radius:2px;
+                    padding:10px 20px;color:#0d0d0f;font-family:'Cinzel',serif;
+                    font-size:11px;letter-spacing:2px;font-weight:700;cursor:pointer;
+                ">SAVE</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+}
+
+function editField(label, id, value, isTextarea = false) {
+    const inputStyle = `
+        width:100%;background:#1c1c22;border:1px solid rgba(201,168,76,0.15);
+        border-radius:2px;padding:10px 14px;color:#e8e0d0;
+        font-family:'Crimson Text',serif;font-size:15px;outline:none;
+        ${isTextarea ? 'resize:vertical;min-height:80px;' : ''}
+    `;
+    const tag = isTextarea ? 'textarea' : 'input';
+    const valueAttr = isTextarea ? '' : `value="${value}"`;
+    const content = isTextarea ? value : '';
+
+    return `
+        <div style="margin-bottom:16px;">
+            <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:#8a8070;display:block;margin-bottom:6px;">${label.toUpperCase()}</label>
+            <${tag} id="${id}" style="${inputStyle}" ${valueAttr}>${content}</${tag}>
+        </div>
+    `;
+}
+
+async function saveEditNPC(id) {
+    const payload = {
+        name: document.getElementById('edit-name').value.trim(),
+        race: document.getElementById('edit-race').value.trim(),
+        class_name: document.getElementById('edit-class').value.trim(),
+        trait: document.getElementById('edit-trait').value.trim(),
+        goal: document.getElementById('edit-goal').value.trim(),
+        backstory: document.getElementById('edit-backstory').value.trim() || null,
+    };
+
+    if (!payload.name || !payload.race || !payload.class_name || !payload.trait || !payload.goal) {
+        toast.error("Please fill in all required fields.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`/npc/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${getToken()}`
+            },
+            body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            let msg = data.detail || "Error updating NPC";
+            if (typeof msg === "object") msg = JSON.stringify(msg);
+            toast.error(msg);
+            return;
+        }
+
+        document.getElementById('edit-modal').remove();
+        toast.success("NPC updated successfully!");
+        showMyNPCs();
+
+    } catch (err) {
+        console.error(err);
+        toast.error("Connection error.");
+    }
 }
