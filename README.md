@@ -18,7 +18,7 @@
 
 <br />
 
-[Features](#-features) · [Getting Started](#-getting-started) · [Tech Stack](#-tech-stack) · [Roadmap](#-roadmap) · [Contributing](#-contributing)
+[Features](#-features) · [Tech Stack](#-tech-stack) · [Roadmap](#-roadmap) · [Contributing](#-contributing)
 
 <br />
 
