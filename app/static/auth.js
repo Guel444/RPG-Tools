@@ -68,7 +68,6 @@ async function registerUser() {
     }
 }
 
-// Mostrar username no dashboard
 async function loadUserInfo() {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -90,14 +89,17 @@ async function loadUserInfo() {
         const el = document.getElementById("userInfo");
         if (el) {
             const roleIcon = data.data.role === "MASTER" ? "📖" : "⚔️";
-            el.innerHTML = `${roleIcon} <strong style="color:var(--text)">${data.data.username || data.data.email}</strong>`;
+            const name = data.data.username || data.data.email;
+            el.innerHTML = `
+                <span style="font-size:18px; width:24px; text-align:center; display:inline-block; flex-shrink:0">${roleIcon}</span>
+                <strong style="color:var(--text); font-weight:600; font-family:'Crimson Text',serif; font-size:16px">${name}</strong>
+            `;
         }
     } catch (err) {
         window.location.href = "/login";
     }
 }
 
-// Chamar ao carregar o dashboard
 if (document.getElementById("userInfo") !== null) {
     loadUserInfo();
 }

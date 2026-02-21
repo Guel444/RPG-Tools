@@ -26,6 +26,7 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     npcs = relationship("NPC", back_populates="owner")
+    notes = relationship("Note", back_populates="owner")
 
 # ---------------------------
 # Campaigns
@@ -37,6 +38,19 @@ class Campaign(Base):
     name = Column(String, nullable=False)
     description = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+# ---------------------------
+# Notes
+# ---------------------------
+class Note(Base):
+    __tablename__ = "notes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    content = Column(Text, nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    owner_id = Column(String, ForeignKey("users.id"))
+    owner = relationship("User", back_populates="notes")
 
 # ---------------------------
 # NPCs

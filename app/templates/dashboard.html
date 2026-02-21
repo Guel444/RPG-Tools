@@ -29,7 +29,6 @@
             font-family: 'Crimson Text', serif;
             min-height: 100vh;
             display: flex;
-            overflow: hidden;
         }
 
         canvas#bgCanvas {
@@ -42,7 +41,10 @@
         /* ── SIDEBAR ── */
         .sidebar {
             width: 240px;
-            min-height: 100vh;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            overflow-y: auto;
             background: var(--dark-2);
             border-right: 1px solid rgba(201,168,76,0.12);
             display: flex;
@@ -134,15 +136,21 @@
         }
 
         #userInfo {
-            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 10px 12px;
             color: var(--text-muted);
-            padding: 8px 12px;
-            font-family: 'Cinzel', serif;
+            font-size: 16px;
+            margin-bottom: 2px;
+            box-sizing: border-box;
         }
 
         /* ── MAIN ── */
         .main {
             flex: 1;
+            height: 100vh;
             overflow-y: auto;
             position: relative;
             z-index: 5;
@@ -427,6 +435,40 @@
         .btn-blue { background: linear-gradient(135deg, #2e6da4, #4a90c9); color: white; }
         .btn-blue:hover { box-shadow: 0 0 20px rgba(74,144,201,0.3); transform: translateY(-1px); }
 
+        /* Busca */
+        .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            background: var(--dark-3);
+            border: 1px solid rgba(201,168,76,0.15);
+            border-radius: 2px;
+            padding: 10px 16px;
+            color: var(--text);
+            font-family: 'Crimson Text', serif;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-bar input:focus { border-color: rgba(201,168,76,0.5); }
+        .search-bar input::placeholder { color: var(--text-muted); opacity: 0.5; }
+
+        .search-count {
+            font-family: 'Cinzel', serif;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .npc-hidden { display: none !important; }
+
         /* Empty state */
         .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
         .empty-state .empty-icon { font-size: 48px; display: block; margin-bottom: 16px; opacity: 0.4; }
@@ -467,9 +509,12 @@
         <button class="nav-btn" id="nav-myNpcs" onclick="showSection('myNpcs')">
             <span class="nav-icon">📜</span> My NPCs
         </button>
+        <button class="nav-btn" id="nav-notes" onclick="showSection('notes')">
+            <span class="nav-icon">📝</span> Master Notes
+        </button>
     </nav>
     <div class="sidebar-footer">
-        <p id="userInfo"></p>
+        <div id="userInfo"></div>
         <button class="nav-btn danger" onclick="logoutDashboard()">
             <span class="nav-icon">🚪</span> Logout
         </button>
@@ -554,14 +599,50 @@
                 <p>Your cast of characters</p>
             </div>
         </div>
+        <div class="search-bar">
+            <input type="text" id="npcSearch" placeholder="Search by name, race or class..." oninput="filterNPCs()">
+            <span class="search-count" id="searchCount"></span>
+        </div>
         <div id="myNpcsList"></div>
+    </div>
+
+    <div id="notesSection" class="section">
+        <div class="section-header">
+            <span class="header-icon">📝</span>
+            <div>
+                <h2>MASTER NOTES</h2>
+                <p>Your session notes, always saved</p>
+            </div>
+        </div>
+        <div class="panel">
+            <textarea id="notesContent" placeholder="Write your session notes here... NPCs encountered, plot hooks, player decisions, anything you need to remember." style="
+                width: 100%;
+                min-height: 400px;
+                background: var(--dark-3);
+                border: 1px solid rgba(201,168,76,0.15);
+                border-radius: 2px;
+                padding: 16px;
+                color: var(--text);
+                font-family: 'Crimson Text', serif;
+                font-size: 16px;
+                line-height: 1.7;
+                outline: none;
+                resize: vertical;
+                transition: border-color 0.2s;
+            " onfocus="this.style.borderColor='rgba(201,168,76,0.5)'" onblur="this.style.borderColor='rgba(201,168,76,0.15)'"
+            oninput="scheduleNoteSave()"></textarea>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px;">
+                <span id="noteSaveStatus" style="font-family:'Cinzel',serif; font-size:10px; letter-spacing:2px; color:var(--text-muted); opacity:0.6;"></span>
+                <button class="btn btn-gold" onclick="saveNotes()">SAVE NOTES</button>
+            </div>
+        </div>
     </div>
 
 </div>
 
 <script src="/static/toast.js?v=1"></script>
-<script src="/static/script.js?v=8"></script>
-<script src="/static/auth.js?v=4"></script>
+<script src="/static/script.js?v=10"></script>
+<script src="/static/auth.js?v=5"></script>
 <script>
     function showSection(section) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -570,6 +651,7 @@
         const navBtn = document.getElementById('nav-' + section);
         if (navBtn) navBtn.classList.add('active');
         if (section === 'myNpcs') showMyNPCs();
+        if (section === 'notes') loadNotes();
     }
 
     function setDice(expr) {

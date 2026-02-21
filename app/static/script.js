@@ -181,6 +181,12 @@ async function showMyNPCs() {
     const container = document.getElementById("myNpcsList");
     container.innerHTML = `<div style="color:var(--text-muted);font-style:italic;padding:20px">Loading your adventurers...</div>`;
 
+    // Resetar busca
+    const search = document.getElementById('npcSearch');
+    const count = document.getElementById('searchCount');
+    if (search) search.value = '';
+    if (count) count.textContent = '';
+
     try {
         const response = await fetch("/npc/my", {
             headers: { "Authorization": `Bearer ${getToken()}` }
@@ -476,4 +482,81 @@ async function saveEditNPC(id) {
         console.error(err);
         toast.error("Connection error.");
     }
+}
+
+// -----------------------------
+// Busca e filtro de NPCs
+// -----------------------------
+function filterNPCs() {
+    const query = document.getElementById('npcSearch').value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.saved-npc-card');
+    let visible = 0;
+
+    cards.forEach(card => {
+        const name = card.querySelector('.npc-name')?.textContent.toLowerCase() || '';
+        const fields = card.querySelectorAll('.npc-field span');
+        const race = fields[0]?.textContent.toLowerCase() || '';
+        const cls = fields[1]?.textContent.toLowerCase() || '';
+
+        const match = !query || name.includes(query) || race.includes(query) || cls.includes(query);
+        card.classList.toggle('npc-hidden', !match);
+        if (match) visible++;
+    });
+
+    const count = document.getElementById('searchCount');
+    if (count) {
+        count.textContent = query ? `${visible} found` : `${cards.length} adventurers`;
+    }
+}
+
+// -----------------------------
+// Master Notes
+// -----------------------------
+let noteSaveTimer = null;
+
+async function loadNotes() {
+    try {
+        const response = await fetch("/notes", {
+            headers: { "Authorization": `Bearer ${getToken()}` }
+        });
+        const data = await response.json();
+        if (data.success) {
+            document.getElementById('notesContent').value = data.content;
+        }
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+async function saveNotes() {
+    const content = document.getElementById('notesContent').value;
+    const status = document.getElementById('noteSaveStatus');
+
+    try {
+        const response = await fetch("/notes", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${getToken()}`
+            },
+            body: JSON.stringify({ content })
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            if (status) status.textContent = "SAVED ✓";
+            setTimeout(() => { if (status) status.textContent = ""; }, 2000);
+        } else {
+            toast.error("Error saving notes.");
+        }
+    } catch (err) {
+        toast.error("Connection error.");
+    }
+}
+
+function scheduleNoteSave() {
+    const status = document.getElementById('noteSaveStatus');
+    if (status) status.textContent = "UNSAVED...";
+    clearTimeout(noteSaveTimer);
+    noteSaveTimer = setTimeout(saveNotes, 2000);
 }
