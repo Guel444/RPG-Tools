@@ -29,6 +29,7 @@
             font-family: 'Crimson Text', serif;
             min-height: 100vh;
             display: flex;
+            overflow: hidden;
         }
 
         canvas#bgCanvas {
@@ -42,16 +43,15 @@
         .sidebar {
             width: 240px;
             height: 100vh;
-            position: sticky;
-            top: 0;
-            overflow-y: auto;
             background: var(--dark-2);
             border-right: 1px solid rgba(201,168,76,0.12);
             display: flex;
             flex-direction: column;
-            position: relative;
+            position: sticky;
+            top: 0;
             z-index: 10;
             flex-shrink: 0;
+            overflow-y: auto;
         }
 
         .sidebar-logo {
@@ -435,6 +435,181 @@
         .btn-blue { background: linear-gradient(135deg, #2e6da4, #4a90c9); color: white; }
         .btn-blue:hover { box-shadow: 0 0 20px rgba(74,144,201,0.3); transform: translateY(-1px); }
 
+        /* Campanhas */
+        .campaigns-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 20px;
+        }
+
+        .campaign-card {
+            background: var(--dark-3);
+            border: 1px solid rgba(201,168,76,0.12);
+            border-radius: 4px;
+            padding: 24px;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .campaign-card:hover {
+            border-color: rgba(201,168,76,0.25);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+
+        .campaign-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(to right, transparent, rgba(201,168,76,0.4), transparent);
+        }
+
+        .campaign-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            gap: 12px;
+        }
+
+        .campaign-name {
+            font-family: 'Cinzel', serif;
+            font-size: 17px;
+            color: var(--gold);
+            line-height: 1.3;
+        }
+
+        .campaign-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .campaign-meta {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .campaign-badge {
+            font-family: 'Cinzel', serif;
+            font-size: 9px;
+            letter-spacing: 1.5px;
+            padding: 3px 10px;
+            border-radius: 2px;
+            font-weight: 600;
+        }
+
+        .badge-active   { background: rgba(76,175,125,0.12); color: #4caf7d; border: 1px solid rgba(76,175,125,0.3); }
+        .badge-paused   { background: rgba(224,168,50,0.12); color: #e0a832; border: 1px solid rgba(224,168,50,0.3); }
+        .badge-completed{ background: rgba(74,144,201,0.12); color: #4a90c9; border: 1px solid rgba(74,144,201,0.3); }
+
+        .campaign-session {
+            font-family: 'Cinzel', serif;
+            font-size: 9px;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .campaign-location {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .campaign-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-bottom: 14px;
+            line-height: 1.5;
+            border-left: 2px solid rgba(201,168,76,0.2);
+            padding-left: 10px;
+        }
+
+        .campaign-session-notes {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+            line-height: 1.5;
+            background: rgba(0,0,0,0.2);
+            padding: 10px 12px;
+            border-radius: 2px;
+            border: 1px solid rgba(255,255,255,0.04);
+            max-height: 80px;
+            overflow-y: auto;
+        }
+
+        .campaign-section-label {
+            font-family: 'Cinzel', serif;
+            font-size: 9px;
+            letter-spacing: 2px;
+            color: rgba(201,168,76,0.4);
+            margin-bottom: 6px;
+        }
+
+        .campaign-npc-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 14px;
+            min-height: 24px;
+        }
+
+        .campaign-npc-tag {
+            background: rgba(201,168,76,0.06);
+            border: 1px solid rgba(201,168,76,0.15);
+            border-radius: 2px;
+            padding: 3px 8px;
+            font-family: 'Cinzel', serif;
+            font-size: 9px;
+            letter-spacing: 1px;
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .campaign-npc-tag button {
+            background: none;
+            border: none;
+            color: rgba(201,168,76,0.4);
+            cursor: pointer;
+            font-size: 10px;
+            padding: 0;
+            transition: color 0.2s;
+            line-height: 1;
+        }
+
+        .campaign-npc-tag button:hover { color: #e74c3c; }
+
+        .campaign-add-npc {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .campaign-add-npc select {
+            flex: 1;
+            background: var(--dark-4);
+            border: 1px solid rgba(201,168,76,0.15);
+            border-radius: 2px;
+            padding: 7px 10px;
+            color: var(--text-muted);
+            font-family: 'Crimson Text', serif;
+            font-size: 14px;
+            outline: none;
+        }
+
         /* Busca */
         .search-bar {
             display: flex;
@@ -508,6 +683,9 @@
         </button>
         <button class="nav-btn" id="nav-myNpcs" onclick="showSection('myNpcs')">
             <span class="nav-icon">📜</span> My NPCs
+        </button>
+        <button class="nav-btn" id="nav-campaigns" onclick="showSection('campaigns')">
+            <span class="nav-icon">🗺️</span> Campaigns
         </button>
         <button class="nav-btn" id="nav-notes" onclick="showSection('notes')">
             <span class="nav-icon">📝</span> Master Notes
@@ -606,6 +784,26 @@
         <div id="myNpcsList"></div>
     </div>
 
+    <div id="campaignsSection" class="section">
+        <div class="section-header">
+            <span class="header-icon">🗺️</span>
+            <div>
+                <h2>CAMPAIGNS</h2>
+                <p>Organize your adventures</p>
+            </div>
+        </div>
+        <div style="display:flex; gap:12px; align-items:center; margin-bottom:24px; flex-wrap:wrap;">
+            <button class="btn btn-gold" onclick="showCampaignModal()">+ NEW CAMPAIGN</button>
+            <div style="display:flex; gap:8px;">
+                <button class="btn btn-outline" onclick="filterCampaigns('ALL')" id="cf-all" style="font-size:10px;padding:6px 14px;">ALL</button>
+                <button class="btn btn-outline" onclick="filterCampaigns('ACTIVE')" id="cf-active" style="font-size:10px;padding:6px 14px;">ACTIVE</button>
+                <button class="btn btn-outline" onclick="filterCampaigns('PAUSED')" id="cf-paused" style="font-size:10px;padding:6px 14px;">PAUSED</button>
+                <button class="btn btn-outline" onclick="filterCampaigns('COMPLETED')" id="cf-completed" style="font-size:10px;padding:6px 14px;">COMPLETED</button>
+            </div>
+        </div>
+        <div id="campaignsList"></div>
+    </div>
+
     <div id="notesSection" class="section">
         <div class="section-header">
             <span class="header-icon">📝</span>
@@ -641,7 +839,7 @@
 </div>
 
 <script src="/static/toast.js?v=1"></script>
-<script src="/static/script.js?v=10"></script>
+<script src="/static/script.js?v=12"></script>
 <script src="/static/auth.js?v=5"></script>
 <script>
     function showSection(section) {
@@ -652,6 +850,7 @@
         if (navBtn) navBtn.classList.add('active');
         if (section === 'myNpcs') showMyNPCs();
         if (section === 'notes') loadNotes();
+        if (section === 'campaigns') loadCampaigns();
     }
 
     function setDice(expr) {
