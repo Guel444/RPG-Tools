@@ -709,7 +709,8 @@ function showCampaignModal(id = null) {
         overflow-y:auto;padding:20px;
     `;
 
-    const fieldStyle = `width:100%;background:#1c1c22;border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 14px;color:#e8e0d0;font-family:'Crimson Text',serif;font-size:15px;outline:none;`;
+    const fieldStyle = `width:100%;box-sizing:border-box;background:#1c1c22;border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 14px;color:#e8e0d0;font-family:'Crimson Text',serif;font-size:15px;outline:none;`;
+    const textareaStyle = `width:100%;box-sizing:border-box;overflow-x:hidden;overflow-wrap:break-word;word-break:break-word;background:#1c1c22;border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 14px;color:#e8e0d0;font-family:'Crimson Text',serif;font-size:15px;outline:none;`;
     const labelStyle = `font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:#8a8070;display:block;margin-bottom:6px;`;
 
     modal.innerHTML = `
@@ -741,11 +742,11 @@ function showCampaignModal(id = null) {
                 </div>
                 <div style="grid-column:1/-1;">
                     <label style="${labelStyle}">DESCRIPTION</label>
-                    <textarea id="c-desc" style="${fieldStyle}resize:vertical;min-height:60px;">${c?.description || ''}</textarea>
+                    <textarea id="c-desc" style="${textareaStyle}resize:vertical;min-height:60px;">${c?.description || ''}</textarea>
                 </div>
                 <div style="grid-column:1/-1;">
                     <label style="${labelStyle}">SESSION NOTES</label>
-                    <textarea id="c-notes" style="${fieldStyle}resize:vertical;min-height:80px;" placeholder="What happened this session?">${c?.session_notes || ''}</textarea>
+                    <textarea id="c-notes" style="${textareaStyle}resize:vertical;min-height:80px;" placeholder="What happened this session?">${c?.session_notes || ''}</textarea>
                 </div>
             </div>
 
@@ -863,3 +864,462 @@ async function removeNPCFromCampaign(campaignId, npcId) {
         toast.error("Connection error.");
     }
 }
+
+// -----------------------------
+// Profile
+// -----------------------------
+let currentRole = 'PLAYER';
+
+async function loadProfile() {
+    try {
+        const response = await fetch('/profile', {
+            headers: { 'Authorization': `Bearer ${getToken()}` }
+        });
+        const data = await response.json();
+        if (!data.success) { toast.error("Error loading profile."); return; }
+
+        const d = data.data;
+
+        // Preencher campos
+        document.getElementById('profile-email').value = d.email;
+        document.getElementById('profile-username').value = d.username || '';
+        currentRole = d.role;
+        selectRole(d.role, false);
+
+        // Stats
+        const statsEl = document.getElementById('profileStats');
+        statsEl.innerHTML = `
+            <div class="profile-stat">
+                <div class="profile-stat-value">${d.npc_count}</div>
+                <div class="profile-stat-label">NPCS CREATED</div>
+            </div>
+            <div class="profile-stat">
+                <div class="profile-stat-value">${d.campaign_count}</div>
+                <div class="profile-stat-label">CAMPAIGNS</div>
+            </div>
+            <div class="profile-stat">
+                <div class="profile-stat-value" style="font-size:18px;padding-top:8px">${d.created_at}</div>
+                <div class="profile-stat-label">MEMBER SINCE</div>
+            </div>
+        `;
+
+    } catch (err) {
+        console.error(err);
+        toast.error("Connection error.");
+    }
+}
+
+function selectRole(role, save = false) {
+    currentRole = role;
+    const master = document.getElementById('role-master');
+    const player = document.getElementById('role-player');
+    if (master) master.classList.toggle('selected', role === 'MASTER');
+    if (player) player.classList.toggle('selected', role === 'PLAYER');
+}
+
+async function saveProfile() {
+    const username = document.getElementById('profile-username').value.trim();
+
+    if (!username) { toast.error("Username cannot be empty."); return; }
+    if (username.length < 3) { toast.error("Username must be at least 3 characters."); return; }
+
+    try {
+        const response = await fetch('/profile', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
+            body: JSON.stringify({ username, role: currentRole })
+        });
+        const data = await response.json();
+        if (!data.success) { toast.error(data.detail || "Error updating profile."); return; }
+        toast.success("Profile updated!");
+
+        // Atualizar nome no sidebar
+        const userInfoEl = document.getElementById('userInfo');
+        if (userInfoEl) {
+            const roleIcon = data.data.role === 'MASTER' ? '📖' : '⚔️';
+            userInfoEl.innerHTML = `
+                <span style="font-size:18px;width:24px;text-align:center;display:inline-block;flex-shrink:0">${roleIcon}</span>
+                <strong style="color:var(--text);font-weight:600;font-family:'Crimson Text',serif;font-size:16px">${data.data.username}</strong>
+            `;
+        }
+    } catch (err) {
+        toast.error("Connection error.");
+    }
+}
+
+async function savePassword() {
+    const current = document.getElementById('profile-current-pw').value;
+    const newPw = document.getElementById('profile-new-pw').value;
+    const confirm = document.getElementById('profile-confirm-pw').value;
+
+    if (!current || !newPw || !confirm) { toast.error("Please fill in all password fields."); return; }
+    if (newPw !== confirm) { toast.error("New passwords don't match."); return; }
+    if (newPw.length < 6) { toast.error("Password must be at least 6 characters."); return; }
+
+    try {
+        const response = await fetch('/profile', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
+            body: JSON.stringify({ current_password: current, new_password: newPw })
+        });
+        const data = await response.json();
+        if (!data.success) { toast.error(data.detail || "Error changing password."); return; }
+
+        toast.success("Password changed successfully!");
+        document.getElementById('profile-current-pw').value = '';
+        document.getElementById('profile-new-pw').value = '';
+        document.getElementById('profile-confirm-pw').value = '';
+    } catch (err) {
+        toast.error("Connection error.");
+    }
+}
+
+// -----------------------------
+// Encounter Generator
+// -----------------------------
+async function generateEncounter() {
+    const level = parseInt(document.getElementById('enc-level').value);
+    const party_size = parseInt(document.getElementById('enc-size').value);
+    const difficulty = document.getElementById('enc-difficulty').value;
+    const environment = document.getElementById('enc-environment').value;
+
+    const result = document.getElementById('encounterResult');
+    result.innerHTML = `<div style="color:var(--text-muted);font-style:italic;padding:20px">Rolling the bones of fate...</div>`;
+
+    try {
+        const response = await fetch('/encounter', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
+            body: JSON.stringify({ level, party_size, difficulty, environment })
+        });
+        const data = await response.json();
+        if (!data.success) { toast.error(data.detail || "Error generating encounter."); return; }
+
+        renderEncounter(data.data);
+    } catch (err) {
+        toast.error("Connection error.");
+    }
+}
+
+function difficultyColor(diff) {
+    const map = { 'Easy': '#4caf7d', 'Medium': '#e0a832', 'Hard': '#e07832', 'Deadly': '#c0392b' };
+    return map[diff] || '#c9a84c';
+}
+
+function renderEncounter(enc) {
+    const result = document.getElementById('encounterResult');
+
+    const monsterCards = enc.monsters.map(m => `
+        <div style="background:var(--dark-3);border:1px solid rgba(201,168,76,0.1);border-radius:4px;padding:20px;position:relative;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:12px;">
+                <div>
+                    <div style="font-family:'Cinzel',serif;font-size:16px;color:var(--gold);">
+                        ${m.count > 1 ? `${m.count}× ` : ''}${m.name}
+                    </div>
+                    <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;color:var(--text-muted);margin-top:2px;">
+                        CR ${m.cr} • ${m.type.toUpperCase()}
+                    </div>
+                </div>
+                <div style="text-align:right;flex-shrink:0;">
+                    <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;color:var(--text-muted);">XP EACH</div>
+                    <div style="font-family:'Cinzel',serif;font-size:14px;color:var(--gold);">${m.xp_each.toLocaleString()}</div>
+                </div>
+            </div>
+
+            <div style="display:flex;gap:16px;margin-bottom:12px;">
+                <div style="background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.05);border-radius:2px;padding:6px 12px;text-align:center;">
+                    <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;color:var(--text-muted);">HP</div>
+                    <div style="font-family:'Cinzel',serif;font-size:16px;color:#c0392b;">${m.hp}</div>
+                </div>
+                <div style="background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.05);border-radius:2px;padding:6px 12px;text-align:center;">
+                    <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;color:var(--text-muted);">AC</div>
+                    <div style="font-family:'Cinzel',serif;font-size:16px;color:#4a90c9;">${m.ac}</div>
+                </div>
+            </div>
+
+            <div style="font-size:14px;color:var(--text-muted);font-style:italic;margin-bottom:12px;line-height:1.5;border-left:2px solid rgba(201,168,76,0.2);padding-left:10px;">
+                ${m.description}
+            </div>
+
+            <div style="margin-bottom:${m.tactics ? '10px' : '0'};">
+                <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:rgba(201,168,76,0.4);margin-bottom:6px;">ATTACKS</div>
+                ${m.attacks.map(a => `
+                    <div style="font-size:13px;color:var(--text);padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);">⚔️ ${a}</div>
+                `).join('')}
+            </div>
+
+            ${m.tactics ? `
+                <div style="margin-top:10px;background:rgba(201,168,76,0.04);border:1px solid rgba(201,168,76,0.1);border-radius:2px;padding:10px 12px;">
+                    <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:rgba(201,168,76,0.5);margin-bottom:4px;">TACTICS</div>
+                    <div style="font-size:13px;color:var(--text-muted);">🧠 ${m.tactics}</div>
+                </div>
+            ` : ''}
+        </div>
+    `).join('');
+
+    const diffColor = difficultyColor(enc.difficulty_actual);
+
+    result.innerHTML = `
+        <!-- Resumo -->
+        <div style="background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:4px;padding:20px;margin-bottom:20px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+                <div style="font-family:'Cinzel',serif;font-size:14px;letter-spacing:2px;color:var(--gold);">ENCOUNTER SUMMARY</div>
+                <span style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;padding:4px 14px;border-radius:2px;background:${diffColor}18;color:${diffColor};border:1px solid ${diffColor}44;">
+                    ${enc.difficulty_actual.toUpperCase()}
+                </span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;">
+                <div style="text-align:center;">
+                    <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;color:var(--text-muted);">MONSTERS</div>
+                    <div style="font-family:'Cinzel',serif;font-size:24px;color:var(--text);">${enc.monster_count}</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;color:var(--text-muted);">TOTAL XP</div>
+                    <div style="font-family:'Cinzel',serif;font-size:24px;color:var(--gold);">${enc.adjusted_xp.toLocaleString()}</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;color:var(--text-muted);">XP/PLAYER</div>
+                    <div style="font-family:'Cinzel',serif;font-size:24px;color:var(--green);">${enc.xp_per_player.toLocaleString()}</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;color:var(--text-muted);">MULTIPLIER</div>
+                    <div style="font-family:'Cinzel',serif;font-size:24px;color:var(--text);">×${enc.multiplier}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monstros -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-bottom:20px;">
+            ${monsterCards}
+        </div>
+
+        <!-- Gerar novo -->
+        <button class="btn btn-outline" onclick="generateEncounter()" style="width:100%;">🎲 GENERATE ANOTHER</button>
+    `;
+}
+
+// -----------------------------
+// Initiative Tracker
+// -----------------------------
+let combatants = [];
+let currentTurn = 0;
+let currentRound = 1;
+let nextId = 1;
+
+function rollD20() {
+    return Math.floor(Math.random() * 20) + 1;
+}
+
+function addCombatant() {
+    const name = document.getElementById('cbt-name').value.trim();
+    const hp = parseInt(document.getElementById('cbt-hp').value) || 10;
+    const ac = parseInt(document.getElementById('cbt-ac').value) || 10;
+    const type = document.getElementById('cbt-type').value;
+    const rollInit = document.getElementById('cbt-roll-init').checked;
+    const mod = parseInt(document.getElementById('cbt-init-mod').value) || 0;
+
+    if (!name) { toast.error("Name is required."); return; }
+
+    let initiative;
+    if (rollInit) {
+        const roll = rollD20();
+        initiative = roll + mod;
+        toast.info(`${name} rolled ${roll} + ${mod} = ${initiative} initiative!`);
+    } else {
+        initiative = parseInt(document.getElementById('cbt-init').value) || 0;
+    }
+
+    combatants.push({
+        id: nextId++,
+        name,
+        initiative,
+        hp,
+        maxHp: hp,
+        ac,
+        type,
+        conditions: [],
+    });
+
+    // Re-sort by initiative (ties broken by player > monster)
+    sortCombatants();
+    renderInitiativeList();
+
+    // Limpar campos
+    document.getElementById('cbt-name').value = '';
+    document.getElementById('cbt-hp').value = '';
+    document.getElementById('cbt-ac').value = '';
+    document.getElementById('cbt-init').value = '';
+    document.getElementById('cbt-init-mod').value = '0';
+    document.getElementById('cbt-name').focus();
+}
+
+function sortCombatants() {
+    combatants.sort((a, b) => {
+        if (b.initiative !== a.initiative) return b.initiative - a.initiative;
+        // Desempate: players primeiro
+        const order = { player: 0, ally: 1, monster: 2 };
+        return (order[a.type] || 0) - (order[b.type] || 0);
+    });
+}
+
+function nextTurn() {
+    if (combatants.length === 0) return;
+
+    // Pula mortos
+    let next = (currentTurn + 1) % combatants.length;
+    let attempts = 0;
+    while (combatants[next].hp <= 0 && attempts < combatants.length) {
+        next = (next + 1) % combatants.length;
+        attempts++;
+    }
+
+    if (next <= currentTurn && combatants.length > 1) {
+        currentRound++;
+        document.getElementById('roundCounter').textContent = currentRound;
+        toast.info(`⚔️ Round ${currentRound} begins!`);
+    }
+
+    currentTurn = next;
+    renderInitiativeList();
+    updateTurnIndicator();
+
+    // Scroll para o combatente ativo
+    const active = document.querySelector('.combatant-row.active-turn');
+    if (active) active.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function updateTurnIndicator() {
+    const el = document.getElementById('turnIndicator');
+    if (combatants.length === 0) { el.textContent = '—'; return; }
+    const c = combatants[currentTurn];
+    if (c) el.textContent = c.name.toUpperCase();
+}
+
+function resetCombat() {
+    showConfirm("Reset combat? All combatants will be cleared.", () => {
+        combatants = [];
+        currentTurn = 0;
+        currentRound = 1;
+        nextId = 1;
+        document.getElementById('roundCounter').textContent = '1';
+        document.getElementById('turnIndicator').textContent = '—';
+        renderInitiativeList();
+    });
+}
+
+function changeHp(id, delta) {
+    const c = combatants.find(x => x.id === id);
+    if (!c) return;
+    c.hp = Math.max(0, Math.min(c.maxHp, c.hp + delta));
+    renderInitiativeList();
+}
+
+function setHp(id, value) {
+    const c = combatants.find(x => x.id === id);
+    if (!c) return;
+    const v = parseInt(value);
+    if (!isNaN(v)) c.hp = Math.max(0, Math.min(c.maxHp, v));
+    renderInitiativeList();
+}
+
+function removeCombatant(id) {
+    const idx = combatants.findIndex(x => x.id === id);
+    if (idx === -1) return;
+    combatants.splice(idx, 1);
+    if (currentTurn >= combatants.length) currentTurn = 0;
+    renderInitiativeList();
+    updateTurnIndicator();
+}
+
+function getHpStatus(hp, maxHp) {
+    if (hp <= 0) return { label: 'DEAD', cls: 'hp-dead' };
+    const pct = hp / maxHp;
+    if (pct > 0.66) return { label: 'HEALTHY', cls: 'hp-healthy' };
+    if (pct > 0.33) return { label: 'HURT', cls: 'hp-hurt' };
+    return { label: 'CRITICAL', cls: 'hp-critical' };
+}
+
+function getTypeBadge(type) {
+    const map = {
+        player:  ['type-player',  '🧙 PLAYER'],
+        monster: ['type-monster', '👹 MONSTER'],
+        ally:    ['type-ally',    '🛡️ ALLY'],
+    };
+    const [cls, label] = map[type] || ['type-monster', type];
+    return `<span class="combatant-type-badge ${cls}">${label}</span>`;
+}
+
+function renderInitiativeList() {
+    const list = document.getElementById('initiativeList');
+    const empty = document.getElementById('initiativeEmpty');
+
+    if (!list) return;
+
+    if (combatants.length === 0) {
+        list.innerHTML = '';
+        if (empty) empty.style.display = 'block';
+        return;
+    }
+
+    if (empty) empty.style.display = 'none';
+
+    list.innerHTML = combatants.map((c, idx) => {
+        const isActive = idx === currentTurn;
+        const isDead = c.hp <= 0;
+        const status = getHpStatus(c.hp, c.maxHp);
+        const hpPct = Math.max(0, c.hp / c.maxHp * 100);
+
+        return `
+            <div class="combatant-row ${isActive ? 'active-turn' : ''} ${isDead ? 'dead' : ''}" id="cbt-row-${c.id}">
+                <!-- Initiative -->
+                <div class="initiative-badge">${c.initiative}</div>
+
+                <!-- Name + type + HP bar -->
+                <div>
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                        <span class="combatant-name">${c.name}</span>
+                        ${getTypeBadge(c.type)}
+                        <span style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;" class="${status.cls}">${status.label}</span>
+                    </div>
+                    <!-- HP Bar -->
+                    <div style="height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;max-width:200px;">
+                        <div style="height:100%;width:${hpPct}%;background:${hpPct > 66 ? '#4caf7d' : hpPct > 33 ? '#e0a832' : '#e74c3c'};transition:width 0.3s;border-radius:2px;"></div>
+                    </div>
+                </div>
+
+                <!-- HP Tracker -->
+                <div class="hp-tracker">
+                    <button class="hp-btn" onclick="changeHp(${c.id}, -1)" title="−1 HP">−</button>
+                    <button class="hp-btn" onclick="changeHp(${c.id}, -5)" title="−5 HP" style="font-size:11px;">−5</button>
+                    <div class="hp-display ${status.cls}">
+                        <input type="number" value="${c.hp}" min="0" max="${c.maxHp}"
+                            onchange="setHp(${c.id}, this.value)"
+                            style="width:36px;background:none;border:none;color:inherit;font-family:'Cinzel',serif;font-size:13px;text-align:center;outline:none;">
+                        <span style="color:var(--text-muted);font-size:11px;">/ ${c.maxHp}</span>
+                    </div>
+                    <button class="hp-btn" onclick="changeHp(${c.id}, +5)" title="+5 HP" style="font-size:11px;">+5</button>
+                    <button class="hp-btn" onclick="changeHp(${c.id}, +1)" title="+1 HP">+</button>
+                </div>
+
+                <!-- AC -->
+                <div class="ac-display">
+                    <div style="font-size:9px;letter-spacing:1px;font-family:'Cinzel',serif;color:var(--text-muted);">AC</div>
+                    <div style="font-size:16px;color:var(--blue);">${c.ac}</div>
+                </div>
+
+                <!-- Ação de turno atual -->
+                ${isActive ? `<button class="btn btn-gold" onclick="nextTurn()" style="padding:6px 12px;font-size:10px;flex-shrink:0;">▶ END TURN</button>` : '<div></div>'}
+
+                <!-- Remover -->
+                <button class="delete-btn" onclick="removeCombatant(${c.id})" title="Remove" style="padding:4px 8px;font-size:10px;">✕</button>
+            </div>
+        `;
+    }).join('');
+
+    updateTurnIndicator();
+}
+
+// Inicializar renderização quando a seção abre
+document.addEventListener('DOMContentLoaded', () => {
+    renderInitiativeList();
+});

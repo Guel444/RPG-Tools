@@ -388,3 +388,103 @@ def remove_npc_from_campaign(
     campaign.npcs.remove(npc_obj)
     db.commit()
     return JSONResponse(content={"success": True, "detail": "NPC removed from campaign"})
+
+
+# -------------------------------
+# Profile
+# -------------------------------
+class ProfileUpdateRequest(BaseModel):
+    username: Optional[str] = None
+    current_password: Optional[str] = None
+    new_password: Optional[str] = None
+    role: Optional[str] = None
+
+@app.get("/profile")
+def get_profile(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    npc_count = db.query(NPC).filter(NPC.owner_id == current_user.id).count()
+    campaign_count = db.query(Campaign).filter(Campaign.owner_id == current_user.id).count()
+
+    return JSONResponse(content={
+        "success": True,
+        "data": {
+            "username": current_user.username,
+            "email": current_user.email,
+            "role": current_user.role.value,
+            "created_at": current_user.created_at.strftime("%B %d, %Y") if current_user.created_at else "Unknown",
+            "npc_count": npc_count,
+            "campaign_count": campaign_count,
+        }
+    })
+
+@app.put("/profile")
+def update_profile(
+    request: ProfileUpdateRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    # Trocar username
+    if request.username and request.username != current_user.username:
+        existing = db.query(User).filter(User.username == request.username).first()
+        if existing:
+            return JSONResponse(content={"success": False, "detail": "Username already taken"})
+        current_user.username = request.username
+
+    # Trocar senha
+    if request.new_password:
+        if not request.current_password:
+            return JSONResponse(content={"success": False, "detail": "Current password is required"})
+        if not auth.verify_password(request.current_password, current_user.password):
+            return JSONResponse(content={"success": False, "detail": "Current password is incorrect"})
+        if len(request.new_password) < 6:
+            return JSONResponse(content={"success": False, "detail": "New password must be at least 6 characters"})
+        current_user.password = auth.hash_password(request.new_password)
+
+    # Trocar role
+    if request.role:
+        current_user.role = Role.MASTER if request.role == "MASTER" else Role.PLAYER
+
+    db.commit()
+    db.refresh(current_user)
+
+    return JSONResponse(content={
+        "success": True,
+        "detail": "Profile updated successfully",
+        "data": {
+            "username": current_user.username,
+            "email": current_user.email,
+            "role": current_user.role.value,
+        }
+    })
+
+
+# -------------------------------
+# Encounter Generator
+# -------------------------------
+from .encounter import get_monsters_for_encounter
+
+class EncounterRequest(BaseModel):
+    level: int
+    party_size: int
+    difficulty: str
+    environment: str
+
+@app.post("/encounter")
+def generate_encounter(
+    request: EncounterRequest,
+    current_user: User = Depends(get_current_user)
+):
+    if not 1 <= request.level <= 20:
+        return JSONResponse(content={"success": False, "detail": "Level must be between 1 and 20"})
+    if not 1 <= request.party_size <= 10:
+        return JSONResponse(content={"success": False, "detail": "Party size must be between 1 and 10"})
+    if request.difficulty.lower() not in ["easy", "medium", "hard", "deadly"]:
+        return JSONResponse(content={"success": False, "detail": "Invalid difficulty"})
+
+    result = get_monsters_for_encounter(
+        level=request.level,
+        party_size=request.party_size,
+        difficulty=request.difficulty,
+        environment=request.environment
+    )
+
+    return JSONResponse(content={"success": True, "data": result})

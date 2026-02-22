@@ -4,7 +4,11 @@ NAMES = [
     "Arthos", "Lyra", "Dorian", "Kael", "Seraphina", "Thorne", "Elara", "Gareth",
     "Isolde", "Fenris", "Mira", "Aldric", "Zephyr", "Nadia", "Corvus", "Sylara",
     "Brennan", "Talia", "Orion", "Vesper", "Caden", "Rhea", "Dax", "Lirien",
-    "Brutus", "Sable", "Edric", "Yara", "Rook", "Fiora"
+    "Brutus", "Sable", "Edric", "Yara", "Rook", "Fiora", "Lucian", "Selene",
+    "Gideon", "Amara", "Vex", "Elysia", "Kieran", "Nyx", "Thalia", "Darius",
+    "Seren", "Kaida", "Riven", "Liora", "Zarek", "Morgana", "Alaric", "Soren",
+    "Eira", "Vanya", "Cyrus", "Isis", "Draven", "Luna", "Ragnar",
+    "Talon", "Evelyn", "Dante", "Aria", "Lucius", "Sable"
 ]
 
 RACES = [

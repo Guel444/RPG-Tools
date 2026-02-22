@@ -546,6 +546,10 @@
             border: 1px solid rgba(255,255,255,0.04);
             max-height: 80px;
             overflow-y: auto;
+            overflow-x: hidden;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            white-space: pre-wrap;
         }
 
         .campaign-section-label {
@@ -608,6 +612,305 @@
             font-family: 'Crimson Text', serif;
             font-size: 14px;
             outline: none;
+        }
+
+        /* Perfil */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 700px) {
+            .profile-grid { grid-template-columns: 1fr; }
+        }
+
+        .profile-stat {
+            background: var(--dark-3);
+            border: 1px solid rgba(201,168,76,0.12);
+            border-radius: 4px;
+            padding: 20px 24px;
+            text-align: center;
+        }
+
+        .profile-stat-value {
+            font-family: 'Cinzel', serif;
+            font-size: 36px;
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        .profile-stat-label {
+            font-family: 'Cinzel', serif;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .profile-section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: rgba(201,168,76,0.5);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(201,168,76,0.1);
+        }
+
+        .role-selector {
+            display: flex;
+            gap: 12px;
+        }
+
+        .role-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 3px;
+            border: 1px solid rgba(201,168,76,0.15);
+            background: none;
+            color: var(--text-muted);
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .role-btn.selected {
+            background: rgba(201,168,76,0.1);
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .role-btn:hover:not(.selected) {
+            border-color: rgba(201,168,76,0.3);
+            color: var(--text);
+        }
+
+        /* Initiative Tracker */
+        .initiative-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .combatant-row {
+            background: var(--dark-3);
+            border: 1px solid rgba(201,168,76,0.1);
+            border-radius: 4px;
+            padding: 14px 16px;
+            display: grid;
+            grid-template-columns: 48px 1fr auto auto auto auto;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .combatant-row.active-turn {
+            border-color: var(--gold);
+            background: rgba(201,168,76,0.07);
+            box-shadow: 0 0 0 1px rgba(201,168,76,0.3);
+        }
+
+        .combatant-row.active-turn::before {
+            content: '▶';
+            position: absolute;
+            left: -20px;
+            color: var(--gold);
+            font-size: 12px;
+        }
+
+        .combatant-row.dead {
+            opacity: 0.4;
+            filter: grayscale(1);
+        }
+
+        .initiative-badge {
+            font-family: 'Cinzel', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gold);
+            text-align: center;
+            background: rgba(201,168,76,0.08);
+            border: 1px solid rgba(201,168,76,0.2);
+            border-radius: 3px;
+            padding: 4px;
+            min-width: 48px;
+        }
+
+        .combatant-name {
+            font-family: 'Cinzel', serif;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .combatant-type-badge {
+            font-family: 'Cinzel', serif;
+            font-size: 9px;
+            letter-spacing: 1px;
+            padding: 2px 8px;
+            border-radius: 2px;
+        }
+
+        .type-player   { background: rgba(74,144,201,0.12); color: #4a90c9; border: 1px solid rgba(74,144,201,0.3); }
+        .type-monster  { background: rgba(192,57,43,0.12);  color: #e74c3c; border: 1px solid rgba(192,57,43,0.3); }
+        .type-ally     { background: rgba(76,175,125,0.12); color: #4caf7d; border: 1px solid rgba(76,175,125,0.3); }
+
+        .hp-tracker {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hp-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 2px;
+            color: var(--text);
+            width: 26px;
+            height: 26px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+        }
+
+        .hp-btn:hover { background: rgba(255,255,255,0.1); }
+
+        .hp-display {
+            font-family: 'Cinzel', serif;
+            font-size: 13px;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .hp-healthy  { color: #4caf7d; }
+        .hp-hurt     { color: #e0a832; }
+        .hp-critical { color: #e74c3c; }
+        .hp-dead     { color: #666; }
+
+        .ac-display {
+            font-family: 'Cinzel', serif;
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+            min-width: 40px;
+        }
+
+        .combatant-controls {
+            display: flex;
+            gap: 4px;
+        }
+
+        .round-counter {
+            font-family: 'Cinzel', serif;
+            font-size: 28px;
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        .turn-indicator {
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+        }
+
+        /* Treasure */
+        .treasure-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .treasure-card {
+            background: var(--dark-3);
+            border: 1px solid rgba(201,168,76,0.12);
+            border-radius: 4px;
+            padding: 20px;
+        }
+
+        .treasure-card-title {
+            font-family: 'Cinzel', serif;
+            font-size: 10px;
+            letter-spacing: 3px;
+            color: rgba(201,168,76,0.5);
+            margin-bottom: 14px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(201,168,76,0.1);
+        }
+
+        .treasure-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 7px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            gap: 10px;
+        }
+
+        .treasure-item:last-child { border-bottom: none; }
+
+        .treasure-item-name {
+            font-size: 15px;
+            color: var(--text);
+            flex: 1;
+        }
+
+        .treasure-item-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .treasure-item-value {
+            font-family: 'Cinzel', serif;
+            font-size: 12px;
+            color: var(--gold);
+            flex-shrink: 0;
+        }
+
+        .rarity-common    { color: #aaa; }
+        .rarity-uncommon  { color: #4caf7d; }
+        .rarity-rare      { color: #4a90c9; }
+        .rarity-very-rare { color: #9b59b6; }
+        .rarity-legendary { color: #e0a832; }
+        .rarity-artifact  { color: #e74c3c; }
+
+        .rarity-badge {
+            font-family: 'Cinzel', serif;
+            font-size: 9px;
+            letter-spacing: 1px;
+            padding: 2px 8px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .coin-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .coin-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cinzel', serif;
+            font-size: 10px;
+            font-weight: 700;
+            flex-shrink: 0;
         }
 
         /* Busca */
@@ -690,6 +993,18 @@
         <button class="nav-btn" id="nav-notes" onclick="showSection('notes')">
             <span class="nav-icon">📝</span> Master Notes
         </button>
+        <button class="nav-btn" id="nav-initiative" onclick="showSection('initiative')">
+            <span class="nav-icon">🎯</span> Initiative
+        </button>
+        <button class="nav-btn" id="nav-treasure" onclick="showSection('treasure')">
+            <span class="nav-icon">💰</span> Treasure
+        </button>
+        <button class="nav-btn" id="nav-encounter" onclick="showSection('encounter')">
+            <span class="nav-icon">⚔️</span> Encounters
+        </button>
+        <button class="nav-btn" id="nav-profile" onclick="showSection('profile')">
+            <span class="nav-icon">👤</span> Profile
+        </button>
     </nav>
     <div class="sidebar-footer">
         <div id="userInfo"></div>
@@ -716,6 +1031,26 @@
             <div class="home-card" onclick="showSection('myNpcs')">
                 <span class="card-icon">📜</span>
                 <span class="card-name">MY NPCS</span>
+            </div>
+            <div class="home-card" onclick="showSection('campaigns')">
+                <span class="card-icon">🗺️</span>
+                <span class="card-name">CAMPAIGNS</span>
+            </div>
+            <div class="home-card" onclick="showSection('notes')">
+                <span class="card-icon">📝</span>
+                <span class="card-name">MASTER NOTES</span>
+            </div>
+            <div class="home-card" onclick="showSection('encounter')">
+                <span class="card-icon">⚔️</span>
+                <span class="card-name">ENCOUNTERS</span>
+            </div>
+            <div class="home-card" onclick="showSection('initiative')">
+                <span class="card-icon">🎯</span>
+                <span class="card-name">INITIATIVE</span>
+            </div>
+            <div class="home-card" onclick="showSection('treasure')">
+                <span class="card-icon">💰</span>
+                <span class="card-name">TREASURE</span>
             </div>
         </div>
     </div>
@@ -804,6 +1139,217 @@
         <div id="campaignsList"></div>
     </div>
 
+    <div id="treasureSection" class="section">
+        <div class="section-header">
+            <span class="header-icon">💰</span>
+            <div>
+                <h2>TREASURE GENERATOR</h2>
+                <p>Coins, gems, art objects and magic items — D&D 5e tables</p>
+            </div>
+        </div>
+
+        <div class="panel" style="margin-bottom:24px;">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:20px;">
+                <div>
+                    <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">ENCOUNTER CR</label>
+                    <input id="tr-cr" type="number" min="0" max="30" value="5" style="width:100%;background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 14px;color:var(--text);font-family:'Crimson Text',serif;font-size:16px;outline:none;">
+                </div>
+                <div>
+                    <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">TREASURE TYPE</label>
+                    <select id="tr-type" style="width:100%;background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 14px;color:var(--text);font-family:'Crimson Text',serif;font-size:16px;outline:none;">
+                        <option value="individual">👤 Individual</option>
+                        <option value="hoard">🏛️ Hoard</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">MONSTER TYPE</label>
+                    <select id="tr-monster" style="width:100%;background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 14px;color:var(--text);font-family:'Crimson Text',serif;font-size:16px;outline:none;">
+                        <option value="any">⚔️ Any</option>
+                        <option value="dragon">🐉 Dragon</option>
+                        <option value="undead">💀 Undead</option>
+                        <option value="fiend">😈 Fiend</option>
+                        <option value="humanoid">🧙 Humanoid</option>
+                        <option value="beast">🐺 Beast</option>
+                        <option value="construct">🤖 Construct</option>
+                        <option value="fey">🧚 Fey</option>
+                        <option value="aberration">👁️ Aberration</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-gold" onclick="generateTreasure()" style="width:100%;">💰 GENERATE TREASURE</button>
+        </div>
+
+        <div id="treasureResult"></div>
+    </div>
+
+    <div id="initiativeSection" class="section">
+        <div class="section-header">
+            <span class="header-icon">🎯</span>
+            <div>
+                <h2>INITIATIVE TRACKER</h2>
+                <p>Track combat order and HP in real time</p>
+            </div>
+        </div>
+
+        <!-- Controles do combate -->
+        <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-bottom:24px;">
+
+            <!-- Round / Turn -->
+            <div class="panel" style="flex-shrink:0;text-align:center;padding:20px 28px;">
+                <div class="turn-indicator">ROUND</div>
+                <div class="round-counter" id="roundCounter">1</div>
+                <div class="turn-indicator" id="turnIndicator" style="margin-top:4px;color:var(--gold);">—</div>
+                <div style="display:flex;gap:8px;margin-top:16px;justify-content:center;">
+                    <button class="btn btn-gold" onclick="nextTurn()" style="padding:8px 20px;font-size:11px;">▶ NEXT TURN</button>
+                    <button class="btn btn-outline" onclick="resetCombat()" style="padding:8px 14px;font-size:11px;">↺ RESET</button>
+                </div>
+            </div>
+
+            <!-- Adicionar combatente -->
+            <div class="panel" style="flex:1;min-width:280px;">
+                <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:rgba(201,168,76,0.5);margin-bottom:14px;">ADD COMBATANT</div>
+                <div style="display:grid;grid-template-columns:1fr 60px 60px 60px;gap:8px;margin-bottom:10px;">
+                    <input id="cbt-name" placeholder="Name" style="background:var(--dark-4);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:8px 10px;color:var(--text);font-family:'Crimson Text',serif;font-size:15px;outline:none;">
+                    <input id="cbt-init" type="number" placeholder="Init" style="background:var(--dark-4);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:8px 10px;color:var(--text);font-family:'Cinzel',serif;font-size:14px;outline:none;text-align:center;">
+                    <input id="cbt-hp" type="number" placeholder="HP" style="background:var(--dark-4);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:8px 10px;color:var(--text);font-family:'Cinzel',serif;font-size:14px;outline:none;text-align:center;">
+                    <input id="cbt-ac" type="number" placeholder="AC" style="background:var(--dark-4);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:8px 10px;color:var(--text);font-family:'Cinzel',serif;font-size:14px;outline:none;text-align:center;">
+                </div>
+                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                    <select id="cbt-type" style="background:var(--dark-4);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:8px 10px;color:var(--text);font-family:'Crimson Text',serif;font-size:14px;outline:none;">
+                        <option value="player">🧙 Player</option>
+                        <option value="monster">👹 Monster</option>
+                        <option value="ally">🛡️ Ally</option>
+                    </select>
+                    <label style="display:flex;align-items:center;gap:6px;font-size:14px;color:var(--text-muted);cursor:pointer;">
+                        <input type="checkbox" id="cbt-roll-init" checked style="accent-color:var(--gold);">
+                        Roll initiative
+                    </label>
+                    <input id="cbt-init-mod" type="number" placeholder="Mod" value="0" style="width:60px;background:var(--dark-4);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:8px 10px;color:var(--text);font-family:'Cinzel',serif;font-size:14px;outline:none;text-align:center;">
+                    <button class="btn btn-gold" onclick="addCombatant()" style="padding:8px 16px;font-size:11px;">+ ADD</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de combatentes -->
+        <div id="initiativeList" class="initiative-list"></div>
+        <div id="initiativeEmpty" style="text-align:center;padding:40px;color:var(--text-muted);font-style:italic;display:block;">
+            No combatants yet. Add players and monsters above to start tracking combat.
+        </div>
+    </div>
+
+    <div id="encounterSection" class="section">
+        <div class="section-header">
+            <span class="header-icon">⚔️</span>
+            <div>
+                <h2>ENCOUNTER GENERATOR</h2>
+                <p>Build balanced encounters using D&D 5e rules</p>
+            </div>
+        </div>
+
+        <!-- Parâmetros -->
+        <div class="panel" style="margin-bottom:24px;">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:20px;">
+                <div>
+                    <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">PARTY LEVEL</label>
+                    <input id="enc-level" type="number" min="1" max="20" value="5" style="width:100%;background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 14px;color:var(--text);font-family:'Crimson Text',serif;font-size:16px;outline:none;">
+                </div>
+                <div>
+                    <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">PARTY SIZE</label>
+                    <input id="enc-size" type="number" min="1" max="10" value="4" style="width:100%;background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 14px;color:var(--text);font-family:'Crimson Text',serif;font-size:16px;outline:none;">
+                </div>
+                <div>
+                    <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">DIFFICULTY</label>
+                    <select id="enc-difficulty" style="width:100%;background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 14px;color:var(--text);font-family:'Crimson Text',serif;font-size:16px;outline:none;">
+                        <option value="easy">🟢 Easy</option>
+                        <option value="medium" selected>🟡 Medium</option>
+                        <option value="hard">🟠 Hard</option>
+                        <option value="deadly">🔴 Deadly</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">ENVIRONMENT</label>
+                    <select id="enc-environment" style="width:100%;background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 14px;color:var(--text);font-family:'Crimson Text',serif;font-size:16px;outline:none;">
+                        <option value="dungeon">🏰 Dungeon</option>
+                        <option value="forest">🌲 Forest</option>
+                        <option value="plains">🌾 Plains</option>
+                        <option value="cave">🕳️ Cave</option>
+                        <option value="city">🏙️ City</option>
+                        <option value="swamp">🌿 Swamp</option>
+                        <option value="mountain">⛰️ Mountain</option>
+                        <option value="arctic">❄️ Arctic</option>
+                        <option value="ruins">🏚️ Ruins</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-gold" onclick="generateEncounter()" style="width:100%;">⚔️ GENERATE ENCOUNTER</button>
+        </div>
+
+        <!-- Resultado -->
+        <div id="encounterResult"></div>
+    </div>
+
+    <div id="profileSection" class="section">
+        <div class="section-header">
+            <span class="header-icon">👤</span>
+            <div>
+                <h2>PROFILE</h2>
+                <p>Your adventurer's details</p>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div id="profileStats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px;"></div>
+
+        <div class="profile-grid">
+            <!-- Informações -->
+            <div class="panel">
+                <div class="profile-section-title">ACCOUNT INFORMATION</div>
+
+                <div style="margin-bottom:16px;">
+                    <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">EMAIL</label>
+                    <input id="profile-email" disabled style="width:100%;background:var(--dark-4);border:1px solid rgba(255,255,255,0.05);border-radius:2px;padding:10px 14px;color:var(--text-muted);font-family:'Crimson Text',serif;font-size:16px;outline:none;cursor:not-allowed;">
+                </div>
+
+                <div style="margin-bottom:16px;">
+                    <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">USERNAME</label>
+                    <input id="profile-username" style="width:100%;background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 14px;color:var(--text);font-family:'Crimson Text',serif;font-size:16px;outline:none;">
+                </div>
+
+                <div style="margin-bottom:24px;">
+                    <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:8px;">ROLE</label>
+                    <div class="role-selector">
+                        <button class="role-btn" id="role-master" onclick="selectRole('MASTER')">📖 MASTER</button>
+                        <button class="role-btn" id="role-player" onclick="selectRole('PLAYER')">⚔️ PLAYER</button>
+                    </div>
+                </div>
+
+                <button class="btn btn-gold" onclick="saveProfile()" style="width:100%;">SAVE CHANGES</button>
+            </div>
+
+            <!-- Trocar senha -->
+            <div class="panel">
+                <div class="profile-section-title">CHANGE PASSWORD</div>
+
+                <div style="margin-bottom:16px;">
+                    <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">CURRENT PASSWORD</label>
+                    <input id="profile-current-pw" type="password" style="width:100%;background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 14px;color:var(--text);font-family:'Crimson Text',serif;font-size:16px;outline:none;">
+                </div>
+
+                <div style="margin-bottom:16px;">
+                    <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">NEW PASSWORD</label>
+                    <input id="profile-new-pw" type="password" style="width:100%;background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 14px;color:var(--text);font-family:'Crimson Text',serif;font-size:16px;outline:none;">
+                </div>
+
+                <div style="margin-bottom:24px;">
+                    <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">CONFIRM NEW PASSWORD</label>
+                    <input id="profile-confirm-pw" type="password" style="width:100%;background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 14px;color:var(--text);font-family:'Crimson Text',serif;font-size:16px;outline:none;">
+                </div>
+
+                <button class="btn btn-gold" onclick="savePassword()" style="width:100%;">CHANGE PASSWORD</button>
+            </div>
+        </div>
+    </div>
+
     <div id="notesSection" class="section">
         <div class="section-header">
             <span class="header-icon">📝</span>
@@ -839,7 +1385,8 @@
 </div>
 
 <script src="/static/toast.js?v=1"></script>
-<script src="/static/script.js?v=12"></script>
+<script src="/static/treasure.js?v=1"></script>
+    <script src="/static/script.js?v=17"></script>
 <script src="/static/auth.js?v=5"></script>
 <script>
     function showSection(section) {
@@ -851,6 +1398,9 @@
         if (section === 'myNpcs') showMyNPCs();
         if (section === 'notes') loadNotes();
         if (section === 'campaigns') loadCampaigns();
+        if (section === 'initiative') renderInitiativeList();
+        if (section === 'encounter') document.getElementById('encounterResult').innerHTML = '';
+        if (section === 'profile') loadProfile();
     }
 
     function setDice(expr) {
