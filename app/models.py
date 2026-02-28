@@ -70,7 +70,28 @@ class Campaign(Base):
     owner_id = Column(String, ForeignKey("users.id"))
     owner = relationship("User", back_populates="campaigns")
     npcs = relationship("NPC", secondary=campaign_npcs, back_populates="campaigns")
+    sessions = relationship("CampaignSession", back_populates="campaign", cascade="all, delete-orphan", order_by="CampaignSession.number")
 
+
+
+# ---------------------------
+# Campaign Sessions
+# ---------------------------
+class CampaignSession(Base):
+    __tablename__ = "campaign_sessions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    number = Column(Integer, nullable=False)
+    date = Column(String, nullable=True)          # ISO date string "2024-03-15"
+    title = Column(String, nullable=False)
+    summary = Column(Text, nullable=True)
+    npcs_involved = Column(Text, nullable=True)   # JSON list of NPC names
+    loot = Column(Text, nullable=True)
+    next_hook = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    campaign_id = Column(String, ForeignKey("campaigns.id", ondelete="CASCADE"))
+    campaign = relationship("Campaign", back_populates="sessions")
 
 # ---------------------------
 # Notes

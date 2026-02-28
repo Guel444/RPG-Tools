@@ -9,7 +9,7 @@ from typing import Optional
 
 from .database import Base, engine, get_db
 from . import auth, dice, npc
-from .models import User, Role, NPC, Note, Campaign, CampaignStatus
+from .models import User, Role, NPC, Note, Campaign, CampaignStatus, CampaignSession
 from .schemas import RegisterRequest, LoginRequest, RollRequest, RollResponse, NPCCreate
 
 app = FastAPI(title="RPG Tools")
@@ -321,6 +321,146 @@ def update_campaign(
     db.commit()
     db.refresh(campaign)
     return JSONResponse(content={"success": True, "data": campaign_to_dict(campaign)})
+
+
+# -------------------------------
+# Campaign Sessions
+# -------------------------------
+class SessionRequest(BaseModel):
+    number: Optional[int] = None
+    date: Optional[str] = None
+    title: str
+    summary: Optional[str] = None
+    npcs_involved: Optional[str] = None
+    loot: Optional[str] = None
+    next_hook: Optional[str] = None
+
+def session_to_dict(s: CampaignSession):
+    return {
+        "id": s.id,
+        "number": s.number,
+        "date": s.date,
+        "title": s.title,
+        "summary": s.summary,
+        "npcs_involved": s.npcs_involved,
+        "loot": s.loot,
+        "next_hook": s.next_hook,
+        "created_at": str(s.created_at),
+    }
+
+@app.get("/campaigns/{campaign_id}/sessions")
+def list_sessions(
+    campaign_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    campaign = db.query(Campaign).filter(
+        Campaign.id == campaign_id,
+        Campaign.owner_id == current_user.id
+    ).first()
+    if not campaign:
+        return JSONResponse(content={"success": False, "detail": "Campaign not found"})
+    sessions = db.query(CampaignSession).filter(
+        CampaignSession.campaign_id == campaign_id
+    ).order_by(CampaignSession.number).all()
+    return JSONResponse(content={"success": True, "data": [session_to_dict(s) for s in sessions]})
+
+@app.post("/campaigns/{campaign_id}/sessions")
+def create_session(
+    campaign_id: str,
+    request: SessionRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    campaign = db.query(Campaign).filter(
+        Campaign.id == campaign_id,
+        Campaign.owner_id == current_user.id
+    ).first()
+    if not campaign:
+        return JSONResponse(content={"success": False, "detail": "Campaign not found"})
+
+    # Auto-numero se não fornecido
+    if not request.number:
+        last = db.query(CampaignSession).filter(
+            CampaignSession.campaign_id == campaign_id
+        ).order_by(CampaignSession.number.desc()).first()
+        number = (last.number + 1) if last else 1
+    else:
+        number = request.number
+
+    session = CampaignSession(
+        campaign_id=campaign_id,
+        number=number,
+        date=request.date,
+        title=request.title,
+        summary=request.summary,
+        npcs_involved=request.npcs_involved,
+        loot=request.loot,
+        next_hook=request.next_hook,
+    )
+    db.add(session)
+    # Atualizar current_session na campanha
+    campaign.current_session = number + 1
+    db.commit()
+    db.refresh(session)
+    return JSONResponse(content={"success": True, "data": session_to_dict(session)})
+
+@app.put("/campaigns/{campaign_id}/sessions/{session_id}")
+def update_session(
+    campaign_id: str,
+    session_id: int,
+    request: SessionRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    campaign = db.query(Campaign).filter(
+        Campaign.id == campaign_id,
+        Campaign.owner_id == current_user.id
+    ).first()
+    if not campaign:
+        return JSONResponse(content={"success": False, "detail": "Campaign not found"})
+
+    s = db.query(CampaignSession).filter(
+        CampaignSession.id == session_id,
+        CampaignSession.campaign_id == campaign_id
+    ).first()
+    if not s:
+        return JSONResponse(content={"success": False, "detail": "Session not found"})
+
+    s.date = request.date
+    s.title = request.title
+    s.summary = request.summary
+    s.npcs_involved = request.npcs_involved
+    s.loot = request.loot
+    s.next_hook = request.next_hook
+    db.commit()
+    db.refresh(s)
+    return JSONResponse(content={"success": True, "data": session_to_dict(s)})
+
+@app.delete("/campaigns/{campaign_id}/sessions/{session_id}")
+def delete_session(
+    campaign_id: str,
+    session_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    campaign = db.query(Campaign).filter(
+        Campaign.id == campaign_id,
+        Campaign.owner_id == current_user.id
+    ).first()
+    if not campaign:
+        return JSONResponse(content={"success": False, "detail": "Campaign not found"})
+
+    s = db.query(CampaignSession).filter(
+        CampaignSession.id == session_id,
+        CampaignSession.campaign_id == campaign_id
+    ).first()
+    if not s:
+        return JSONResponse(content={"success": False, "detail": "Session not found"})
+
+    db.delete(s)
+    db.commit()
+    return JSONResponse(content={"success": True, "detail": "Session deleted"})
 
 @app.delete("/campaigns/{campaign_id}")
 def delete_campaign(

@@ -654,6 +654,7 @@ function renderCampaignCard(c, allNpcs, grid) {
             <div class="campaign-name">${c.name}</div>
             <div class="campaign-actions">
                 <button class="edit-btn" onclick="showCampaignModal('${c.id}')">✎ EDIT</button>
+                <button class="edit-btn" onclick="showSessionsPanel('${c.id}')" style="color:var(--gold);border-color:rgba(201,168,76,0.3);">📅 SESSIONS</button>
                 <button class="delete-btn" onclick="deleteCampaign('${c.id}')">✕</button>
             </div>
         </div>
@@ -686,6 +687,12 @@ function renderCampaignCard(c, allNpcs, grid) {
             </div>
         ` : ''}
     `;
+
+    // Container de sessions (inicialmente oculto)
+    const sessionsPanel = document.createElement('div');
+    sessionsPanel.id = `sessions-panel-${c.id}`;
+    sessionsPanel.style.cssText = 'display:none;margin-top:16px;border-top:1px solid rgba(201,168,76,0.1);padding-top:16px;';
+    card.appendChild(sessionsPanel);
 
     grid.appendChild(card);
 }
@@ -826,6 +833,217 @@ function deleteCampaign(id) {
             loadCampaigns();
         } catch (err) {
             toast.error("Connection error.");
+        }
+    });
+}
+
+// ===========================
+// CAMPAIGN SESSIONS
+// ===========================
+async function showSessionsPanel(campaignId) {
+    const panel = document.getElementById(`sessions-panel-${campaignId}`);
+    if (!panel) return;
+
+    if (panel.style.display === 'block') {
+        panel.style.display = 'none';
+        return;
+    }
+
+    panel.style.display = 'block';
+    panel.innerHTML = `<div style="color:var(--text-muted);font-style:italic;padding:10px 0;">Loading sessions...</div>`;
+
+    try {
+        const res = await fetch(`/campaigns/${campaignId}/sessions`, {
+            headers: { 'Authorization': `Bearer ${getToken()}` }
+        });
+        const data = await res.json();
+        if (!data.success) { panel.innerHTML = '<div style="color:#e74c3c;">Error loading sessions.</div>'; return; }
+        renderSessionsPanel(campaignId, data.data, panel);
+    } catch (e) {
+        panel.innerHTML = '<div style="color:#e74c3c;">Connection error.</div>';
+    }
+}
+
+function renderSessionsPanel(campaignId, sessions, panel) {
+    const S = 'background:#141418;border:1px solid rgba(201,168,76,0.1);border-radius:3px;padding:14px;margin-bottom:8px;';
+    const sessionsHTML = sessions.length === 0
+        ? `<div style="color:var(--text-muted);font-style:italic;font-size:14px;padding:8px 0;margin-bottom:12px;">No sessions recorded yet.</div>`
+        : sessions.map(s => `
+            <div style="${S}">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px;">
+                    <div>
+                        <span style="font-family:'Cinzel',serif;font-size:10px;color:var(--gold);letter-spacing:2px;">SESSION ${s.number}</span>
+                        ${s.date ? `<span style="font-size:12px;color:var(--text-muted);margin-left:8px;">${formatSessionDate(s.date)}</span>` : ''}
+                        <div style="font-size:15px;color:var(--text);font-weight:600;margin-top:2px;">${s.title}</div>
+                    </div>
+                    <div style="display:flex;gap:6px;flex-shrink:0;">
+                        <button onclick="editSession('${campaignId}', ${s.id})" style="background:none;border:1px solid rgba(201,168,76,0.2);border-radius:2px;padding:3px 8px;color:var(--gold);font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;cursor:pointer;">EDIT</button>
+                        <button onclick="deleteSession('${campaignId}', ${s.id})" style="background:none;border:1px solid rgba(192,57,43,0.2);border-radius:2px;padding:3px 8px;color:#e74c3c;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;cursor:pointer;">✕</button>
+                    </div>
+                </div>
+                ${s.summary ? `<div style="font-size:13px;color:var(--text-muted);line-height:1.5;margin-bottom:6px;border-left:2px solid rgba(201,168,76,0.2);padding-left:10px;font-style:italic;">${s.summary}</div>` : ''}
+                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;">
+                    ${s.npcs_involved ? `<span style="font-size:12px;color:var(--text-muted);">👥 ${s.npcs_involved}</span>` : ''}
+                    ${s.loot ? `<span style="font-size:12px;color:#c9a84c;">💰 ${s.loot}</span>` : ''}
+                </div>
+                ${s.next_hook ? `<div style="margin-top:8px;padding:6px 10px;background:rgba(201,168,76,0.05);border-radius:2px;font-size:12px;color:var(--text-muted);">🎣 <em>${s.next_hook}</em></div>` : ''}
+            </div>
+        `).join('');
+
+    panel.innerHTML = `
+        <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:rgba(201,168,76,0.5);margin-bottom:12px;">📅 SESSION TIMELINE</div>
+        ${sessionsHTML}
+        <button onclick="showSessionForm('${campaignId}')" style="width:100%;background:none;border:1px dashed rgba(201,168,76,0.2);border-radius:2px;padding:10px;color:rgba(201,168,76,0.6);font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;cursor:pointer;transition:all 0.2s;"
+            onmouseover="this.style.borderColor='rgba(201,168,76,0.4)';this.style.color='var(--gold)'"
+            onmouseout="this.style.borderColor='rgba(201,168,76,0.2)';this.style.color='rgba(201,168,76,0.6)'">
+            + RECORD NEW SESSION
+        </button>
+    `;
+}
+
+function formatSessionDate(dateStr) {
+    if (!dateStr) return '';
+    try {
+        const d = new Date(dateStr + 'T00:00:00');
+        return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    } catch { return dateStr; }
+}
+
+function showSessionForm(campaignId, existingSession = null) {
+    const existing = document.getElementById('session-modal');
+    if (existing) existing.remove();
+
+    const isEdit = !!existingSession;
+    const s = existingSession || {};
+
+    const modal = document.createElement('div');
+    modal.id = 'session-modal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;';
+    modal.innerHTML = `
+        <div style="background:#141418;border:1px solid rgba(201,168,76,0.2);border-radius:4px;padding:28px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;">
+            <div style="font-family:'Cinzel',serif;font-size:14px;letter-spacing:3px;color:var(--gold);margin-bottom:20px;">
+                ${isEdit ? '✎ EDIT SESSION' : '📅 NEW SESSION'}
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+                <div>
+                    <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">TITLE *</label>
+                    <input id="sess-title" value="${s.title || ''}" placeholder="The Fall of the Iron Keep"
+                        style="width:100%;background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 12px;color:var(--text);font-family:'Crimson Text',serif;font-size:15px;outline:none;">
+                </div>
+                <div>
+                    <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">DATE</label>
+                    <input id="sess-date" type="date" value="${s.date || ''}"
+                        style="width:100%;background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 12px;color:var(--text);font-family:'Crimson Text',serif;font-size:15px;outline:none;">
+                </div>
+            </div>
+
+            <div style="margin-bottom:12px;">
+                <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">SUMMARY</label>
+                <textarea id="sess-summary" rows="4" placeholder="What happened this session..."
+                    style="width:100%;background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 12px;color:var(--text);font-family:'Crimson Text',serif;font-size:15px;outline:none;resize:vertical;">${s.summary || ''}</textarea>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+                <div>
+                    <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">👥 NPCS INVOLVED</label>
+                    <input id="sess-npcs" value="${s.npcs_involved || ''}" placeholder="Aldric, The Pale One..."
+                        style="width:100%;background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 12px;color:var(--text);font-family:'Crimson Text',serif;font-size:15px;outline:none;">
+                </div>
+                <div>
+                    <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">💰 LOOT</label>
+                    <input id="sess-loot" value="${s.loot || ''}" placeholder="300gp, Sword +1..."
+                        style="width:100%;background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 12px;color:var(--text);font-family:'Crimson Text',serif;font-size:15px;outline:none;">
+                </div>
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">🎣 NEXT SESSION HOOK</label>
+                <input id="sess-hook" value="${s.next_hook || ''}" placeholder="What was left unresolved..."
+                    style="width:100%;background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 12px;color:var(--text);font-family:'Crimson Text',serif;font-size:15px;outline:none;">
+            </div>
+
+            <div style="display:flex;gap:10px;">
+                <button onclick="saveSession('${campaignId}', ${isEdit ? s.id : 'null'})"
+                    style="flex:1;background:linear-gradient(135deg,#b8952a,#c9a84c);border:none;border-radius:2px;padding:12px;color:#0d0d0f;font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;cursor:pointer;font-weight:700;">
+                    ${isEdit ? 'SAVE CHANGES' : 'RECORD SESSION'}
+                </button>
+                <button onclick="document.getElementById('session-modal').remove()"
+                    style="background:none;border:1px solid rgba(201,168,76,0.2);border-radius:2px;padding:12px 20px;color:var(--text-muted);font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;cursor:pointer;">
+                    CANCEL
+                </button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+    setTimeout(() => document.getElementById('sess-title').focus(), 50);
+}
+
+async function saveSession(campaignId, sessionId = null) {
+    const title = document.getElementById('sess-title').value.trim();
+    if (!title) { toast.error('Title is required.'); return; }
+
+    const payload = {
+        title,
+        date: document.getElementById('sess-date').value || null,
+        summary: document.getElementById('sess-summary').value.trim() || null,
+        npcs_involved: document.getElementById('sess-npcs').value.trim() || null,
+        loot: document.getElementById('sess-loot').value.trim() || null,
+        next_hook: document.getElementById('sess-hook').value.trim() || null,
+    };
+
+    try {
+        const url = sessionId
+            ? `/campaigns/${campaignId}/sessions/${sessionId}`
+            : `/campaigns/${campaignId}/sessions`;
+        const method = sessionId ? 'PUT' : 'POST';
+
+        const res = await fetch(url, {
+            method,
+            headers: { 'Authorization': `Bearer ${getToken()}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!data.success) { toast.error(data.detail || 'Error saving session.'); return; }
+
+        document.getElementById('session-modal').remove();
+        toast.success(sessionId ? 'Session updated!' : 'Session recorded!');
+        showSessionsPanel(campaignId); // fecha
+        showSessionsPanel(campaignId); // reabre para recarregar
+    } catch (e) {
+        toast.error('Connection error.');
+    }
+}
+
+async function editSession(campaignId, sessionId) {
+    try {
+        const res = await fetch(`/campaigns/${campaignId}/sessions`, {
+            headers: { 'Authorization': `Bearer ${getToken()}` }
+        });
+        const data = await res.json();
+        if (!data.success) return;
+        const session = data.data.find(s => s.id === sessionId);
+        if (session) showSessionForm(campaignId, session);
+    } catch (e) {
+        toast.error('Error loading session.');
+    }
+}
+
+async function deleteSession(campaignId, sessionId) {
+    showConfirm('Delete this session? This cannot be undone.', async () => {
+        try {
+            const res = await fetch(`/campaigns/${campaignId}/sessions/${sessionId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${getToken()}` }
+            });
+            const data = await res.json();
+            if (!data.success) { toast.error(data.detail || 'Error deleting session.'); return; }
+            toast.success('Session deleted.');
+            showSessionsPanel(campaignId); // fecha
+            showSessionsPanel(campaignId); // reabre para recarregar
+        } catch (e) {
+            toast.error('Connection error.');
         }
     });
 }
