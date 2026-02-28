@@ -999,6 +999,15 @@
         <button class="nav-btn" id="nav-treasure" onclick="showSection('treasure')">
             <span class="nav-icon">💰</span> Treasure
         </button>
+        <button class="nav-btn" id="nav-tavern" onclick="showSection('tavern')">
+            <span class="nav-icon">🍺</span> Tavern
+        </button>
+        <button class="nav-btn" id="nav-plothook" onclick="showSection('plothook')">
+            <span class="nav-icon">📜</span> Plot Hooks
+        </button>
+        <button class="nav-btn" id="nav-weather" onclick="showSection('weather')">
+            <span class="nav-icon">🌩️</span> Weather
+        </button>
         <button class="nav-btn" id="nav-encounter" onclick="showSection('encounter')">
             <span class="nav-icon">⚔️</span> Encounters
         </button>
@@ -1039,6 +1048,18 @@
             <div class="home-card" onclick="showSection('notes')">
                 <span class="card-icon">📝</span>
                 <span class="card-name">MASTER NOTES</span>
+            </div>
+            <div class="home-card" onclick="showSection('tavern')">
+                <span class="card-icon">🍺</span>
+                <span class="card-name">TAVERN</span>
+            </div>
+            <div class="home-card" onclick="showSection('plothook')">
+                <span class="card-icon">📜</span>
+                <span class="card-name">PLOT HOOKS</span>
+            </div>
+            <div class="home-card" onclick="showSection('weather')">
+                <span class="card-icon">🌩️</span>
+                <span class="card-name">WEATHER</span>
             </div>
             <div class="home-card" onclick="showSection('encounter')">
                 <span class="card-icon">⚔️</span>
@@ -1237,6 +1258,146 @@
         </div>
     </div>
 
+    <div id="tavernSection" class="section">
+        <div class="section-header">
+            <span class="header-icon">🍺</span>
+            <div>
+                <h2>TAVERN GENERATOR</h2>
+                <p>Names, atmosphere, patrons, menu, rumors and events</p>
+            </div>
+        </div>
+
+        <div class="panel" style="margin-bottom:24px;">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:20px;">
+                <div>
+                    <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">TYPE</label>
+                    <select id="tav-type" style="width:100%;background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 14px;color:var(--text);font-family:'Crimson Text',serif;font-size:16px;outline:none;">
+                        <option value="tavern">🍺 Roadside Tavern</option>
+                        <option value="inn">🏠 Inn & Tavern</option>
+                        <option value="port">⚓ Port Alehouse</option>
+                        <option value="criminal">🗡️ Criminal Den</option>
+                        <option value="noble">👑 Noble Establishment</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">SIZE</label>
+                    <select id="tav-size" style="width:100%;background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 14px;color:var(--text);font-family:'Crimson Text',serif;font-size:16px;outline:none;">
+                        <option value="small">🏚️ Small</option>
+                        <option value="medium" selected>🏠 Medium</option>
+                        <option value="large">🏰 Large</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">REPUTATION</label>
+                    <select id="tav-rep" style="width:100%;background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 14px;color:var(--text);font-family:'Crimson Text',serif;font-size:16px;outline:none;">
+                        <option value="respectable">✅ Respectable</option>
+                        <option value="suspicious">👀 Suspicious</option>
+                        <option value="infamous">💀 Infamous</option>
+                        <option value="legendary">⭐ Legendary</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-gold" onclick="generateTavern()" style="width:100%;">🍺 GENERATE TAVERN</button>
+        </div>
+
+        <div id="tavernResult"></div>
+    </div>
+
+    <div id="plothookSection" class="section">
+        <div class="section-header">
+            <span class="header-icon">📜</span>
+            <div>
+                <h2>PLOT HOOK GENERATOR</h2>
+                <p>Antagonists, objectives, complications and rewards</p>
+            </div>
+        </div>
+
+        <div class="panel" style="margin-bottom:24px;">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:20px;">
+                <div>
+                    <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">TONE</label>
+                    <select id="ph-tone" style="width:100%;background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 14px;color:var(--text);font-family:'Crimson Text',serif;font-size:16px;outline:none;">
+                        <option value="mysterious">🌙 Mysterious</option>
+                        <option value="political">⚖️ Political</option>
+                        <option value="action">⚔️ Action</option>
+                        <option value="horror">💀 Horror</option>
+                        <option value="comedy">🎭 Comedy</option>
+                        <option value="drama">🎬 Drama</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">SCALE</label>
+                    <select id="ph-scale" style="width:100%;background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 14px;color:var(--text);font-family:'Crimson Text',serif;font-size:16px;outline:none;">
+                        <option value="local">🏘️ Local</option>
+                        <option value="regional">🗺️ Regional</option>
+                        <option value="epic">🌍 Epic</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">PARTY LEVEL</label>
+                    <select id="ph-level" style="width:100%;background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 14px;color:var(--text);font-family:'Crimson Text',serif;font-size:16px;outline:none;">
+                        <option value="1-4">⚔️ Level 1–4</option>
+                        <option value="5-10">🛡️ Level 5–10</option>
+                        <option value="11-16">👑 Level 11–16</option>
+                        <option value="17+">🌟 Level 17+</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-gold" onclick="generatePlotHook()" style="width:100%;">📜 GENERATE PLOT HOOK</button>
+        </div>
+
+        <div id="plotResult"></div>
+    </div>
+
+    <div id="weatherSection" class="section">
+        <div class="section-header">
+            <span class="header-icon">🌩️</span>
+            <div>
+                <h2>WEATHER & ENVIRONMENT</h2>
+                <p>Atmospheric conditions, mechanical effects and nature signs</p>
+            </div>
+        </div>
+
+        <div class="panel" style="margin-bottom:24px;">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:20px;">
+                <div>
+                    <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">BIOME</label>
+                    <select id="wx-biome" style="width:100%;background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 14px;color:var(--text);font-family:'Crimson Text',serif;font-size:16px;outline:none;">
+                        <option value="forest">🌲 Forest</option>
+                        <option value="mountain">⛰️ Mountain</option>
+                        <option value="plains">🌾 Plains</option>
+                        <option value="swamp">🌿 Swamp</option>
+                        <option value="desert">🏜️ Desert</option>
+                        <option value="arctic">❄️ Arctic</option>
+                        <option value="coastal">🌊 Coastal</option>
+                        <option value="underground">🪨 Underground</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">SEASON</label>
+                    <select id="wx-season" style="width:100%;background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 14px;color:var(--text);font-family:'Crimson Text',serif;font-size:16px;outline:none;">
+                        <option value="spring">🌸 Spring</option>
+                        <option value="summer">☀️ Summer</option>
+                        <option value="autumn">🍂 Autumn</option>
+                        <option value="winter">❄️ Winter</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:6px;">INTENSITY</label>
+                    <select id="wx-intensity" style="width:100%;background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 14px;color:var(--text);font-family:'Crimson Text',serif;font-size:16px;outline:none;">
+                        <option value="calm">🌤️ Calm</option>
+                        <option value="unstable">🌩️ Unstable</option>
+                        <option value="severe">⛈️ Severe</option>
+                        <option value="catastrophic">🌪️ Catastrophic</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-gold" onclick="generateWeather()" style="width:100%;">🌩️ GENERATE CONDITIONS</button>
+        </div>
+
+        <div id="weatherResult"></div>
+    </div>
+
     <div id="encounterSection" class="section">
         <div class="section-header">
             <span class="header-icon">⚔️</span>
@@ -1385,7 +1546,2002 @@
 </div>
 
 <script src="/static/toast.js?v=1"></script>
-<script src="/static/treasure.js?v=1"></script>
+
+    <script>
+// =============================================================
+// TREASURE GENERATOR — D&D 5e
+// =============================================================
+
+function treasureRollDice(count, sides) {
+    let total = 0;
+    for (let i = 0; i < count; i++) total += Math.floor(Math.random() * sides) + 1;
+    return total;
+}
+function treasurePick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function treasurePickN(arr, n) {
+    const copy = [...arr], result = [];
+    for (let i = 0; i < n && copy.length; i++) {
+        const idx = Math.floor(Math.random() * copy.length);
+        result.push(copy.splice(idx, 1)[0]);
+    }
+    return result;
+}
+
+// ---- GEMS ----
+const GEMS_10GP = ["Azurite (opaque mottled deep blue)","Banded agate (translucent striped brown/blue/white)","Blue quartz (transparent pale blue)","Eye agate (translucent circles of gray/white/brown/blue/green)","Hematite (opaque gray-black)","Lapis lazuli (opaque light/dark blue with yellow flecks)","Malachite (opaque striated light/dark green)","Moss agate (translucent pink/white with mossy gray/green)","Obsidian (opaque black)","Rhodochrosite (opaque light pink)","Tiger eye (translucent brown with golden center)","Turquoise (opaque light blue-green)"];
+const GEMS_50GP = ["Bloodstone (opaque dark gray with red flecks)","Carnelian (opaque orange to red-brown)","Chalcedony (opaque white)","Chrysoprase (translucent green)","Citrine (transparent pale yellow-brown)","Jasper (opaque blue/black/brown)","Moonstone (translucent white with pale blue glow)","Onyx (opaque bands of black/white)","Quartz (transparent white/smoky gray)","Sardonyx (opaque bands of red/brown with white)","Rose quartz (translucent rosy)","Zircon (transparent pale blue-green)"];
+const GEMS_100GP = ["Amber (transparent watery gold to rich gold)","Amethyst (transparent deep purple)","Chrysoberyl (transparent yellow-green)","Coral (opaque crimson)","Garnet (transparent red/brown-green/violet)","Jade (translucent light/dark green/white)","Jet (opaque deep black)","Pearl (opaque lustrous white/pink/yellow/gray/black)","Spinel (transparent red/red-brown/deep green)","Tourmaline (transparent pale green/blue/brown/red)"];
+const GEMS_500GP = ["Alexandrite (transparent dark green)","Aquamarine (transparent pale blue-green)","Black pearl (opaque pure black)","Blue spinel (transparent deep blue)","Peridot (transparent rich olive green)","Topaz (transparent golden yellow)"];
+const GEMS_1000GP = ["Black opal (translucent dark green with black mottling and golden flecks)","Blue sapphire (transparent blue-white to medium blue)","Emerald (transparent deep bright green)","Fire opal (translucent fiery red)","Opal (translucent pale blue with green/gold mottling)","Star ruby (translucent ruby with white star-shape)","Star sapphire (translucent blue sapphire with white star-shape)","Yellow sapphire (transparent fiery yellow or yellow-green)"];
+const GEMS_5000GP = ["Black sapphire (translucent lustrous black with glowing highlights)","Diamond (transparent blue-white/canary/pink/brown/blue)","Jacinth (transparent fiery orange)","Ruby (transparent clear red to deep crimson)"];
+
+// ---- ART OBJECTS ----
+const ART_25GP = ["Silver ewer","Carved bone statuette","Small gold bracelet","Cloth-of-gold vestments","Black velvet mask stitched with silver thread","Copper chalice with silver filigree","Pair of engraved bone dice","Small mirror set in a painted wooden frame","Embroidered silk handkerchief","Gold locket with a painted portrait inside"];
+const ART_250GP = ["Gold ring set with bloodstones","Carved ivory statuette","Large gold bracelet","Silver necklace with a gemstone pendant","Bronze crown","Silk robe with gold embroidery","Large well-made tapestry","Brass mug with jade inlay","Box of turquoise animal figurines","Gold bird cage with electrum filigree"];
+const ART_750GP = ["Silver chalice set with moonstones","Silver-plated steel longsword with jet set in hilt","Carved harp of exotic wood with ivory inlay and zircon gems","Small gold idol","Gold dragon comb set with red garnets as eyes","Bottle stopper cork embossed with gold leaf and amethysts","Ceremonial electrum dagger with a black pearl in the pommel","Silver and gold brooch","Obsidian statuette with gold fittings and inlay","Painted gold war mask"];
+const ART_2500GP = ["Fine gold chain set with a fire opal","Old masterwork oil painting on a rolling canvas","Embroidered silk and velvet mantle set with moonstones","Platinum bracelet set with a sapphire","Embroidered glove set with jewel chips","Jeweled anklet","Gold music box","Gold circlet set with four aquamarines","Eye patch with mock eye set in blue sapphire and moonstone","A necklace string of small pink pearls"];
+const ART_7500GP = ["Jeweled gold crown","Jeweled platinum ring","Small gold statuette set with rubies","Gold cup set with emeralds","Gold jewelry box with platinum filigree","Painted gold child's sarcophagus","Jade game board with solid gold playing pieces","Bejeweled ivory drinking horn with gold filigree"];
+
+// ---- MAGIC ITEMS COMMON ----
+const MAGIC_COMMON = [
+    {name:"Cantrip Spell Scroll",desc:"A scroll containing a single cantrip spell.",attunement:false},
+    {name:"Cloak of Billowing",desc:"Use a bonus action to make this cloak billow dramatically.",attunement:false},
+    {name:"Cloak of Many Fashions",desc:"Use a bonus action to change this cloak's color and style.",attunement:false},
+    {name:"Clockwork Amulet",desc:"Once per day, treat a d20 attack roll as a 10.",attunement:false},
+    {name:"Dark Shard Amulet",desc:"A warlock can use this shard of darkness as a spellcasting focus.",attunement:false},
+    {name:"Dread Helm",desc:"Your eyes glow red and nonmagical darkness within 30ft appears as dim light.",attunement:false},
+    {name:"Ear Horn of Hearing",desc:"Advantage on Perception checks relying on hearing.",attunement:false},
+    {name:"Enduring Spellbook",desc:"This spellbook can't be damaged by fire, water, or age.",attunement:false},
+    {name:"Ersatz Eye",desc:"Artificial eye — while socketed, you see through it normally.",attunement:true},
+    {name:"Hat of Vermin",desc:"3 charges. Produce one harmless bat, frog, or rat from the hat.",attunement:false},
+    {name:"Hat of Wizardry",desc:"Use as a spellcasting focus. 5% daily chance to learn a random wizard cantrip.",attunement:true},
+    {name:"Horn of Silent Alarm",desc:"4 charges. A chosen creature within 600ft hears the horn; others don't.",attunement:false},
+    {name:"Instrument of Illusion",desc:"While playing, create visual illusions within 5 feet.",attunement:false},
+    {name:"Lock of Trickery",desc:"Appears ordinary, but the DC to pick it is 15 higher than normal.",attunement:false},
+    {name:"Moon-Touched Sword",desc:"In darkness, the unsheathed blade sheds moonlight in a 15-foot radius.",attunement:false},
+    {name:"Mystery Key",desc:"Once per day, try it on any lock — 1-in-4 chance it opens.",attunement:false},
+    {name:"Orb of Direction",desc:"Use an action to determine which way is north.",attunement:false},
+    {name:"Orb of Time",desc:"Use an action to know if it is morning, afternoon, evening, or night outside.",attunement:false},
+    {name:"Perfume of Bewitching",desc:"Apply to yourself for advantage on Charisma checks for 1 hour.",attunement:false},
+    {name:"Pipe of Smoke Monsters",desc:"Exhale a puff of smoke shaped like a creature of your choice.",attunement:false},
+    {name:"Pole of Collapsing",desc:"Command word collapses this 10-foot pole into a 1-foot rod.",attunement:false},
+    {name:"Rope of Mending",desc:"Cut this 50-foot rope and speak a command word to knit it back together.",attunement:false},
+    {name:"Ruby of the War Mage",desc:"Use a simple or martial weapon as a spellcasting focus.",attunement:true},
+    {name:"Shield of Expression",desc:"Bonus action to alter the expression of the face sculpted on this shield.",attunement:false},
+    {name:"Smoldering Armor",desc:"Wisps of harmless smoke rise from this armor. Advantage on Stealth in smoke.",attunement:false},
+    {name:"Staff of Birdcalls",desc:"10 charges. Produce any bird sound as an action.",attunement:false},
+    {name:"Staff of Flowers",desc:"10 charges. Cause a flower to sprout from nearby earth.",attunement:false},
+    {name:"Talking Doll",desc:"Program up to six phrases of six words each. Speaks them on touch.",attunement:false},
+    {name:"Tankard of Sobriety",desc:"Drink any alcohol from this tankard without becoming inebriated.",attunement:false},
+    {name:"Unbreakable Arrow",desc:"This arrow cannot be broken, except within an antimagic field.",attunement:false},
+    {name:"Veteran's Cane",desc:"Bonus action command word transforms this cane into a handaxe.",attunement:false},
+    {name:"Wand of Conducting",desc:"3 charges. Wave the wand to create orchestral music.",attunement:false},
+    {name:"Wand of Pyrotechnics",desc:"7 charges. Create a harmless burst of multicolored light.",attunement:false},
+];
+
+// ---- MAGIC ITEMS UNCOMMON ----
+const MAGIC_UNCOMMON = [
+    {name:"Ammunition +1",desc:"+1 bonus to attack and damage rolls.",attunement:false},
+    {name:"Bag of Holding",desc:"Interior holds up to 500 lbs in a 64 cubic-foot space.",attunement:false},
+    {name:"Boots of Elvenkind",desc:"Your steps make no sound. Advantage on Stealth checks to move silently.",attunement:false},
+    {name:"Boots of Striding and Springing",desc:"Speed becomes 30ft minimum; jump three times the normal distance.",attunement:true},
+    {name:"Boots of the Winterlands",desc:"Resistance to cold damage; ignore difficult terrain from ice and snow.",attunement:true},
+    {name:"Broom of Flying",desc:"Stand astride and speak the command word to fly at speed 50.",attunement:false},
+    {name:"Cap of Water Breathing",desc:"Command word creates a bubble of air around your head underwater.",attunement:false},
+    {name:"Cloak of Elvenkind",desc:"Hood up: others have disadvantage to see you; you have advantage on Stealth.",attunement:true},
+    {name:"Cloak of Protection",desc:"+1 bonus to AC and saving throws.",attunement:true},
+    {name:"Decanter of Endless Water",desc:"Pour a stream, fountain, or geyser of water on command.",attunement:false},
+    {name:"Dust of Disappearance",desc:"Throw into air — you and creatures within 10ft turn invisible for 2d4 minutes.",attunement:false},
+    {name:"Dust of Dryness",desc:"Each pinch destroys a 15-foot cube of water.",attunement:false},
+    {name:"Eversmoking Bottle",desc:"Opens to billow thick smoke in a 60-foot radius.",attunement:false},
+    {name:"Eyes of Minute Seeing",desc:"Advantage on Investigation checks relying on sight within 1 foot.",attunement:false},
+    {name:"Gauntlets of Ogre Power",desc:"Strength score becomes 19.",attunement:true},
+    {name:"Gloves of Missile Snaring",desc:"Reaction: reduce ranged weapon damage by 1d10+Dex modifier.",attunement:true},
+    {name:"Gloves of Swimming and Climbing",desc:"Climbing/swimming cost no extra movement; +5 to Athletics for those actions.",attunement:true},
+    {name:"Goggles of Night",desc:"Darkvision 60ft, or extends existing darkvision by 60ft.",attunement:false},
+    {name:"Hat of Disguise",desc:"Cast disguise self at will.",attunement:true},
+    {name:"Headband of Intellect",desc:"Intelligence score becomes 19.",attunement:true},
+    {name:"Helm of Comprehending Languages",desc:"Cast comprehend languages at will.",attunement:false},
+    {name:"Helm of Telepathy",desc:"Cast detect thoughts (DC 13) at will.",attunement:true},
+    {name:"Immovable Rod",desc:"Press the button to fix the rod magically in place — holds 8,000 lbs.",attunement:false},
+    {name:"Javelin of Lightning",desc:"Hurl it as a lightning bolt — 4d6 lightning in a 5ft wide 120ft line.",attunement:false},
+    {name:"Lantern of Revealing",desc:"Invisible creatures and objects visible in the lantern's bright light.",attunement:false},
+    {name:"Medallion of Thoughts",desc:"3 charges. Cast detect thoughts (DC 13).",attunement:true},
+    {name:"Necklace of Adaptation",desc:"Breathe normally in any environment; advantage vs harmful gases.",attunement:true},
+    {name:"Periapt of Health",desc:"Immune to contracting disease; suppresses disease effects.",attunement:false},
+    {name:"Pipes of Haunting",desc:"3 charges. Play to frighten creatures within 30ft (DC 13 Wis).",attunement:false},
+    {name:"Potion of Animal Friendship",desc:"Cast animal friendship (DC 13) at will for 1 hour.",attunement:false},
+    {name:"Potion of Climbing",desc:"Gain a climbing speed equal to walking speed for 1 hour.",attunement:false},
+    {name:"Potion of Fire Breath",desc:"Bonus action: exhale fire at a target within 30ft (4d6 fire, DC 13 Dex).",attunement:false},
+    {name:"Potion of Growth",desc:"Gain the enlarge effect for 1d4 hours.",attunement:false},
+    {name:"Potion of Healing (Greater)",desc:"Regain 4d4+4 hit points.",attunement:false},
+    {name:"Potion of Resistance",desc:"Resistance to one damage type for 1 hour.",attunement:false},
+    {name:"Potion of Water Breathing",desc:"Breathe underwater for 1 hour.",attunement:false},
+    {name:"Ring of Jumping",desc:"Cast jump on yourself as a bonus action at will.",attunement:true},
+    {name:"Ring of Mind Shielding",desc:"Immune to magic that reads thoughts, detects alignment, or detects creature type.",attunement:true},
+    {name:"Ring of Swimming",desc:"Swimming speed of 40 feet.",attunement:false},
+    {name:"Ring of Warmth",desc:"Resistance to cold damage; survive temperatures down to −50°F.",attunement:true},
+    {name:"Ring of Water Walking",desc:"Stand and move on any liquid surface as if it were solid ground.",attunement:false},
+    {name:"Rope of Climbing",desc:"60-foot rope that can animate and climb on command; holds 3,000 lbs.",attunement:false},
+    {name:"Sending Stones (pair)",desc:"Cast sending to communicate with the paired stone's holder.",attunement:false},
+    {name:"Shield +1",desc:"+1 bonus to AC in addition to the shield's normal bonus.",attunement:false},
+    {name:"Slippers of Spider Climbing",desc:"Move on walls and ceilings while leaving your hands free.",attunement:true},
+    {name:"Spell Scroll (1st level)",desc:"A scroll bearing a single 1st-level spell.",attunement:false},
+    {name:"Spell Scroll (2nd level)",desc:"A scroll bearing a single 2nd-level spell.",attunement:false},
+    {name:"Spell Scroll (3rd level)",desc:"A scroll bearing a single 3rd-level spell.",attunement:false},
+    {name:"Stone of Good Luck",desc:"+1 bonus to ability checks and saving throws.",attunement:true},
+    {name:"Wand of Magic Detection",desc:"3 charges. Cast detect magic.",attunement:false},
+    {name:"Wand of Magic Missiles",desc:"7 charges. Cast magic missile (1–3 charges).",attunement:false},
+    {name:"Wand of Secrets",desc:"3 charges. Pulses and points to the nearest secret door or trap within 30ft.",attunement:false},
+    {name:"Wand of the War Mage +1",desc:"+1 to spell attack rolls; ignore half cover.",attunement:true},
+    {name:"Weapon +1",desc:"+1 bonus to attack and damage rolls.",attunement:false},
+    {name:"Wind Fan",desc:"Cast gust of wind (DC 13) once per day.",attunement:false},
+    {name:"Winged Boots",desc:"Flying speed equal to walking speed for up to 4 hours per day.",attunement:true},
+];
+
+// ---- MAGIC ITEMS RARE ----
+const MAGIC_RARE = [
+    {name:"Ammunition +2",desc:"+2 bonus to attack and damage rolls.",attunement:false},
+    {name:"Amulet of Health",desc:"Constitution score becomes 19.",attunement:true},
+    {name:"Amulet of Proof Against Detection",desc:"Hidden from divination magic; can't be targeted by scrying.",attunement:true},
+    {name:"Armor +1 (any)",desc:"+1 bonus to AC.",attunement:false},
+    {name:"Belt of Dwarvenkind",desc:"+2 Constitution (max 20); advantage on Persuasion with dwarves.",attunement:true},
+    {name:"Belt of Giant Strength (Hill)",desc:"Strength score becomes 21.",attunement:true},
+    {name:"Boots of Levitation",desc:"Cast levitate on yourself at will.",attunement:true},
+    {name:"Boots of Speed",desc:"Bonus action: double walking speed, disadvantage on opportunity attacks against you.",attunement:true},
+    {name:"Brooch of Shielding",desc:"Resistance to force damage; immunity to magic missile.",attunement:true},
+    {name:"Cape of the Mountebank",desc:"Cast dimension door once per day.",attunement:false},
+    {name:"Carpet of Flying",desc:"Magic carpet with fly speed 80ft (2 passengers) or 40ft (4 passengers).",attunement:false},
+    {name:"Cloak of Displacement",desc:"Attackers have disadvantage against you until you take damage.",attunement:true},
+    {name:"Cloak of the Bat",desc:"Advantage on Stealth; glide at fly speed 40ft in dim light or darkness.",attunement:true},
+    {name:"Cube of Force",desc:"36 charges. Create a force barrier around yourself.",attunement:true},
+    {name:"Dagger of Venom",desc:"+1 dagger. Coat blade in poison (1d4+1 min): DC 15 Con or 2d10 poison.",attunement:false},
+    {name:"Dragon Scale Mail",desc:"+1 armor with resistance to one damage type based on dragon type.",attunement:true},
+    {name:"Elven Chain",desc:"+1 chain shirt. Counts as proficient even without medium armor proficiency.",attunement:false},
+    {name:"Flame Tongue",desc:"Bonus action: blade erupts in flame (2d6 fire damage, 40ft bright light).",attunement:true},
+    {name:"Gem of Seeing",desc:"3 charges. Truesight out to 120ft for 10 minutes.",attunement:true},
+    {name:"Giant Slayer",desc:"Extra 2d6 damage vs giants; giants must save DC 15 Str or fall prone.",attunement:false},
+    {name:"Glamoured Studded Leather",desc:"+1 AC. Bonus action: change armor's appearance to any other outfit.",attunement:false},
+    {name:"Helm of Teleportation",desc:"3 charges. Cast teleport.",attunement:true},
+    {name:"Heward's Handy Haversack",desc:"Backpack with extradimensional pouches holding up to 80 lbs.",attunement:false},
+    {name:"Horn of Blasting",desc:"30ft cone of thunder: 5d6 thunder, DC 15 Con or deafened 1 min.",attunement:false},
+    {name:"Ioun Stone (Reserve)",desc:"Stores spells of 1st–3rd level; cast them at will.",attunement:true},
+    {name:"Mace of Disruption",desc:"Extra 2d6 radiant vs fiends/undead. On low HP, target must flee or die.",attunement:true},
+    {name:"Mace of Terror",desc:"3 charges. Creatures within 30ft DC 15 Wis save or frightened.",attunement:true},
+    {name:"Mantle of Spell Resistance",desc:"Advantage on saving throws against spells.",attunement:true},
+    {name:"Necklace of Fireballs",desc:"1d6+3 beads; each bead can be thrown as a fireball (3d6 per bead).",attunement:false},
+    {name:"Necklace of Prayer Beads",desc:"Magic beads: bless, cure wounds, aid, or other cleric spells.",attunement:true},
+    {name:"Periapt of Proof Against Poison",desc:"Immune to poison damage and the poisoned condition.",attunement:false},
+    {name:"Ring of Animal Influence",desc:"3 charges. Animal friendship, fear, or speak with animals.",attunement:false},
+    {name:"Ring of Evasion",desc:"3 charges. Reaction: succeed on a failed Dex saving throw.",attunement:true},
+    {name:"Ring of Feather Falling",desc:"Descend 60ft per round and take no falling damage.",attunement:true},
+    {name:"Ring of Free Action",desc:"Difficult terrain costs no extra movement; immune to paralyzed and restrained.",attunement:true},
+    {name:"Ring of Protection",desc:"+1 bonus to AC and saving throws.",attunement:true},
+    {name:"Ring of Resistance",desc:"Resistance to one damage type.",attunement:true},
+    {name:"Ring of Spell Storing",desc:"Stores up to 5 levels of spells for the wearer to cast.",attunement:true},
+    {name:"Ring of the Ram",desc:"3 charges. Force push dealing 2d10 per charge and knocking prone.",attunement:true},
+    {name:"Ring of X-ray Vision",desc:"Action: see into and through solid matter for 1 minute.",attunement:true},
+    {name:"Robe of Useful Items",desc:"Cloth patches that become useful objects: boats, ladders, iron doors, etc.",attunement:false},
+    {name:"Rod of Rulership",desc:"Action: creatures within 120ft DC 15 Wis save or obey you for 8 hours.",attunement:true},
+    {name:"Rod of the Pact Keeper +2",desc:"+2 to warlock spell attacks and save DCs. Regain one warlock spell slot per day.",attunement:true},
+    {name:"Rope of Entanglement",desc:"30ft rope. Command one end to entangle a creature within 20ft.",attunement:false},
+    {name:"Shield +2",desc:"+2 bonus to AC.",attunement:false},
+    {name:"Staff of Charming",desc:"10 charges. Cast charm person, command, or comprehend languages.",attunement:true},
+    {name:"Staff of Healing",desc:"10 charges. Cast cure wounds, lesser restoration, or mass cure wounds.",attunement:true},
+    {name:"Staff of the Python",desc:"Throw staff to transform it into a giant constrictor snake under your control.",attunement:true},
+    {name:"Sun Blade",desc:"Longsword of radiance. +2, extra 1d8 radiant vs undead. Sheds sunlight.",attunement:true},
+    {name:"Sword of Life Stealing",desc:"On a nat 20: extra 10 necrotic damage and you gain 10 temp HP.",attunement:true},
+    {name:"Sword of Wounding",desc:"Once per turn on hit: target bleeds 1d4 necrotic at start of its turns.",attunement:true},
+    {name:"Vicious Weapon",desc:"On a nat 20: extra 7 damage of the weapon's type.",attunement:false},
+    {name:"Wand of Binding",desc:"7 charges. Cast hold monster or hold person.",attunement:true},
+    {name:"Wand of Fear",desc:"7 charges. Creatures in 60ft cone DC 15 Wis save or frightened.",attunement:true},
+    {name:"Wand of Fireballs",desc:"7 charges. Cast fireball (DC 15) using 1–3 charges.",attunement:true},
+    {name:"Wand of Lightning Bolts",desc:"7 charges. Cast lightning bolt (DC 15) using 1–3 charges.",attunement:true},
+    {name:"Wand of Paralysis",desc:"7 charges. DC 15 Con save or paralyzed for 1 minute.",attunement:true},
+    {name:"Wand of the War Mage +2",desc:"+2 to spell attack rolls; ignore half cover.",attunement:true},
+    {name:"Wand of Wonder",desc:"7 charges. Roll d100 for a random magical effect.",attunement:true},
+    {name:"Weapon +2",desc:"+2 bonus to attack and damage rolls.",attunement:false},
+    {name:"Wings of Flying",desc:"1 hour per day: bat or bird wings, fly speed equal to walking speed.",attunement:true},
+];
+
+// ---- MAGIC ITEMS VERY RARE ----
+const MAGIC_VERY_RARE = [
+    {name:"Ammunition +3",desc:"+3 bonus to attack and damage rolls.",attunement:false},
+    {name:"Animated Shield",desc:"Bonus action: shield animates and hovers, protecting you hands-free for 1 min.",attunement:true},
+    {name:"Armor +2 (any)",desc:"+2 bonus to AC.",attunement:false},
+    {name:"Belt of Giant Strength (Stone/Frost)",desc:"Strength score becomes 23.",attunement:true},
+    {name:"Cloak of Arachnida",desc:"Resistance to poison; spider climb; move across webs; cast web once per day.",attunement:true},
+    {name:"Dancing Sword",desc:"Bonus action: toss the sword to hover and attack on its own for 1 minute.",attunement:true},
+    {name:"Demon Armor",desc:"+1 AC; clawed gauntlets deal slashing damage; understand/speak Abyssal.",attunement:true},
+    {name:"Dwarven Plate",desc:"+2 AC. Reaction: reduce forced movement by 10ft.",attunement:false},
+    {name:"Dwarven Thrower",desc:"+3 warhammer with thrown property. Extra 1d8 (or 2d8 vs giants) on throw.",attunement:true},
+    {name:"Efreeti Bottle",desc:"Open to release an efreeti — roll to determine its disposition.",attunement:false},
+    {name:"Frost Brand",desc:"Extra 1d6 cold on hit. Resistance to fire. Extinguishes non-magical flames on draw.",attunement:true},
+    {name:"Helm of Brilliance",desc:"Set with diamonds, rubies, fire opals. Cast fireball, daylight, prismatic spray.",attunement:true},
+    {name:"Ioun Stone (Absorption)",desc:"Absorbs spells of 4th level or lower targeting only you (20 levels total).",attunement:true},
+    {name:"Manual of Bodily Health",desc:"Read over 6 days: Constitution increases by 2 (max 28).",attunement:false},
+    {name:"Manual of Gainful Exercise",desc:"Read over 6 days: Strength increases by 2 (max 28).",attunement:false},
+    {name:"Manual of Quickness of Action",desc:"Read over 6 days: Dexterity increases by 2 (max 28).",attunement:false},
+    {name:"Mirror of Life Trapping",desc:"Humanoids who see their reflection DC 15 Cha save or become trapped.",attunement:false},
+    {name:"Nine Lives Stealer",desc:"On nat 20 vs creature under 100 HP: DC 15 Con save or instant death.",attunement:true},
+    {name:"Oathbow",desc:"Swear an oath against a target: +3d6 damage against it; disadvantage vs others.",attunement:true},
+    {name:"Plate Armor +2",desc:"+2 bonus to AC.",attunement:false},
+    {name:"Ring of Regeneration",desc:"Regain 1d6 HP every 10 minutes. Regrow lost limbs over 1d6+1 days.",attunement:true},
+    {name:"Ring of Telekinesis",desc:"Cast telekinesis at will on unattended objects.",attunement:true},
+    {name:"Robe of Eyes",desc:"Darkvision 120ft; see invisible; can't be surprised; advantage on Perception.",attunement:true},
+    {name:"Rod of Absorption",desc:"Reaction: absorb a spell targeting only you, storing its levels as charges.",attunement:true},
+    {name:"Rod of Security",desc:"Transport up to 200 willing creatures to a paradise demiplane for 200 days.",attunement:false},
+    {name:"Scimitar of Speed",desc:"+2 scimitar. Bonus action: make one extra attack per turn.",attunement:true},
+    {name:"Shield +3",desc:"+3 bonus to AC.",attunement:false},
+    {name:"Spellguard Shield",desc:"Advantage on saves vs spells; spell attacks have disadvantage against you.",attunement:true},
+    {name:"Staff of Fire",desc:"Resistance to fire. 10 charges: burning hands, fireball, wall of fire.",attunement:true},
+    {name:"Staff of Frost",desc:"Resistance to cold. 10 charges: cone of cold, fog cloud, ice storm, wall of ice.",attunement:true},
+    {name:"Staff of Power",desc:"+2 to attacks, AC, saves, spell attacks. 20 charges of powerful spells.",attunement:true},
+    {name:"Staff of Striking",desc:"+3 quarterstaff. 10 charges: deal extra 1d6 per charge (up to 3).",attunement:true},
+    {name:"Staff of Thunder and Lightning",desc:"+2 quarterstaff. Thunder, lightning bolt, thunderclap, and storm powers.",attunement:true},
+    {name:"Sword of Sharpness",desc:"Maximize weapon dice vs objects. On nat 20: extra 4d6 slashing and may sever limb.",attunement:true},
+    {name:"Tome of Clear Thought",desc:"Read over 6 days: Intelligence increases by 2 (max 28).",attunement:false},
+    {name:"Tome of Leadership and Influence",desc:"Read over 6 days: Charisma increases by 2 (max 28).",attunement:false},
+    {name:"Tome of Understanding",desc:"Read over 6 days: Wisdom increases by 2 (max 28).",attunement:false},
+    {name:"Wand of the War Mage +3",desc:"+3 to spell attack rolls; ignore half cover.",attunement:true},
+    {name:"Weapon +3",desc:"+3 bonus to attack and damage rolls.",attunement:false},
+];
+
+// ---- MAGIC ITEMS LEGENDARY ----
+const MAGIC_LEGENDARY = [
+    {name:"Armor of Invulnerability",desc:"Resistance to nonmagical damage. Action: immunity to nonmagical damage for 10 min.",attunement:true},
+    {name:"Belt of Giant Strength (Storm)",desc:"Strength score becomes 29.",attunement:true},
+    {name:"Cloak of Invisibility",desc:"Pull up hood: become invisible. Anything worn/carried is invisible too.",attunement:true},
+    {name:"Crystal Ball of True Seeing",desc:"Scrying (DC 17) with truesight through the sensor.",attunement:true},
+    {name:"Cubic Gate",desc:"Six sides keyed to six planes. Press a side to cast gate to that plane.",attunement:false},
+    {name:"Deck of Many Things",desc:"Draw a card: each card has a powerful and potentially catastrophic effect.",attunement:false},
+    {name:"Defender",desc:"+3 weapon. Transfer part or all of the bonus to AC each turn.",attunement:true},
+    {name:"Efreeti Chain",desc:"+3 AC, immune to fire, understand and speak Primordial.",attunement:true},
+    {name:"Hammer of Thunderbolts",desc:"+1 hammer. Kill giants on hit (DC 17 Con save). Thrown: 5d6 thunder in 30ft.",attunement:true},
+    {name:"Holy Avenger",desc:"+3 sword. Extra 2d10 radiant vs fiends/undead. Aura of magic resistance in 10ft.",attunement:true},
+    {name:"Ioun Stone (Mastery)",desc:"Proficiency bonus increases by 1.",attunement:true},
+    {name:"Iron Flask",desc:"Capture a creature from another plane. Command it, then release it.",attunement:false},
+    {name:"Luck Blade",desc:"+1 sword, +1 to saves. Reroll one roll per day. 1–3 charges of wish.",attunement:true},
+    {name:"Plate Armor of Etherealness",desc:"Command word: gain the effect of etherealness for 10 minutes.",attunement:true},
+    {name:"Ring of Djinni Summoning",desc:"Summon a specific djinni to serve for 1 hour per day.",attunement:true},
+    {name:"Ring of Elemental Command",desc:"Command elementals of one type. Gain elemental resistances and abilities.",attunement:true},
+    {name:"Ring of Invisibility",desc:"Turn invisible as an action at will. Remain until you attack, cast, or choose to end.",attunement:true},
+    {name:"Ring of Spell Turning",desc:"Advantage vs spells targeting only you. On nat 20 (spell level ≤7): reflect it.",attunement:true},
+    {name:"Ring of Three Wishes",desc:"3 charges. Cast wish. Becomes nonmagical after the last charge.",attunement:false},
+    {name:"Robe of the Archmagi",desc:"+2 AC if unarmored; advantage on saves vs spells; +2 to spell save DC and spell attack.",attunement:true},
+    {name:"Rod of Lordly Might",desc:"+3 mace that transforms into six different weapons and tools.",attunement:true},
+    {name:"Rod of Resurrection",desc:"5 charges. Cast heal (1 charge) or resurrection (5 charges).",attunement:true},
+    {name:"Scarab of Protection",desc:"+2 to saving throws. Immune to necromancy spells. 12 charges: negate effects.",attunement:true},
+    {name:"Sphere of Annihilation",desc:"A 2-foot void that obliterates all matter it touches. Controllable with a DC check.",attunement:false},
+    {name:"Staff of the Magi",desc:"+2 to spell attacks. 50 charges of powerful spells. Retributive Strike on break.",attunement:true},
+    {name:"Talisman of Pure Good",desc:"Powerful good-aligned item. Open a holy fissure to banish fiends.",attunement:true},
+    {name:"Talisman of Ultimate Evil",desc:"Powerful evil-aligned item. Open an unholy fissure to banish celestials.",attunement:true},
+    {name:"Vorpal Sword",desc:"+3 sword. Ignores slashing resistance. On nat 20 vs creature with a head: decapitate.",attunement:true},
+    {name:"Well of Many Worlds",desc:"Unfold this cloth to create a two-way portal to a random location on another plane.",attunement:false},
+];
+
+// ---- ARTIFACTS ----
+const MAGIC_ARTIFACTS = [
+    {name:"Axe of the Dwarvish Lords",desc:"Legendary dwarven artifact forged by Moradin. Unites dwarf clans and grants immense power.",attunement:true},
+    {name:"Book of Exalted Deeds",desc:"Sacred text of all that is good. Only good creatures can read it without being blinded.",attunement:true},
+    {name:"Book of Vile Darkness",desc:"Written by Vecna. Contains the darkest secrets of evil. Corrupts all who read it.",attunement:true},
+    {name:"Eye of Vecna",desc:"Vecna's mummified eye. Replace your own eye with it to gain immense necrotic power.",attunement:true},
+    {name:"Hand of Vecna",desc:"Vecna's mummified hand. Replace your own hand with it to gain dark magical abilities.",attunement:true},
+    {name:"Orb of Dragonkind",desc:"Ancient orb for controlling chromatic dragons. Each orb is tied to a specific dragon type.",attunement:true},
+    {name:"Sword of Kas",desc:"The blade that severed Vecna's hand. A sentient sword of immense vampiric power.",attunement:true},
+    {name:"Wand of Orcus",desc:"Orcus's personal weapon, topped with a skull. Raises undead armies on command.",attunement:true},
+];
+
+// ---- THEMED ITEMS ----
+const THEMED_ITEMS = {
+    dragon:[
+        {name:"Dragon Scale (shed)",desc:"A shed scale still faintly warm to the touch.",value:"50 gp",isThemed:true},
+        {name:"Dragon Tooth Necklace",desc:"A crude necklace of dragon teeth.",value:"100 gp",isThemed:true},
+        {name:"Vial of Dragon Blood",desc:"A sealed vial of potent, still-magical dragon blood.",value:"200 gp",isThemed:true},
+        {name:"Dragon's Hoard Coin",desc:"An ancient gold coin older than any living kingdom, stamped with a wyrm.",value:"10 gp",isThemed:true},
+    ],
+    undead:[
+        {name:"Phylactery Fragment",desc:"A shard of magical crystal that once housed a soul.",value:"500 gp",isThemed:true},
+        {name:"Death Knight's Sigil Ring",desc:"A black iron ring bearing the crest of a fallen paladin.",value:"150 gp",isThemed:true},
+        {name:"Bone Wand",desc:"A wand carved from humanoid bone, cold to the touch.",value:"100 gp",isThemed:true},
+        {name:"Lich's Spellbook",desc:"A singed tome of forbidden magic, its pages inked in necrotic fluid.",value:"1000 gp",isThemed:true},
+    ],
+    fiend:[
+        {name:"Infernal Contract",desc:"A parchment written in blood detailing a soul bargain. The signatory is deceased.",value:"300 gp",isThemed:true},
+        {name:"Devil's Eye Gem",desc:"A deep red gem that seems to watch you.",value:"250 gp",isThemed:true},
+        {name:"Hellfire Shard",desc:"A fragment of solidified hellfire, perpetually warm.",value:"150 gp",isThemed:true},
+        {name:"Demon Ichor Vial",desc:"A sealed vial of foul-smelling black demon blood.",value:"100 gp",isThemed:true},
+    ],
+    fey:[
+        {name:"Pixie Wing Dust",desc:"A small pouch of iridescent dust that smells of flowers.",value:"100 gp",isThemed:true},
+        {name:"Moonstone Pendant",desc:"A pendant carved with dancing fey figures; glows under moonlight.",value:"150 gp",isThemed:true},
+        {name:"Faerie Ring Mushroom (preserved)",desc:"A preserved mushroom from a faerie ring, still faintly magical.",value:"50 gp",isThemed:true},
+        {name:"Unseelie Court Token",desc:"A black rose that never wilts — a gift or threat from the dark fey.",value:"200 gp",isThemed:true},
+    ],
+    aberration:[
+        {name:"Mind Flayer Brain Cylinder",desc:"A sealed cylinder containing a preserved brain — a mind flayer's meal.",value:"200 gp",isThemed:true},
+        {name:"Beholder Eyestalk (preserved)",desc:"A preserved eyestalk from a beholder, still faintly magical.",value:"300 gp",isThemed:true},
+        {name:"Aboleth Slime Sample",desc:"A vial of aboleth mucus — dangerous if opened without protection.",value:"150 gp",isThemed:true},
+        {name:"Far Realm Shard",desc:"A crystalline fragment from beyond the stars; nearby magic behaves oddly.",value:"500 gp",isThemed:true},
+    ],
+    humanoid:[
+        {name:"Guild Ledger",desc:"A coded ledger of a thieves' guild, worth a fortune to the right buyer.",value:"200 gp",isThemed:true},
+        {name:"Forged Noble Seal",desc:"A near-perfect forgery of a noble family's wax seal.",value:"100 gp",isThemed:true},
+        {name:"Mercenary Contract",desc:"A signed contract for a very large sum, now with no employer.",value:"50 gp",isThemed:true},
+        {name:"Spy's Cipher Key",desc:"A key to decode intercepted messages from a foreign power.",value:"300 gp",isThemed:true},
+    ],
+    construct:[
+        {name:"Golem Core Shard",desc:"A fragment of the magical core that animated a golem.",value:"300 gp",isThemed:true},
+        {name:"Automaton Gear (arcane)",desc:"A perfectly crafted gear infused with residual magic.",value:"75 gp",isThemed:true},
+        {name:"Runic Ingot",desc:"A bar of metal etched with runes that still hum with energy.",value:"150 gp",isThemed:true},
+    ],
+    beast:[
+        {name:"Manticore Spine",desc:"A spine from a manticore's tail, still venomous if handled carelessly.",value:"50 gp",isThemed:true},
+        {name:"Owlbear Feather",desc:"An enormous feather from an owlbear, prized by collectors.",value:"25 gp",isThemed:true},
+        {name:"Wyvern Stinger",desc:"A severed wyvern stinger — alchemists pay well for these.",value:"200 gp",isThemed:true},
+        {name:"Displacer Beast Pelt",desc:"A shimmering pelt that still faintly displaces light.",value:"400 gp",isThemed:true},
+    ],
+};
+
+// ---- COINS ----
+function generateCoins(cr, type) {
+    const h = type === 'hoard';
+    // Tabelas do DMG 5e — Individual e Hoard por faixa de CR
+    if (cr <= 4) {
+        if (h) return {
+            cp: treasureRollDice(6,6) * 100,
+            sp: treasureRollDice(3,6) * 100,
+            gp: treasureRollDice(2,6) * 10,
+        };
+        // Individual: monstro fraco carrega pouco
+        const roll = treasureRollDice(1,100);
+        if (roll <= 30) return { cp: treasureRollDice(5,6) };
+        if (roll <= 60) return { sp: treasureRollDice(4,6) };
+        if (roll <= 70) return { cp: treasureRollDice(3,6), sp: treasureRollDice(2,6) };
+        if (roll <= 95) return { gp: treasureRollDice(3,6) };
+        return { gp: treasureRollDice(1,6), pp: treasureRollDice(1,4) };
+    }
+    if (cr <= 10) {
+        if (h) return {
+            cp: treasureRollDice(2,6) * 100,
+            sp: treasureRollDice(2,6) * 1000,
+            gp: treasureRollDice(6,6) * 100,
+            pp: treasureRollDice(3,6) * 10,
+        };
+        const roll = treasureRollDice(1,100);
+        if (roll <= 30) return { cp: treasureRollDice(4,6)*10, sp: treasureRollDice(1,6)*10 };
+        if (roll <= 60) return { sp: treasureRollDice(6,6)*10, gp: treasureRollDice(2,6)*10 };
+        if (roll <= 70) return { gp: treasureRollDice(3,6)*10, sp: treasureRollDice(2,6)*10 };
+        if (roll <= 95) return { gp: treasureRollDice(4,6)*10 };
+        return { gp: treasureRollDice(2,6)*10, pp: treasureRollDice(3,6) };
+    }
+    if (cr <= 16) {
+        if (h) return {
+            gp:  treasureRollDice(4,6) * 1000,
+            pp:  treasureRollDice(5,6) * 100,
+        };
+        const roll = treasureRollDice(1,100);
+        if (roll <= 20) return { sp: treasureRollDice(4,6)*100, gp: treasureRollDice(1,6)*100 };
+        if (roll <= 35) return { gp: treasureRollDice(1,6)*100, pp: treasureRollDice(1,6)*10 };
+        if (roll <= 75) return { gp: treasureRollDice(2,6)*100, pp: treasureRollDice(1,6)*10 };
+        if (roll <= 95) return { gp: treasureRollDice(2,6)*100, pp: treasureRollDice(2,6)*10 };
+        return { gp: treasureRollDice(3,6)*100, pp: treasureRollDice(2,6)*10 };
+    }
+    // CR 17+
+    if (h) return {
+        gp: treasureRollDice(12,6) * 1000,
+        pp: treasureRollDice(8,6)  * 100,   // DMG usa *100, não *1000
+    };
+    const roll = treasureRollDice(1,100);
+    if (roll <= 15) return { gp: treasureRollDice(2,6)*1000, pp: treasureRollDice(8,6)*100 };
+    if (roll <= 55) return { gp: treasureRollDice(2,6)*1000, pp: treasureRollDice(8,6)*100 };
+    if (roll <= 70) return { gp: treasureRollDice(1,6)*1000, pp: treasureRollDice(1,6)*100 };
+    if (roll <= 95) return { gp: treasureRollDice(1,6)*1000, pp: treasureRollDice(2,6)*100 };
+    return { gp: treasureRollDice(2,6)*1000, pp: treasureRollDice(3,6)*100 };
+}
+
+// ---- GEMS & ART ----
+function generateGemsAndArt(cr, type) {
+    const h = type === 'hoard';
+    const items = [];
+    const gpVal = g => GEMS_10GP.includes(g)?'10 gp':GEMS_50GP.includes(g)?'50 gp':GEMS_100GP.includes(g)?'100 gp':GEMS_500GP.includes(g)?'500 gp':GEMS_1000GP.includes(g)?'1,000 gp':'5,000 gp';
+    const addGems = (pool, n) => { for(let i=0;i<n;i++){const g=treasurePick(pool);items.push({type:'gem',name:g,value:gpVal(g)});} };
+    const addArt  = (pool, val, n) => { for(let i=0;i<n;i++) items.push({type:'art',name:treasurePick(pool),value:val}); };
+
+    const roll = treasureRollDice(1,100);
+
+    if (cr <= 4) {
+        if (h) {
+            // Hoard CR 1-4: gemas baratas + arte simples
+            if (roll <= 30) addGems(GEMS_10GP, treasureRollDice(2,6));
+            else if (roll <= 60) addGems(GEMS_50GP, treasureRollDice(2,4));
+            else if (roll <= 80) { addGems(GEMS_10GP, treasureRollDice(2,6)); addArt(ART_25GP, '25 gp', treasureRollDice(2,4)); }
+            else { addGems(GEMS_50GP, treasureRollDice(1,6)); addArt(ART_25GP, '25 gp', treasureRollDice(1,6)); }
+        } else {
+            // Individual CR 1-4: chance de 1 gema pequena
+            if (roll <= 40) addGems(GEMS_10GP, 1);
+            else if (roll <= 60) addGems(GEMS_50GP, 1);
+            // 40% sem gema
+        }
+    } else if (cr <= 10) {
+        if (h) {
+            if (roll <= 20) addGems(GEMS_100GP, treasureRollDice(2,4));
+            else if (roll <= 40) addArt(ART_25GP, '25 gp', treasureRollDice(2,4));
+            else if (roll <= 50) addArt(ART_250GP, '250 gp', treasureRollDice(2,4));
+            else if (roll <= 60) { addGems(GEMS_50GP, treasureRollDice(2,6)); addArt(ART_250GP, '250 gp', treasureRollDice(2,4)); }
+            else if (roll <= 70) { addGems(GEMS_100GP, treasureRollDice(3,6)); addArt(ART_250GP, '250 gp', treasureRollDice(2,4)); }
+            else if (roll <= 80) addGems(GEMS_100GP, treasureRollDice(3,6));
+            else if (roll <= 90) addArt(ART_250GP, '250 gp', treasureRollDice(2,4));
+            else { addGems(GEMS_100GP, treasureRollDice(4,6)); addArt(ART_250GP, '250 gp', treasureRollDice(2,4)); }
+        } else {
+            // Individual CR 5-10: 1-3 gemas, sem arte
+            if (roll <= 25) addGems(GEMS_10GP, treasureRollDice(2,4));
+            else if (roll <= 50) addGems(GEMS_50GP, treasureRollDice(1,4));
+            else if (roll <= 75) addGems(GEMS_100GP, treasureRollDice(1,4));
+            else if (roll <= 90) { addGems(GEMS_50GP, 1); addArt(ART_25GP, '25 gp', 1); }
+            // 10% sem nada
+        }
+    } else if (cr <= 16) {
+        if (h) {
+            if (roll <= 20) addArt(ART_250GP, '250 gp', treasureRollDice(2,4));
+            else if (roll <= 30) addGems(GEMS_500GP, treasureRollDice(2,4));
+            else if (roll <= 40) { addArt(ART_750GP, '750 gp', treasureRollDice(2,4)); addGems(GEMS_500GP, treasureRollDice(2,4)); }
+            else if (roll <= 50) addArt(ART_750GP, '750 gp', treasureRollDice(2,4));
+            else if (roll <= 60) { addGems(GEMS_1000GP, treasureRollDice(2,4)); addArt(ART_2500GP, '2,500 gp', treasureRollDice(2,4)); }
+            else if (roll <= 70) addGems(GEMS_1000GP, treasureRollDice(2,4));
+            else if (roll <= 80) addArt(ART_2500GP, '2,500 gp', treasureRollDice(2,4));
+            else { addGems(GEMS_1000GP, treasureRollDice(2,4)); addArt(ART_2500GP, '2,500 gp', treasureRollDice(2,4)); }
+        } else {
+            // Individual CR 11-16: gemas médias + chance de arte
+            if (roll <= 30) addGems(GEMS_100GP, treasureRollDice(1,4));
+            else if (roll <= 55) addGems(GEMS_500GP, treasureRollDice(1,4));
+            else if (roll <= 70) addGems(GEMS_1000GP, 1);
+            else if (roll <= 85) { addGems(GEMS_500GP, 1); addArt(ART_250GP, '250 gp', 1); }
+            else { addGems(GEMS_1000GP, 1); addArt(ART_750GP, '750 gp', 1); }
+        }
+    } else {
+        // CR 17+
+        if (h) {
+            if (roll <= 15) addArt(ART_2500GP, '2,500 gp', treasureRollDice(2,4));
+            else if (roll <= 30) addGems(GEMS_5000GP, treasureRollDice(2,4));
+            else if (roll <= 45) { addArt(ART_7500GP, '7,500 gp', treasureRollDice(2,4)); addGems(GEMS_5000GP, treasureRollDice(2,4)); }
+            else if (roll <= 60) addArt(ART_7500GP, '7,500 gp', treasureRollDice(2,4));
+            else if (roll <= 75) { addGems(GEMS_5000GP, treasureRollDice(2,4)); addArt(ART_2500GP, '2,500 gp', treasureRollDice(2,4)); }
+            else if (roll <= 90) { addGems(GEMS_5000GP, treasureRollDice(3,6)); addArt(ART_7500GP, '7,500 gp', treasureRollDice(2,4)); }
+            else { addGems(GEMS_5000GP, treasureRollDice(3,6)); addArt(ART_7500GP, '7,500 gp', treasureRollDice(3,4)); }
+        } else {
+            if (roll <= 25) addGems(GEMS_1000GP, treasureRollDice(1,4));
+            else if (roll <= 50) addGems(GEMS_5000GP, treasureRollDice(1,4));
+            else if (roll <= 70) { addGems(GEMS_5000GP, 1); addArt(ART_2500GP, '2,500 gp', 1); }
+            else if (roll <= 90) { addGems(GEMS_5000GP, 1); addArt(ART_7500GP, '7,500 gp', 1); }
+            else { addGems(GEMS_5000GP, treasureRollDice(1,4)); addArt(ART_7500GP, '7,500 gp', treasureRollDice(1,4)); }
+        }
+    }
+    return items;
+}
+
+// ---- MAGIC ITEMS ----
+function generateMagicItems(cr, type, monsterType) {
+    const h    = type === 'hoard';
+    const items = [];
+    const roll  = treasureRollDice(1,100);
+
+    // Tabelas do DMG: chance e quantidade por CR
+    if (cr <= 4) {
+        if (h) {
+            // Hoard CR 1-4: rolagem de tabela A (common/uncommon)
+            if (roll <= 60) items.push(...treasurePickN(MAGIC_COMMON, treasureRollDice(1,6)));
+            else if (roll <= 90) items.push(...treasurePickN(MAGIC_UNCOMMON, treasureRollDice(1,4)));
+            else { items.push(...treasurePickN(MAGIC_COMMON, treasureRollDice(1,4))); items.push(...treasurePickN(MAGIC_UNCOMMON, 1)); }
+        } else {
+            // Individual CR 1-4: 25% chance de 1 item common
+            if (roll <= 25) items.push(treasurePick(MAGIC_COMMON));
+        }
+    } else if (cr <= 10) {
+        if (h) {
+            // Hoard CR 5-10: tabela B/C
+            if (roll <= 40) items.push(...treasurePickN(MAGIC_UNCOMMON, treasureRollDice(1,6)));
+            else if (roll <= 60) { items.push(...treasurePickN(MAGIC_UNCOMMON, treasureRollDice(1,4))); items.push(...treasurePickN(MAGIC_RARE, 1)); }
+            else if (roll <= 75) items.push(...treasurePickN(MAGIC_RARE, treasureRollDice(1,4)));
+            else if (roll <= 90) { items.push(...treasurePickN(MAGIC_RARE, treasureRollDice(1,4))); items.push(...treasurePickN(MAGIC_UNCOMMON, treasureRollDice(1,4))); }
+            else { items.push(...treasurePickN(MAGIC_RARE, treasureRollDice(1,6))); items.push(...treasurePickN(MAGIC_VERY_RARE, 1)); }
+        } else {
+            // Individual CR 5-10: 40% chance, uncommon ou raro
+            if (roll <= 20) items.push(treasurePick(MAGIC_COMMON));
+            else if (roll <= 40) items.push(treasurePick(MAGIC_UNCOMMON));
+        }
+    } else if (cr <= 16) {
+        if (h) {
+            // Hoard CR 11-16: tabela D/E
+            if (roll <= 20) items.push(...treasurePickN(MAGIC_UNCOMMON, treasureRollDice(1,4)));
+            else if (roll <= 35) items.push(...treasurePickN(MAGIC_RARE, treasureRollDice(1,6)));
+            else if (roll <= 55) { items.push(...treasurePickN(MAGIC_RARE, treasureRollDice(1,4))); items.push(...treasurePickN(MAGIC_UNCOMMON, treasureRollDice(1,6))); }
+            else if (roll <= 70) { items.push(...treasurePickN(MAGIC_RARE, treasureRollDice(1,4))); items.push(...treasurePickN(MAGIC_VERY_RARE, 1)); }
+            else if (roll <= 85) items.push(...treasurePickN(MAGIC_VERY_RARE, treasureRollDice(1,4)));
+            else { items.push(...treasurePickN(MAGIC_VERY_RARE, treasureRollDice(1,4))); items.push(...treasurePickN(MAGIC_RARE, treasureRollDice(1,4))); }
+        } else {
+            // Individual CR 11-16: 50% chance
+            if (roll <= 20) items.push(treasurePick(MAGIC_UNCOMMON));
+            else if (roll <= 40) items.push(treasurePick(MAGIC_RARE));
+            else if (roll <= 50) items.push(treasurePick(MAGIC_VERY_RARE));
+        }
+    } else {
+        // CR 17+
+        if (h) {
+            // Hoard CR 17+: tabela F/G/H/I
+            if (roll <= 15) items.push(...treasurePickN(MAGIC_RARE, treasureRollDice(1,4)));
+            else if (roll <= 30) { items.push(...treasurePickN(MAGIC_RARE, treasureRollDice(1,4))); items.push(...treasurePickN(MAGIC_VERY_RARE, treasureRollDice(1,4))); }
+            else if (roll <= 45) items.push(...treasurePickN(MAGIC_VERY_RARE, treasureRollDice(1,4)));
+            else if (roll <= 60) { items.push(...treasurePickN(MAGIC_VERY_RARE, treasureRollDice(1,4))); items.push(...treasurePickN(MAGIC_LEGENDARY, 1)); }
+            else if (roll <= 75) items.push(...treasurePickN(MAGIC_LEGENDARY, treasureRollDice(1,4)));
+            else if (roll <= 90) { items.push(...treasurePickN(MAGIC_LEGENDARY, treasureRollDice(1,4))); items.push(...treasurePickN(MAGIC_VERY_RARE, treasureRollDice(1,4))); }
+            else { items.push(...treasurePickN(MAGIC_LEGENDARY, treasureRollDice(1,4))); items.push(...treasurePickN(MAGIC_ARTIFACTS, 1)); }
+        } else {
+            // Individual CR 17+: sempre alguma coisa boa
+            if (roll <= 20) items.push(treasurePick(MAGIC_RARE));
+            else if (roll <= 50) items.push(treasurePick(MAGIC_VERY_RARE));
+            else if (roll <= 80) items.push(treasurePick(MAGIC_LEGENDARY));
+            else { items.push(treasurePick(MAGIC_LEGENDARY)); items.push(treasurePick(MAGIC_VERY_RARE)); }
+        }
+    }
+
+    // Item temático do tipo de monstro (chance menor para não inflar)
+    if (monsterType !== 'any' && THEMED_ITEMS[monsterType] && Math.random() < 0.35) {
+        items.push(treasurePick(THEMED_ITEMS[monsterType]));
+    }
+
+    return items;
+}
+
+// ---- RARITY ----
+function getRarity(item) {
+    if(MAGIC_ARTIFACTS.some(x=>x.name===item.name)) return {label:'ARTIFACT',cls:'rarity-artifact'};
+    if(MAGIC_LEGENDARY.some(x=>x.name===item.name)) return {label:'LEGENDARY',cls:'rarity-legendary'};
+    if(MAGIC_VERY_RARE.some(x=>x.name===item.name)) return {label:'VERY RARE',cls:'rarity-very-rare'};
+    if(MAGIC_RARE.some(x=>x.name===item.name)) return {label:'RARE',cls:'rarity-rare'};
+    if(MAGIC_UNCOMMON.some(x=>x.name===item.name)) return {label:'UNCOMMON',cls:'rarity-uncommon'};
+    return {label:'COMMON',cls:'rarity-common'};
+}
+
+// ---- MAIN ----
+
+function generateTreasure() {
+    const cr           = parseInt(document.getElementById('tr-cr').value) || 5;
+    const treasureType = document.getElementById('tr-type').value;
+    const monsterType  = document.getElementById('tr-monster').value;
+    const result       = document.getElementById('treasureResult');
+
+    // --- gerar dados ---
+    const coins      = generateCoins(cr, treasureType);
+    const gemsArt    = generateGemsAndArt(cr, treasureType);
+    const magicItems = generateMagicItems(cr, treasureType, monsterType);
+    const gems       = gemsArt.filter(i => i.type === 'gem');
+    const art        = gemsArt.filter(i => i.type === 'art');
+
+    // --- calcular total em GP ---
+    function parseVal(v) { return parseInt(String(v || '0').replace(/[^0-9]/g, '')) || 0; }
+    const coinGP  = (coins.cp||0)/100 + (coins.sp||0)/10 + (coins.ep||0)/2 + (coins.gp||0) + (coins.pp||0)*10;
+    const gemGP   = gems.reduce((s, g) => s + parseVal(g.value), 0);
+    const artGP   = art.reduce((s, a) => s + parseVal(a.value), 0);
+    const totalGP = Math.round(coinGP + gemGP + artGP);
+
+    // --- HTML das moedas ---
+    const COIN_DEFS = [
+        { key: 'cp', label: 'CP', name: 'Copper',   color: '#b87333' },
+        { key: 'sp', label: 'SP', name: 'Silver',   color: '#aaaaaa' },
+        { key: 'ep', label: 'EP', name: 'Electrum', color: '#c0c080' },
+        { key: 'gp', label: 'GP', name: 'Gold',     color: '#c9a84c' },
+        { key: 'pp', label: 'PP', name: 'Platinum', color: '#b0a0d0' },
+    ];
+
+    let coinRows = '';
+    for (const def of COIN_DEFS) {
+        if (!coins[def.key]) continue;
+        coinRows += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);">'
+            + '<div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:10px;font-weight:700;flex-shrink:0;background:rgba(0,0,0,0.2);border:1px solid ' + def.color + ';color:' + def.color + ';">' + def.label + '</div>'
+            + '<div style="flex:1;color:' + def.color + ';font-family:Cinzel,serif;font-size:12px;">' + def.name + ' Pieces</div>'
+            + '<div style="font-family:Cinzel,serif;font-size:18px;font-weight:700;color:' + def.color + ';">' + coins[def.key].toLocaleString() + '</div>'
+            + '</div>';
+    }
+
+    // --- HTML das gemas ---
+    let gemRows = gems.length ? '' : '<div style="color:#8a8070;font-style:italic;font-size:14px;">None</div>';
+    for (const g of gems) {
+        gemRows += '<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);gap:8px;">'
+            + '<div style="font-size:14px;color:#e8e0d0;">💎 ' + g.name + '</div>'
+            + '<div style="font-family:Cinzel,serif;font-size:12px;color:#c9a84c;flex-shrink:0;">' + g.value + '</div>'
+            + '</div>';
+    }
+
+    // --- HTML das obras de arte ---
+    let artRows = art.length ? '' : '<div style="color:#8a8070;font-style:italic;font-size:14px;">None</div>';
+    for (const a of art) {
+        artRows += '<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);gap:8px;">'
+            + '<div style="font-size:14px;color:#e8e0d0;">🎨 ' + a.name + '</div>'
+            + '<div style="font-family:Cinzel,serif;font-size:12px;color:#c9a84c;flex-shrink:0;">' + a.value + '</div>'
+            + '</div>';
+    }
+
+    // --- HTML dos itens mágicos ---
+    const RARITY_COLOR = { COMMON:'#aaa', UNCOMMON:'#4caf7d', RARE:'#4a90c9', 'VERY RARE':'#9b59b6', LEGENDARY:'#e0a832', ARTIFACT:'#e74c3c' };
+    let magicRows = magicItems.length ? '' : '<div style="color:#8a8070;font-style:italic;font-size:14px;">None</div>';
+    for (const item of magicItems) {
+        const r   = getRarity(item);
+        const col = RARITY_COLOR[r.label] || '#aaa';
+        if (item.isThemed) {
+            magicRows += '<div style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);">'
+                + '<div style="display:flex;justify-content:space-between;gap:8px;">'
+                + '<div style="font-size:14px;color:#e8e0d0;">✨ ' + item.name + '</div>'
+                + '<div style="font-family:Cinzel,serif;font-size:12px;color:#c9a84c;flex-shrink:0;">' + item.value + '</div>'
+                + '</div>'
+                + '<div style="font-size:12px;color:#8a8070;font-style:italic;margin-top:3px;">' + item.desc + '</div>'
+                + '</div>';
+        } else {
+            magicRows += '<div style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);">'
+                + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">'
+                + '<div style="font-size:14px;color:#e8e0d0;">⚗️ ' + item.name + '</div>'
+                + '<div style="display:flex;gap:6px;align-items:center;flex-shrink:0;">'
+                + (item.attunement ? '<span style="font-family:Cinzel,serif;font-size:9px;letter-spacing:1px;padding:2px 6px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);border-radius:2px;color:#c9a84c;">ATTUNE</span>' : '')
+                + '<span style="font-family:Cinzel,serif;font-size:9px;letter-spacing:1px;padding:2px 8px;border-radius:2px;border:1px solid ' + col + ';color:' + col + ';">' + r.label + '</span>'
+                + '</div></div>'
+                + '<div style="font-size:12px;color:#8a8070;font-style:italic;margin-top:4px;">' + item.desc + '</div>'
+                + '</div>';
+        }
+    }
+
+    // --- montar HTML final ---
+    const CARD = 'background:#1c1c22;border:1px solid rgba(201,168,76,0.12);border-radius:4px;padding:20px;';
+    const TITLE = 'font-family:Cinzel,serif;font-size:10px;letter-spacing:3px;color:rgba(201,168,76,0.5);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid rgba(201,168,76,0.1);';
+
+    result.innerHTML =
+        // Resumo total
+        '<div style="' + CARD + 'display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:20px;border-color:rgba(201,168,76,0.25);">'
+        + '<div>'
+        + '<div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:3px;color:rgba(201,168,76,0.5);">TOTAL VALUE (APPROX)</div>'
+        + '<div style="font-family:Cinzel,serif;font-size:36px;font-weight:700;color:#c9a84c;">' + totalGP.toLocaleString() + ' GP</div>'
+        + '</div>'
+        + '<div style="display:flex;gap:20px;flex-wrap:wrap;">'
+        + '<div style="text-align:center;"><div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:1px;color:#8a8070;">GEMS</div><div style="font-family:Cinzel,serif;font-size:22px;color:#e8e0d0;">' + gems.length + '</div></div>'
+        + '<div style="text-align:center;"><div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:1px;color:#8a8070;">ART</div><div style="font-family:Cinzel,serif;font-size:22px;color:#e8e0d0;">' + art.length + '</div></div>'
+        + '<div style="text-align:center;"><div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:1px;color:#8a8070;">MAGIC ITEMS</div><div style="font-family:Cinzel,serif;font-size:22px;color:#e8e0d0;">' + magicItems.length + '</div></div>'
+        + '</div></div>'
+
+        // Grid 3 colunas: moedas / gemas / arte
+        + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-bottom:16px;">'
+        + '<div style="' + CARD + '"><div style="' + TITLE + '">🪙 COINS</div>' + coinRows + '</div>'
+        + '<div style="' + CARD + '"><div style="' + TITLE + '">💎 GEMS</div>' + gemRows + '</div>'
+        + '<div style="' + CARD + '"><div style="' + TITLE + '">🎨 ART OBJECTS</div>' + artRows + '</div>'
+        + '</div>'
+
+        // Itens mágicos (largura total)
+        + '<div style="' + CARD + 'margin-bottom:16px;"><div style="' + TITLE + '">⚗️ MAGIC ITEMS</div>' + magicRows + '</div>'
+
+        + '<button onclick="generateTreasure()" style="width:100%;background:none;border:1px solid rgba(201,168,76,0.25);border-radius:2px;padding:12px;color:#c9a84c;font-family:Cinzel,serif;font-size:11px;letter-spacing:2px;cursor:pointer;">🎲 GENERATE ANOTHER</button>';
+}
+
+</script>
+    <script>
+// =============================================================
+// TAVERN GENERATOR
+// =============================================================
+
+// ---- NAMES ----
+const TAVERN_ADJ = [
+    "Golden","Silver","Rusty","Broken","Wandering","Sleeping","Drunken","Laughing",
+    "Howling","Crimson","Black","Iron","Copper","Emerald","Amber","Pale","Hungry",
+    "Lucky","Forgotten","Cursed","Blessed","Dancing","Roaring","Whispering","Salty",
+    "Shattered","Gilded","Weeping","Smiling","Crooked","Hollow","Burning","Frozen",
+    "Ancient","Blind","Bold","Brave","Cozy","Dark","Dim","Dusty","Fading","Grim",
+    "Haunted","Merry","Muddy","Noisy","Quiet","Ragged","Scarred","Smoky","Tired",
+];
+
+const TAVERN_NOUN = [
+    "Dragon","Flagon","Barrel","Sword","Shield","Anchor","Goblin","Wizard","Crown",
+    "Hearth","Lantern","Raven","Wolf","Bear","Fox","Boar","Stag","Eagle","Serpent",
+    "Hammer","Anvil","Coin","Candle","Tankard","Boot","Glove","Cloak","Dagger",
+    "Skull","Rose","Thistle","Oak","Pine","Stone","River","Mountain","Moon","Star",
+    "Maiden","Knight","Pilgrim","Sailor","Ranger","Minstrel","Merchant","Soldier",
+    "Ghost","Specter","Demon","Angel","Titan","Giant","Dwarf","Elf","Halfling",
+];
+
+const TAVERN_SUFFIX = [
+    "Inn","Tavern","Alehouse","Lodge","Rest","Retreat","Haven","Hideaway","Hole",
+    "Den","Cellar","Pit","House","Hall","Keep","Post","Stop","Spot","Corner",
+];
+
+// ---- TIPOS ----
+const TAVERN_TYPES = {
+    tavern:   { label: "Roadside Tavern",     emoji: "🍺" },
+    inn:      { label: "Inn & Tavern",         emoji: "🏠" },
+    port:     { label: "Port Alehouse",        emoji: "⚓" },
+    criminal: { label: "Criminal Den",         emoji: "🗡️" },
+    noble:    { label: "Noble Establishment",  emoji: "👑" },
+};
+
+// ---- PROPRIETÁRIOS ----
+const OWNER_RACES = ["Human","Dwarf","Halfling","Half-Elf","Gnome","Tiefling","Orc","Elf"];
+const OWNER_NAMES_HUMAN = ["Aldric","Brenna","Corwin","Delia","Edran","Fiona","Gareth","Hilda","Ivar","Jessa","Kellan","Lorna","Marten","Nessa","Oswin","Petra","Quinn","Rolf","Sable","Tomas","Ursa","Vance","Wren","Xander","Yara","Zane"];
+const OWNER_NAMES_DWARF = ["Balin","Brunhilde","Dolgrin","Fargrim","Gimra","Harbek","Kildrak","Morda","Orsik","Rurik","Tordek","Vistra","Brottor","Eberk","Gromnir","Thorin","Veit"];
+const OWNER_NAMES_HALFLING = ["Alton","Beau","Cora","Danry","Eldon","Fendolin","Garret","Haela","Ignis","Jinny","Kellen","Lyle","Merric","Nora","Osborn","Perrin","Quin","Rosie","Shaena","Tobold","Vani","Wendell"];
+const OWNER_NAMES_OTHER = ["Aelindra","Caelynn","Fenris","Zephyrine","Malachar","Seraphel","Drizzt","Vex","Yennefer","Lucien","Moira","Theron","Calista","Oberon","Seren","Valdris","Nyx","Oryn"];
+
+const OWNER_TRAITS = [
+    "missing two fingers on the left hand","has a glass eye that never blinks","laughs at everything, even bad news",
+    "speaks in a permanent whisper","has a scar from ear to chin","constantly cleans the same mug",
+    "never looks customers in the eye","knows everyone's name after hearing it once","hums an unrecognizable tune all day",
+    "keeps a loaded crossbow under the bar","has a pet rat that sits on their shoulder","lost a bet and now wears a ridiculous hat",
+    "was clearly a soldier once","smells strongly of pipe smoke","quotes old proverbs no one has ever heard",
+    "has ink-stained fingers and writes constantly","is suspiciously well-read for a tavern keeper",
+    "treats every customer like a long-lost relative","is missing an ear and pretends not to notice",
+    "always has a story about 'the old days'","never drinks their own product","tastes everything before serving it",
+];
+
+const OWNER_ATTITUDES = ["cheerful and talkative","gruff but fair","paranoid and suspicious","warm and motherly",
+    "cold and businesslike","philosophical and slow-speaking","nervous and jumpy","proud and boastful",
+    "melancholy but professional","sly and calculating"];
+
+// ---- ATMOSFERA ----
+const ATMO_SOUNDS = {
+    tavern:   ["the crack of dice on a wooden table","a bard playing an off-key lute","drunken arguments about local politics","the clinking of tankards","someone snoring loudly in the corner"],
+    inn:      ["the creak of floorboards upstairs","muffled conversation through thin walls","a baby crying somewhere above","the innkeeper calling out room numbers","travelers swapping road stories"],
+    port:     ["rowdy sea shanties","fistfights breaking out and ending quickly","the groan of ships through the walls","sailors betting on arm-wrestling","someone singing badly about a mermaid"],
+    criminal: ["hushed conversations that stop when you enter","the scrape of chairs being pushed back","coded phrases passed between regulars","suspiciously long silences","knives being sharpened"],
+    noble:    ["soft lute and harp music","refined conversation and polite laughter","the pop of fine wine corks","clinking of crystal glasses","servants moving quietly between tables"],
+};
+
+const ATMO_SMELLS = {
+    tavern:   ["spilled ale and sawdust","woodsmoke and roasting meat","wet dog and mud","pipe smoke and cheap tallow candles","sweat and old leather"],
+    inn:      ["fresh bread from the kitchen","lavender in the linens","horse and hay from the stable door","cooking oil and herbs","a faint smell of mildew"],
+    port:     ["salt, fish, and tar","cheap rum and unwashed sailors","seaweed and brine","pipe tobacco and engine grease","the sharp smell of fresh catches"],
+    criminal: ["stale smoke and cheap spirits","blood — old and dried","nervous sweat","the chemical tang of alchemical goods","something burnt that no one explains"],
+    noble:    ["expensive perfume and pomade","roasting pheasant and fine herbs","fresh flowers in crystal vases","imported spices","beeswax candles and polished wood"],
+};
+
+const ATMO_LIGHTING = {
+    tavern:   ["dim — a handful of tallow candles","warm — a roaring hearth does most of the work","inconsistent — bright near the bar, dark in the corners"],
+    inn:      ["well-lit with oil lanterns on every table","warm and welcoming","bright in the common room, shadowy in the hall"],
+    port:     ["smoky and dim","barely lit — half the candles have burned out","harsh lamplight near the bar, total darkness elsewhere"],
+    criminal: ["deliberately dark","a single lamp behind the bar","patchy — you can barely see who's sitting next to you"],
+    noble:    ["brilliantly lit with dozens of candles","warm chandelier light","elegant sconces casting flattering golden light"],
+};
+
+const ATMO_CONDITION = {
+    tavern:   ["well-worn but honest","showing its age but still standing","tables carved with decades of initials","floors sticky with spilled ale","rough but comfortable"],
+    inn:      ["reasonably clean","tidy but clearly overworked","clean enough for most travelers","comfortable if modest","neat and organized"],
+    port:     ["a total wreck held together by stubbornness","rough as the sea outside","furniture that has been repaired too many times","battle-scarred walls and a lopsided bar","smells worse than it looks"],
+    criminal: ["deliberately unmarked — no sign, no name","the kind of place you find if you're supposed to find it","sparse furniture arranged for quick exits","every table has sightlines to the door","looks abandoned from outside"],
+    noble:    ["impeccably maintained","finer than most inns in the region","polished wood, clean linens, real art on the walls","the kind of place that makes you feel underdressed","warm, well-appointed, and expensive-looking"],
+};
+
+// ---- FREQUENTADORES ----
+const PATRON_TEMPLATES = [
+    // [description, type]
+    ["A {adj} farmer nursing a single ale and staring at the floor", "common"],
+    ["Two {adj} merchants arguing over a bill of sale", "common"],
+    ["A {adj} mercenary sharpening a blade at a corner table", "adventurer"],
+    ["An old {adj} woman who seems to know everyone", "local"],
+    ["A {adj} bard trying to get the room's attention", "entertainer"],
+    ["A cloaked {adj} figure who hasn't touched their drink", "mysterious"],
+    ["A {adj} priest muttering prayers under their breath", "religious"],
+    ["A {adj} off-duty guard telling war stories to anyone who'll listen", "common"],
+    ["A {adj} halfling with an enormous pack who smells of adventure", "adventurer"],
+    ["A {adj} gambler dealing cards alone, watching the room", "criminal"],
+    ["A {adj} couple clearly on their first date and terrified", "common"],
+    ["A {adj} dwarf who has clearly been here since morning", "common"],
+    ["A {adj} wizard making notes in a small leather journal", "scholar"],
+    ["A {adj} sailor with a parrot that keeps repeating a name", "traveler"],
+    ["A {adj} local noble slumming it and enjoying every moment", "noble"],
+    ["A {adj} beggar nursing a free bowl of soup in the corner", "common"],
+    ["A {adj} ranger with mud-caked boots and road-worn eyes", "adventurer"],
+    ["A {adj} tiefling being pointedly ignored by the other patrons", "outsider"],
+    ["A {adj} herbalist with a basket of suspicious-smelling plants", "merchant"],
+    ["A {adj} retired adventurer boring their neighbor with old stories", "adventurer"],
+    ["A {adj} courier eating quickly before getting back on the road", "traveler"],
+    ["A {adj} elf who looks mildly disgusted by their surroundings", "outsider"],
+    ["A {adj} child selling flowers who somehow keeps getting back inside", "local"],
+    ["A {adj} blacksmith still in apron, too tired to go home", "common"],
+    ["A {adj} debt collector making increasingly uncomfortable eye contact with someone", "criminal"],
+    ["A {adj} cartographer pinning a map to the table with their cups", "scholar"],
+    ["A {adj} cleric healing a patron's hangover for a copper", "religious"],
+    ["A {adj} bounty hunter with a wanted poster and a patient expression", "adventurer"],
+    ["A {adj} gnome inventor whose bag keeps emitting small sparks", "scholar"],
+    ["A {adj} widow who comes here every evening at the same time", "local"],
+];
+
+const PATRON_ADJ = ["nervous","cheerful","sullen","loud","quiet","scarred","well-dressed","ragged","one-eyed","enormous","tiny","ancient","young","sunburned","pale","red-faced","tattooed","bald","bearded","hooded"];
+
+// ---- CARDÁPIO ----
+const FOODS = [
+    { name: "Roasted boar ribs",         desc: "Slow-cooked and falling off the bone",           price: "4 sp" },
+    { name: "Mutton stew",               desc: "Thick, peppery, served with black bread",         price: "2 sp" },
+    { name: "Salted herring",            desc: "With pickled onions and rye crackers",             price: "1 sp" },
+    { name: "Traveler's pottage",        desc: "Oats, root vegetables, and mystery meat",          price: "1 sp" },
+    { name: "Roast chicken",             desc: "Half a bird with herb gravy and turnips",          price: "3 sp" },
+    { name: "Cheese board",             desc: "Three local cheeses and a heel of bread",           price: "2 sp" },
+    { name: "Eel pie",                   desc: "River eel in a flaky crust, surprisingly good",   price: "3 sp" },
+    { name: "Venison haunch",            desc: "Smoky, tender, with wild mushroom sauce",          price: "6 sp" },
+    { name: "Bread and dripping",        desc: "Day-old bread with rendered fat and salt",         price: "3 cp" },
+    { name: "Pickled eggs",              desc: "Six in a jar, vinegary and filling",               price: "5 cp" },
+    { name: "Smoked sausage plate",      desc: "Three links with mustard and boiled cabbage",      price: "2 sp" },
+    { name: "Fish chowder",             desc: "Creamy, with clams and chunks of white fish",       price: "2 sp" },
+    { name: "Lamb skewers",              desc: "Charred on the outside, pink inside, with flatbread","price": "3 sp" },
+    { name: "Vegetable soup",            desc: "Whatever was in the garden, simmered all day",    price: "1 sp" },
+    { name: "Potato dumplings",          desc: "Heavy, filling, served with sour cream",           price: "2 sp" },
+    { name: "Pheasant in wine sauce",    desc: "Clearly a noble dish — how is it so cheap?",      price: "8 sp" },
+    { name: "Spiced lentil soup",        desc: "Warming, filling, favored by monks and pilgrims", price: "1 sp" },
+    { name: "Baked apple",              desc: "Stuffed with honey, cinnamon, and walnuts",         price: "1 sp" },
+    { name: "Honeyed ham slice",         desc: "Thick cut, glazed, with roasted carrots",          price: "4 sp" },
+    { name: "Oatcake with butter",       desc: "Simple, fresh-baked, eaten by half the room",     price: "3 cp" },
+];
+
+const DRINKS = [
+    { name: "House ale",            desc: "Local brew, nothing special, gets the job done",    price: "4 cp" },
+    { name: "Dark stout",           desc: "Thick and bitter, favored by dwarves",              price: "6 cp" },
+    { name: "Pale wheat beer",      desc: "Light and cloudy, good for hot days",               price: "5 cp" },
+    { name: "Hard cider",           desc: "Tart apple, made in the valley nearby",             price: "5 cp" },
+    { name: "Cheap red wine",       desc: "Rough and acidic, but it's wine",                   price: "1 sp" },
+    { name: "Decent red wine",      desc: "From a southern region — actually quite good",      price: "3 sp" },
+    { name: "Fine white wine",      desc: "Chilled somehow. Don't ask how.",                   price: "5 sp" },
+    { name: "Honeymead",            desc: "Sweet, strong, locals swear by it",                 price: "8 cp" },
+    { name: "Spiced mead",          desc: "Cloves, cinnamon, and a secret herb",               price: "1 sp" },
+    { name: "Mulled wine",          desc: "Warm, spiced, served in a clay cup",                price: "1 sp" },
+    { name: "Goat milk",            desc: "Fresh. Yes, some people order it.",                 price: "2 cp" },
+    { name: "Herbal tea",           desc: "Chamomile, mint, and something bitter",             price: "2 cp" },
+    { name: "Imported brandy",      desc: "From far away. Costs it.",                          price: "8 sp" },
+    { name: "Rotgut whiskey",       desc: "Burns on the way down and the way back up",         price: "3 cp" },
+    { name: "Aged whiskey",         desc: "Ten years in the barrel. Worth every copper.",      price: "6 sp" },
+    { name: "Sailor's rum",         desc: "Dark, sweet, smells like a ship's hold",            price: "4 cp" },
+    { name: "Elven spring water",   desc: "Suspiciously pure. Faintly luminescent.",           price: "1 sp" },
+    { name: "Dwarven black brew",   desc: "More coffee than beer. Keeps you awake for days",  price: "1 sp" },
+    { name: "Halfling pipeweed tea",desc: "Earthy, mild, very calming",                       price: "5 cp" },
+    { name: "Mysterious purple drink",desc: "The barkeep won't say what's in it",             price: "2 sp" },
+];
+
+// ---- RUMORES ----
+const RUMORS = [
+    "A merchant caravan went missing three days east. No survivors found, but smoke was seen.",
+    "The miller's daughter hasn't been home in a week. Her father is offering a reward.",
+    "Something has been killing livestock on the farms to the north. Not wolves — the wounds are wrong.",
+    "A new toll station appeared on the road last week. Nobody knows who built it or who collects it.",
+    "The old keep on the hill has had lights in the windows at night. It's been abandoned for twenty years.",
+    "A stranger paid in coins stamped with a kingdom that fell three centuries ago.",
+    "The well in the market square has run dry. People are saying it's a curse.",
+    "A bounty hunter came through looking for someone. Left in a hurry after asking questions.",
+    "The river has turned faintly red upstream. The temple is calling it an omen.",
+    "Wolves have been spotted wearing crude iron collars. No one knows what that means.",
+    "A traveling circus arrived and one of the performers is clearly not human.",
+    "The local lord hasn't been seen in two weeks. His guards say he's ill, but the healers haven't been called.",
+    "Someone broke into the alchemist's shop but took nothing. The alchemist looks terrified.",
+    "A child claims to have seen a ghost in the graveyard that told her the mayor's name.",
+    "The road to the capital has been closed by the army. No reason given.",
+    "An old hermit came into town raving about 'something waking up under the hill'.",
+    "Three separate merchants have arrived with the exact same scar they can't explain.",
+    "The local thieves' guild has been quiet for weeks. That's more worrying than when they were active.",
+    "A ship arrived at port with no crew. Cargo intact, food still on the table.",
+    "The priest was seen meeting with a hooded figure outside the temple at midnight.",
+    "A reward has been posted for information about a missing book from the mage's tower.",
+    "Strange music can be heard in the forest at night. Those who follow it don't come back right away.",
+    "Someone has been leaving coins on the graves of people who died violently. Same coin each time.",
+    "A dragon was spotted flying south three nights ago. Nobody's talking about it, which is suspicious.",
+    "The fishing boats have stopped going out. The fishermen say something is in the water.",
+];
+
+// ---- EVENTOS ESPECIAIS ----
+const SPECIAL_EVENTS = [
+    "A local arm-wrestling tournament is underway — prize is a week of free drinks.",
+    "A traveling merchant is auctioning off a mysterious locked chest. Nobody knows what's inside.",
+    "Two rival adventuring parties are glaring at each other from opposite sides of the room.",
+    "A bard is performing the ballad of a local hero — who is sitting three tables away looking embarrassed.",
+    "A wedding party has taken over half the tavern and is getting progressively louder.",
+    "A card sharp is taking money from travelers who should know better.",
+    "Someone just accused someone else of cheating at dice. Tension is high.",
+    "A young mage is showing off spells for drinks and has accidentally set something on fire.",
+    "A group of monks is here on some kind of pilgrimage and seems deeply uncomfortable.",
+    "The evening just got very quiet — a hooded figure walked in that the regulars clearly recognize.",
+    "A local celebrity (retired adventurer, famous merchant) is holding court at the best table.",
+    "A knife fight broke out and ended just before you arrived. The loser is still unconscious.",
+    "Someone's beloved dog has gone missing and half the tavern has turned into a search party.",
+    "A storyteller is holding the whole room captive with a tale about a local legend.",
+    "A thunderstorm has trapped everyone inside. Tempers are beginning to fray.",
+    "An unexpected visit from a tax collector has made half the patrons very nervous.",
+    "A merchant just announced they're buying a round for the whole house. Nobody trusts it.",
+    "A message arrived for someone in the bar. Nobody is claiming it.",
+    "A one-sided argument between a drunk and an extremely patient goat is escalating.",
+    "The cook just quit in spectacular fashion. Dinner may or may not happen.",
+];
+
+// ---- QUARTOS ----
+const ROOM_OPTIONS = {
+    none:    { label: "No rooms available",  price: null,    desc: "This place doesn't offer lodging." },
+    floor:   { label: "Common floor",        price: "2 cp",  desc: "A spot on the common room floor. Bring your own bedroll." },
+    shared:  { label: "Shared dormitory",    price: "1 sp",  desc: "A bunk in a room with 5 others. Earplugs recommended." },
+    private: { label: "Private room",        price: "5 sp",  desc: "A small room with a locked door and a straw mattress." },
+    quality: { label: "Quality room",        price: "8 sp",  desc: "Clean sheets, a real mattress, and a wash basin." },
+    suite:   { label: "Private suite",       price: "2 gp",  desc: "A comfortable suite. Lock on the door, real furniture, actual privacy." },
+};
+
+// ---- SPECIALTIES ----
+const HOUSE_SPECIALTIES = [
+    "The house brew is made with a secret local herb nobody will identify.",
+    "Known for a particular stew recipe that's been passed down for four generations.",
+    "The only place within fifty miles that serves a particular imported spirit.",
+    "Rumored to water down the drinks — the owner denies it vigorously.",
+    "Famous for a dessert that travelers go out of their way to stop for.",
+    "The bread is baked fresh twice a day and sells out both times.",
+    "Known for hosting the best card games in the region.",
+    "Has a private room that can be rented for 'discreet meetings'.",
+    "The cellar is said to contain bottles of wine older than the town itself.",
+    "Offers a loyalty system — your tenth drink is free, and they actually keep count.",
+];
+
+// ---- MAIN GENERATOR ----
+function generateTavern() {
+    const tavernType = document.getElementById('tav-type').value;
+    const size       = document.getElementById('tav-size').value;
+    const reputation = document.getElementById('tav-rep').value;
+    const result     = document.getElementById('tavernResult');
+
+    // Nome
+    const name = tavernPick(TAVERN_ADJ) + ' ' + tavernPick(TAVERN_NOUN) + (Math.random() > 0.4 ? ' ' + tavernPick(TAVERN_SUFFIX) : '');
+
+    // Dono
+    const race = tavernPick(OWNER_RACES);
+    const namePool = race === 'Dwarf' ? OWNER_NAMES_DWARF : race === 'Halfling' ? OWNER_NAMES_HALFLING : Math.random() > 0.4 ? OWNER_NAMES_HUMAN : OWNER_NAMES_OTHER;
+    const ownerName = tavernPick(namePool);
+    const ownerTrait = tavernPick(OWNER_TRAITS);
+    const ownerAttitude = tavernPick(OWNER_ATTITUDES);
+
+    // Atmosfera
+    const sound    = tavernPick(ATMO_SOUNDS[tavernType]);
+    const smell    = tavernPick(ATMO_SMELLS[tavernType]);
+    const lighting = tavernPick(ATMO_LIGHTING[tavernType]);
+    const condition = tavernPick(ATMO_CONDITION[tavernType]);
+
+    // Frequentadores (3-6 dependendo do tamanho)
+    const patronCount = { small: 3, medium: 4, large: 6 }[size] || 4;
+    const patrons = tavernPickN(PATRON_TEMPLATES, patronCount).map(p =>
+        p[0].replace('{adj}', tavernPick(PATRON_ADJ))
+    );
+
+    // Cardápio
+    const foodCount  = { small: 3, medium: 4, large: 5 }[size] || 4;
+    const drinkCount = { small: 4, medium: 5, large: 7 }[size] || 5;
+    const foods  = tavernPickN(FOODS, foodCount);
+    const drinks = tavernPickN(DRINKS, drinkCount);
+
+    // Rumores
+    const rumorCount = { suspicious: 3, infamous: 3, respectable: 2, legendary: 2 }[reputation] || 2;
+    const rumors = tavernPickN(RUMORS, rumorCount);
+
+    // Evento especial
+    const event = tavernPick(SPECIAL_EVENTS);
+
+    // Quartos
+    const roomTypes = {
+        tavern:   ['none','floor','shared'],
+        inn:      ['shared','private','quality'],
+        port:     ['floor','shared','private'],
+        criminal: ['none','floor','shared'],
+        noble:    ['private','quality','suite'],
+    };
+    const roomKey = tavernPick(roomTypes[tavernType]);
+    const room = ROOM_OPTIONS[roomKey];
+
+    // Especialidade
+    const specialty = tavernPick(HOUSE_SPECIALTIES);
+
+    // Reputação cor
+    const repColors = { respectable:'#4caf7d', suspicious:'#e0a832', infamous:'#e74c3c', legendary:'#9b59b6' };
+    const repColor = repColors[reputation] || '#4a90c9';
+
+    const typeInfo = TAVERN_TYPES[tavernType];
+
+    // ---- RENDER ----
+    const S  = 'background:#1c1c22;border:1px solid rgba(201,168,76,0.12);border-radius:4px;padding:20px;';
+    const T  = 'font-family:Cinzel,serif;font-size:10px;letter-spacing:3px;color:rgba(201,168,76,0.5);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid rgba(201,168,76,0.1);';
+    const LI = 'padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:14px;color:#e8e0d0;line-height:1.5;';
+
+    // Header
+    let html = '<div style="' + S + 'border-color:rgba(201,168,76,0.3);margin-bottom:20px;">'
+        + '<div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;">'
+        + '<div>'
+        + '<div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:3px;color:rgba(201,168,76,0.5);margin-bottom:6px;">' + typeInfo.emoji + ' ' + typeInfo.label.toUpperCase() + '</div>'
+        + '<div style="font-family:Cinzel,serif;font-size:28px;font-weight:700;color:#c9a84c;line-height:1.2;">The ' + name + '</div>'
+        + '<div style="font-size:14px;color:#8a8070;margin-top:8px;font-style:italic;">' + specialty + '</div>'
+        + '</div>'
+        + '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;">'
+        + '<span style="font-family:Cinzel,serif;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:2px;border:1px solid ' + repColor + ';color:' + repColor + ';">' + reputation.toUpperCase() + '</span>'
+        + '<span style="font-family:Cinzel,serif;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:2px;border:1px solid rgba(201,168,76,0.25);color:#c9a84c;">' + size.toUpperCase() + '</span>'
+        + '</div></div></div>';
+
+    // Grid principal
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:16px;">';
+
+    // Atmosfera
+    html += '<div style="' + S + '">'
+        + '<div style="' + T + '">🌫️ ATMOSPHERE</div>'
+        + '<div style="' + LI + '"><span style="color:#8a8070;">Lighting: </span>' + lighting + '</div>'
+        + '<div style="' + LI + '"><span style="color:#8a8070;">Smells of: </span>' + smell + '</div>'
+        + '<div style="' + LI + 'border:none;"><span style="color:#8a8070;">You hear: </span>' + sound + '</div>'
+        + '<div style="margin-top:10px;padding:8px;background:rgba(201,168,76,0.04);border-radius:2px;font-size:13px;color:#8a8070;font-style:italic;">'
+        + 'The place is ' + condition + '.'
+        + '</div></div>';
+
+    // Proprietário
+    html += '<div style="' + S + '">'
+        + '<div style="' + T + '">🧑 PROPRIETOR</div>'
+        + '<div style="font-family:Cinzel,serif;font-size:16px;color:#e8e0d0;margin-bottom:4px;">' + ownerName + '</div>'
+        + '<div style="font-size:13px;color:#8a8070;margin-bottom:10px;">' + race + ' · ' + ownerAttitude + '</div>'
+        + '<div style="font-size:14px;color:#e8e0d0;line-height:1.5;">' + ownerName.split(' ')[0] + ' ' + ownerTrait + '.</div>'
+        + '</div>';
+
+    // Quartos
+    html += '<div style="' + S + '">'
+        + '<div style="' + T + '">🛏️ LODGING</div>';
+    if (room.price) {
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
+            + '<div style="font-family:Cinzel,serif;font-size:14px;color:#e8e0d0;">' + room.label + '</div>'
+            + '<div style="font-family:Cinzel,serif;font-size:14px;color:#c9a84c;">' + room.price + ' / night</div>'
+            + '</div>'
+            + '<div style="font-size:13px;color:#8a8070;">' + room.desc + '</div>';
+    } else {
+        html += '<div style="font-size:14px;color:#8a8070;font-style:italic;">' + room.desc + '</div>';
+    }
+    html += '</div>';
+
+    html += '</div>'; // end grid
+
+    // Frequentadores (largura total)
+    html += '<div style="' + S + 'margin-bottom:16px;">'
+        + '<div style="' + T + '">👥 NOTABLE PATRONS</div>'
+        + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:4px;">'
+        + patrons.map(p => '<div style="' + LI + 'border-bottom:none;padding:5px 0;">• ' + p + '.</div>').join('')
+        + '</div></div>';
+
+    // Cardápio
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:16px;">';
+
+    // Comidas
+    html += '<div style="' + S + '">'
+        + '<div style="' + T + '">🍖 FOOD</div>'
+        + foods.map(f =>
+            '<div style="display:flex;justify-content:space-between;align-items:flex-start;' + LI + 'gap:8px;">'
+            + '<div><div style="font-size:14px;color:#e8e0d0;">' + f.name + '</div>'
+            + '<div style="font-size:12px;color:#8a8070;font-style:italic;">' + f.desc + '</div></div>'
+            + '<div style="font-family:Cinzel,serif;font-size:12px;color:#c9a84c;flex-shrink:0;">' + f.price + '</div>'
+            + '</div>'
+        ).join('')
+        + '</div>';
+
+    // Bebidas
+    html += '<div style="' + S + '">'
+        + '<div style="' + T + '">🍺 DRINKS</div>'
+        + drinks.map(d =>
+            '<div style="display:flex;justify-content:space-between;align-items:flex-start;' + LI + 'gap:8px;">'
+            + '<div><div style="font-size:14px;color:#e8e0d0;">' + d.name + '</div>'
+            + '<div style="font-size:12px;color:#8a8070;font-style:italic;">' + d.desc + '</div></div>'
+            + '<div style="font-family:Cinzel,serif;font-size:12px;color:#c9a84c;flex-shrink:0;">' + d.price + '</div>'
+            + '</div>'
+        ).join('')
+        + '</div>';
+
+    html += '</div>'; // end cardápio grid
+
+    // Rumores
+    html += '<div style="' + S + 'margin-bottom:16px;">'
+        + '<div style="' + T + '">💬 RUMORS & WHISPERS</div>'
+        + rumors.map((r, i) =>
+            '<div style="' + LI + (i === rumors.length-1 ? 'border:none;' : '') + 'display:flex;gap:10px;">'
+            + '<span style="color:#c9a84c;font-family:Cinzel,serif;flex-shrink:0;">' + (i+1) + '.</span>'
+            + '<span>' + r + '</span></div>'
+        ).join('')
+        + '</div>';
+
+    // Evento especial
+    html += '<div style="background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);border-radius:4px;padding:16px;margin-bottom:16px;">'
+        + '<div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:3px;color:rgba(201,168,76,0.6);margin-bottom:8px;">⚡ TONIGHT\'S EVENT</div>'
+        + '<div style="font-size:15px;color:#e8e0d0;">' + event + '</div>'
+        + '</div>';
+
+    // Botão
+    html += '<button onclick="generateTavern()" style="width:100%;background:none;border:1px solid rgba(201,168,76,0.25);border-radius:2px;padding:12px;color:#c9a84c;font-family:Cinzel,serif;font-size:11px;letter-spacing:2px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background=\'rgba(201,168,76,0.08)\'" onmouseout="this.style.background=\'none\'">🎲 GENERATE ANOTHER TAVERN</button>';
+
+    result.innerHTML = html;
+}
+
+function tavernPick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function tavernPickN(arr, n) {
+    const copy = [...arr], result = [];
+    for (let i = 0; i < n && copy.length; i++) {
+        const idx = Math.floor(Math.random() * copy.length);
+        result.push(copy.splice(idx, 1)[0]);
+    }
+    return result;
+}
+
+</script>
+    <script>
+// =============================================================
+// PLOT HOOK GENERATOR
+// =============================================================
+
+function phPick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function phPickN(arr, n) {
+    const copy = [...arr], res = [];
+    for (let i = 0; i < n && copy.length; i++) {
+        const idx = Math.floor(Math.random() * copy.length);
+        res.push(copy.splice(idx, 1)[0]);
+    }
+    return res;
+}
+function phPickW(items) {
+    // weighted pick: items = [{value, weight}]
+    const total = items.reduce((s,i) => s + i.weight, 0);
+    let r = Math.random() * total;
+    for (const item of items) { r -= item.weight; if (r <= 0) return item.value; }
+    return items[items.length-1].value;
+}
+
+// ---- TÍTULOS ----
+const TITLE_VERB = [
+    "The Fall of","The Shadow of","The Secret of","The Last","The Stolen","The Forgotten",
+    "The Curse of","The Hunt for","The Blood of","The Price of","The Weight of","The Return of",
+    "The Trial of","The Siege of","The Betrayal of","The Silence of","The Eye of","The Hand of",
+    "Children of","Servants of","Heirs of","The Mask of","The Throne of","The Grave of",
+];
+const TITLE_NOUN = [
+    "the Iron King","the Old Forest","the Sunken City","the Pale Moon","the Golden Flame",
+    "the Shattered Crown","the Red Mountain","the Nameless God","the Last Oracle","the Blind Tower",
+    "the Waking Dead","the Silver Chain","the Broken Oath","the Drowned Bell","the Hollow Throne",
+    "the Laughing Skull","the Three Moons","the Ember Court","the Weeping Stone","the Final Door",
+    "the Frozen Sea","the Undying Flame","the Buried King","the Seventh Seal","the Black Compass",
+];
+
+// ---- GANCHOS DE ABERTURA ----
+const HOOKS_BY_TONE = {
+    mysterious: [
+        "A sealed letter arrives bearing no sender's name — only a date, a location, and the words 'come alone or don't come at all.'",
+        "A child appears at the door clutching a map drawn in a hand none of you recognize. She doesn't remember how she got it.",
+        "Every mirror in town has shown the same face for three days. Nobody knows whose face it is.",
+        "A merchant pays you in coins that haven't been minted in two hundred years — and has no idea where he got them.",
+        "A body is found with no wounds, no expression, and no shadow. The local temple is very, very quiet about it.",
+        "An old woman stops you on the road, calls you each by name, and tells you to 'finish what was started.' She vanishes before you can ask what she meant.",
+        "Someone has been leaving notes under your doors. The notes describe things you did yesterday in perfect detail.",
+        "A beggar presses a key into your hand and says 'they'll come for it before dawn' before collapsing. He is already dead.",
+        "The town well has started pulling up objects from the bottom — personal items belonging to people who went missing years ago.",
+        "You all have the same dream on the same night. In the dream, a voice gives you an address.",
+    ],
+    political: [
+        "A noble house hires you to retrieve a document before it reaches the capital — they're not telling you what's in it.",
+        "Two powerful factions both claim the same piece of land. Each side offers to pay you to resolve it 'quietly.'",
+        "The governor's aide approaches you privately: someone in the council is selling secrets to a foreign power.",
+        "A senator is found dead the morning of a critical vote. His allies want answers before the vote is rescheduled.",
+        "A minor lord offers a substantial reward to escort a package to the capital — his rivals offer twice that to intercept it.",
+        "The new trade agreement has made enemies. Someone needs to identify which faction is planning an 'accident' for the signing ceremony.",
+        "A political prisoner escapes. Three different groups want to find her first, for three very different reasons.",
+        "The king's heir is missing. His disappearance will destabilize the entire region if it becomes public knowledge.",
+        "You are handed forged documents that implicate a local official in treason. Someone wants you to use them. Someone else wants you to destroy them.",
+        "A diplomatic envoy is assassinated on your watch. Both nations are blaming your party.",
+    ],
+    action: [
+        "A fortress is under siege and the garrison commander sends a desperate message: they need a small team to do what an army can't.",
+        "A dangerous prisoner is being transferred by wagon. Three separate groups are planning to intercept it on the road.",
+        "A bounty goes up for a monster that's been terrorizing a valley. The reward triples if you bring it back alive.",
+        "A ship carrying vital supplies is overdue by a week. The port master offers everything he has for news of it.",
+        "A dungeon thought empty for decades shows signs of fresh activity — lights, sounds, tracks going in but not coming out.",
+        "A relic is being auctioned to the highest bidder tomorrow night. Your employer wants it. So does someone very dangerous.",
+        "A bridge on the only road through the mountains has been destroyed. Someone did it on purpose, and the winter is coming.",
+        "A caravan was raided and one survivor escaped. She saw the attackers' faces — and they were people she recognized from town.",
+        "A powerful monster has claimed a mine that employs half the village. The workers are trapped inside.",
+        "A rival adventuring party entered the ruins two days ago. Their employer offers you double to go in and find out what happened.",
+    ],
+    horror: [
+        "Livestock across the valley have been found drained of blood — arranged in patterns that match pages from a book that was burned fifty years ago.",
+        "A village has stopped sending messengers. The last one who came back wouldn't speak, wouldn't eat, and kept counting her fingers.",
+        "People in town are waking up exhausted with no memory of their dreams — except for one recurring image they all share.",
+        "A haunted manor is being demolished. The workers stopped showing up after the third one was found inside the walls.",
+        "Children in the village have started speaking in an extinct language. The priests are calling it a blessing. The children are calling it something else.",
+        "A traveling carnival arrived two weeks ago. Since then, seven people have joined it — and none of them seem to remember their lives before.",
+        "A new cult has formed around something found at the bottom of the river. Their rituals have been getting louder. Their numbers have been growing.",
+        "A plague is moving through the region. The victims don't die — they just stop being... themselves.",
+        "A lighthouse keeper sends a message: 'There is something in the water. It has been here before. It remembers us.'",
+        "The graveyard has been quiet for thirty years. Last week, the graves started sinking — from the inside.",
+    ],
+    comedy: [
+        "A wizard accidentally polymorphed the town's beloved mayor into a goat. The wizard is very sorry. The goat is running for re-election.",
+        "A high-profile thief stole the wrong item — a wedding ring that belonged to a very powerful grandmother. She wants it back. Personally.",
+        "You are hired to protect a merchant's prize-winning pig during a festival. The pig is smarter than it looks and has its own agenda.",
+        "A misdelivered letter has convinced an entire village that you are the legendary heroes of a prophecy. You are not. They are very enthusiastic.",
+        "A genie was freed and granted three wishes. All three were wasted. Now the genie is your problem.",
+        "The local thieves' guild staged a heist that went perfectly except they stole from the wrong house. They need your help to secretly put it all back.",
+        "A noble's spoiled son ran away to become an adventurer. His father will pay handsomely to have him returned — safely and without anyone finding out.",
+        "A duel is scheduled for dawn. Both duelists have hired you — separately — to help them cheat. Neither knows about the other.",
+        "The kingdom's most feared assassin has retired and opened a bakery. Someone keeps sending them contracts. They just want to bake.",
+        "A ghost refuses to move on until someone settles a decades-old argument about a recipe. The argument has since consumed the entire afterlife.",
+    ],
+    drama: [
+        "A wrongly convicted prisoner is about to be executed. You have three days to find the real culprit.",
+        "A dying elder calls you to her side and reveals a secret that changes everything you thought you knew about your hometown.",
+        "A soldier returns from war to find his family gone and his home occupied — and is told they never existed.",
+        "A child asks you to help find her father, who left six months ago and was last seen heading toward a ruin no one returns from.",
+        "An old enemy seeks you out — not for revenge, but to make amends before they die. The secret they carry will complicate everything.",
+        "A community is torn apart by accusations following a tragedy. Two sides have hardened. You're the only outsiders they'll listen to.",
+        "A reformed criminal is being blackmailed by someone who wants them back in the life. They ask for help. Their past is darker than they said.",
+        "A clan is on the verge of a blood feud over something that happened a generation ago. Someone who was there is still alive — and lying.",
+        "You are asked to deliver a letter to someone who died three years ago. The person who sent it doesn't know that yet.",
+        "A talented young mage is about to be expelled for a crime they didn't commit. The person who did it is the one making the accusation.",
+    ],
+};
+
+// ---- ANTAGONISTAS ----
+const ANTAGONISTS = {
+    local: [
+        { name: "A corrupt town guard captain", motive: "covering up a crime from his past", method: "intimidation, false arrests, and planted evidence" },
+        { name: "A greedy merchant guild", motive: "monopolizing the region's trade routes", method: "bribery, sabotage, and hired thugs" },
+        { name: "A jealous rival noble", motive: "inheriting land that was given to another", method: "legal manipulation, rumors, and quiet violence" },
+        { name: "A desperate debtor", motive: "erasing a debt they can never repay", method: "theft, blackmail, and increasingly reckless plans" },
+        { name: "A vengeful widow", motive: "justice for a crime the law ignored", method: "careful planning, manipulation, and hired help" },
+        { name: "A charismatic cult leader", motive: "control over the vulnerable and desperate", method: "false prophecy, community isolation, and fear" },
+        { name: "A disgraced healer", motive: "proving a theory no one believes", method: "dangerous experiments and covered-up failures" },
+        { name: "A local crime boss", motive: "protecting their operation from exposure", method: "bribery, threats, and calculated elimination" },
+    ],
+    regional: [
+        { name: "A bandit king", motive: "building a kingdom outside the law", method: "raids, extortion, and recruiting the desperate" },
+        { name: "A rogue military commander", motive: "seizing control of a strategic territory", method: "force, propaganda, and political manipulation" },
+        { name: "A merchant prince", motive: "cornering a regional market through any means", method: "economic warfare, espionage, and assassination" },
+        { name: "A fanatical religious order", motive: "purging those they deem heretical", method: "trials, mob violence, and holy war" },
+        { name: "A network of spies", motive: "destabilizing the region for a foreign power", method: "assassination, forged documents, and false flags" },
+        { name: "A warlord", motive: "conquest and the glory of battle", method: "military force, scorched-earth tactics, and terror" },
+        { name: "A lich in hiding", motive: "buying time to complete a ritual decades in the making", method: "undead proxies, blackmail, and misdirection" },
+        { name: "A corrupt high priest", motive: "maintaining their power over a desperate population", method: "manufactured miracles, suppression, and divine authority" },
+    ],
+    epic: [
+        { name: "An ancient dragon", motive: "reclaiming territory lost centuries ago", method: "manipulation of mortal factions, hoarding power, and waiting" },
+        { name: "A god's forgotten servant", motive: "carrying out a divine mandate that was rescinded — but not for them", method: "catastrophic force and unshakeable conviction" },
+        { name: "A council of archmages", motive: "restructuring the world's magical order by any means necessary", method: "political puppets, planar engineering, and mass memory alteration" },
+        { name: "A fallen celestial", motive: "proving that mortals are undeserving of the gods' protection", method: "cultivating despair, engineering failures, and eliminating heroes" },
+        { name: "A cult of the end", motive: "welcoming a prophesied apocalypse they believe will remake the world better", method: "martyrdom, sabotage of civilization's pillars, and recruitment of the powerful" },
+        { name: "An undying emperor", motive: "reclaiming an empire that collapsed around them while they slept", method: "raising ancient armies, recalling old oaths, and terror" },
+        { name: "A demon lord's avatar", motive: "opening a permanent rift between planes", method: "corruption of ley lines, mass sacrifice, and breeding chaos" },
+        { name: "A planar entity", motive: "consuming this world to fuel its own existence", method: "slow reality erosion, dream invasion, and chosen champions" },
+    ],
+};
+
+// ---- OBJETIVOS ----
+const OBJECTIVES = {
+    local:    ["Find the person responsible before another victim is claimed","Recover the stolen item before it changes hands","Expose the conspiracy before the vote / trial / ceremony","Protect the target long enough to reach safety","Gather enough evidence to bring the guilty to justice","Stop the ritual before it completes","Infiltrate the organization and learn the truth","Negotiate between two parties before the conflict turns violent"],
+    regional: ["Disrupt the supply lines before the army can march","Secure the alliance before the enemy does","Find and destroy the source of the curse before it spreads","Retrieve the artifact before it falls into the wrong hands","Warn the capital before the border is overrun","Unite the fractured factions under one banner","Expose the traitor before they can report back","Survive long enough to deliver critical intelligence"],
+    epic:     ["Seal the rift before the invasion begins in earnest","Destroy the phylactery hidden at the heart of the enemy's power","Prevent the ritual that would unmake the divine order","Recover the last fragment needed to restore the ancient ward","Stand against the returning conqueror at the gates of the last free city","Convince a god to intervene — and pay the price they demand","Navigate the politics of three factions while the world burns around you","Survive a journey through a shattered plane to recover what was lost"],
+};
+
+// ---- COMPLICAÇÕES ----
+const COMPLICATIONS = [
+    "One of your allies is not who they claim to be.",
+    "The real villain is someone the party trusts — or owes a favor.",
+    "The 'victim' is not innocent. Far from it.",
+    "The item / person you're retrieving doesn't want to be retrieved.",
+    "A third faction with its own agenda gets involved at the worst moment.",
+    "The evidence you needed is destroyed before you reach it.",
+    "One of the party has a personal connection to the antagonist.",
+    "The only solution requires breaking a law — or a promise.",
+    "Your employer has been lying about their motives from the start.",
+    "Two innocent parties are both guilty of something different.",
+    "The monster you're hunting is being controlled by something smarter.",
+    "The place you need to reach has already been found by someone else.",
+    "Someone in town is informing on your movements.",
+    "The cure is worse than the disease.",
+    "Completing the objective will harm someone who doesn't deserve it.",
+    "A powerful organization wants the opposite outcome and has more resources than you.",
+    "The antagonist has a legitimate grievance — they might not be entirely wrong.",
+    "What you find there changes the moral calculus of the whole mission.",
+    "The clock is shorter than you were told.",
+    "Success requires the party to split up at exactly the wrong moment.",
+];
+
+// ---- LOCALIZAÇÕES ----
+const LOCATIONS = {
+    local: [
+        { name: "An abandoned mill on the edge of town", desc: "The wheel still turns despite there being no water. Locals avoid it." },
+        { name: "The sealed lower district", desc: "Closed after a fire three years ago. Someone has been living there since." },
+        { name: "A hidden room beneath the tavern", desc: "Behind a false wall. Older than the building above it." },
+        { name: "The old cemetery on the hill", desc: "No new graves in ten years — which doesn't mean no new bodies." },
+        { name: "A collapsed mine shaft at the edge of the farmland", desc: "Everyone agrees it should stay closed. Not everyone agrees why." },
+        { name: "The locked upper floor of the guildhall", desc: "The key went missing along with the last three people who asked about it." },
+        { name: "A shrine at the crossroads that wasn't there last month", desc: "Already showing moss and weathering. That's not possible." },
+        { name: "The merchant's manor at the edge of the respectable quarter", desc: "Lights on all night. No one goes in or out. The garden is dead." },
+    ],
+    regional: [
+        { name: "A fortress perched on an impassable ridge", desc: "Considered impregnable. Someone found a way in anyway." },
+        { name: "A town that was bypassed by the main road and slowly forgotten", desc: "Still inhabited. The inhabitants have some unusual customs." },
+        { name: "The ruins of a monastery in the high pass", desc: "Destroyed in a war no one remembers clearly. The library survived." },
+        { name: "An island in a contested lake", desc: "Three nations claim it. None of them will admit why they want it so badly." },
+        { name: "A forest that appears on no map", desc: "Travelers who enter heading east come out heading west, three days later." },
+        { name: "A buried city uncovered by the spring floods", desc: "Scholars are excited. The locals are terrified." },
+        { name: "The border checkpoint that has changed hands four times this year", desc: "Currently unmanned. Or appears to be." },
+        { name: "A mountain pass that is strategically critical and spiritually cursed", desc: "Both things can be true." },
+    ],
+    epic: [
+        { name: "A plane-touched ruin at the convergence of ley lines", desc: "Reality is thinner here. Things that died nearby didn't stay dead." },
+        { name: "The sunken capital of a civilization that should not have been able to sink", desc: "It didn't go into the water. The water came to it." },
+        { name: "A palace that exists in two places simultaneously", desc: "The same hall appears in two cities, fifty miles apart. The doors connect." },
+        { name: "The God's Road — a path that only appears under specific stars", desc: "It leads somewhere the gods don't want mortals to reach. They put the stars there anyway." },
+        { name: "A sealed vault beneath an active volcano", desc: "The seals were designed to hold from the inside." },
+        { name: "A tower that is taller on the inside than the outside by a factor of twelve", desc: "Each floor was built in a different era. The top floor hasn't been reached yet." },
+        { name: "The battlefield of a war that ended a thousand years ago", desc: "The soldiers are still there. Still fighting. They don't know it's over." },
+        { name: "A demiplane created by a god who abandoned it", desc: "The inhabitants adapted. They are not what they were." },
+    ],
+};
+
+// ---- RECOMPENSAS ----
+const REWARDS_BY_LEVEL = {
+    "1-4":  { gold: "50–150 gp", extras: ["A deed to a small property","A favor from a local official","A common magic item","Membership in a guild","Reputation in the region","A map to somewhere interesting"] },
+    "5-10": { gold: "300–800 gp", extras: ["An uncommon magic item","A letter of credit with a major merchant house","Access to a restricted library or archive","A safe house in the city","A ship's passage anywhere in the region","A rare piece of information"] },
+    "11-16":{ gold: "2,000–5,000 gp", extras: ["A rare magic item","A minor noble title or land grant","A sworn ally with real power","Permanent access to a fortified location","A rare or unique spell","The loyalty of a skilled NPC"] },
+    "17+":  { gold: "10,000–50,000 gp", extras: ["A legendary magic item","A divine boon from a grateful deity","Control of a strategic location","A permanent place in the historical record","An artifact fragment","The ability to call on a powerful faction as an ally"] },
+};
+
+// ---- CONEXÕES (sub-ganchos) ----
+const SIDE_HOOKS = [
+    "A witness saw something they shouldn't have — and is about to disappear.",
+    "Someone who should be dead is living quietly under a false name nearby.",
+    "The antagonist's second-in-command is having doubts — and is watching for an opportunity.",
+    "An old journal found at the scene fills in the history — but raises harder questions.",
+    "A child in the area knows exactly where something important is hidden.",
+    "A local eccentric has been tracking this situation for years and has files.",
+    "A rival group is one step ahead and isn't hostile — yet.",
+    "The location has a guardian that isn't the antagonist's and isn't friendly to either side.",
+    "One of the minor NPCs in this story is connected to someone in the party's past.",
+    "There's a second objective the employer didn't mention — because they don't know about it yet.",
+    "A red herring has been deliberately planted — someone wants you looking the wrong direction.",
+    "The real victim in this story isn't who hired you.",
+    "An old treaty or law, if invoked correctly, changes everything.",
+    "Someone nearby owes the antagonist a debt they haven't paid — and is about to.",
+    "A piece of evidence was moved recently. Someone else is investigating.",
+];
+
+// ---- URGÊNCIA ----
+const URGENCY = [
+    "The window is three days. After that, the opportunity — or the victim — will be gone.",
+    "A larger force is already moving. You'll lose the advantage if you wait.",
+    "The ritual / trial / ceremony is at the next new moon. That's six days.",
+    "The informant can only hold their silence for so long before they're found out.",
+    "The weather closes the pass in two weeks. After that, it's impassable until spring.",
+    "Someone else has been hired to do the same job. They have a head start.",
+    "The victim is running out of time. The healers give them a week.",
+    "If the document reaches the capital, it's too late to suppress it.",
+    "The siege begins at dawn. There's one night to change the outcome.",
+    "Every day of delay costs lives the party will have to account for.",
+    "The antagonist knows someone is asking questions. They're already covering tracks.",
+    "A political window is closing — in three days, the faction that could help you will be gone.",
+    "The creature / force is growing stronger. It was manageable last week. It isn't now.",
+    "A witness is being moved at dawn. This is the last chance to reach them.",
+    "The artifact is being sold in forty-eight hours. After that, it's gone forever.",
+];
+
+// ---- TONALIDADE visual ----
+const TONE_STYLES = {
+    mysterious: { color: '#9b59b6', icon: '🌙', label: 'MYSTERIOUS' },
+    political:  { color: '#4a90c9', icon: '⚖️', label: 'POLITICAL'  },
+    action:     { color: '#e0a832', icon: '⚔️', label: 'ACTION'     },
+    horror:     { color: '#e74c3c', icon: '💀', label: 'HORROR'     },
+    comedy:     { color: '#4caf7d', icon: '🎭', label: 'COMEDY'     },
+    drama:      { color: '#c9a84c', icon: '🎬', label: 'DRAMA'      },
+};
+
+const SCALE_LABELS = { local: '🏘️ LOCAL', regional: '🗺️ REGIONAL', epic: '🌍 EPIC' };
+
+// ---- MAIN ----
+function generatePlotHook() {
+    const tone   = document.getElementById('ph-tone').value;
+    const scale  = document.getElementById('ph-scale').value;
+    const level  = document.getElementById('ph-level').value;
+    const result = document.getElementById('plotResult');
+
+    const title       = phPick(TITLE_VERB) + ' ' + phPick(TITLE_NOUN);
+    const hook        = phPick(HOOKS_BY_TONE[tone]);
+    const antagonist  = phPick(ANTAGONISTS[scale]);
+    const objective   = phPick(OBJECTIVES[scale]);
+    const complication= phPick(COMPLICATIONS);
+    const location    = phPick(LOCATIONS[scale]);
+    const reward      = REWARDS_BY_LEVEL[level];
+    const rewardExtra = phPick(reward.extras);
+    const sideHooks   = phPickN(SIDE_HOOKS, 2);
+    const urgency     = phPick(URGENCY);
+    const toneStyle   = TONE_STYLES[tone];
+
+    const S   = 'background:#1c1c22;border:1px solid rgba(201,168,76,0.12);border-radius:4px;padding:20px;';
+    const T   = 'font-family:Cinzel,serif;font-size:10px;letter-spacing:3px;color:rgba(201,168,76,0.5);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(201,168,76,0.1);';
+    const ROW = 'padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:14px;color:#e8e0d0;line-height:1.6;';
+    const LBL = 'font-size:11px;font-family:Cinzel,serif;letter-spacing:1px;color:#8a8070;display:block;margin-bottom:3px;';
+
+    let html =
+        // Header
+        '<div style="' + S + 'border-color:rgba(201,168,76,0.3);margin-bottom:20px;">'
+        + '<div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;">'
+        + '<div>'
+        + '<div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:3px;color:rgba(201,168,76,0.5);margin-bottom:6px;">'
+        + toneStyle.icon + ' ' + toneStyle.label + ' &nbsp;·&nbsp; ' + SCALE_LABELS[scale]
+        + '&nbsp;·&nbsp; LEVEL ' + level
+        + '</div>'
+        + '<div style="font-family:Cinzel,serif;font-size:26px;font-weight:700;color:#c9a84c;line-height:1.2;">' + title + '</div>'
+        + '</div>'
+        + '<span style="font-family:Cinzel,serif;font-size:9px;letter-spacing:1px;padding:4px 12px;border-radius:2px;border:1px solid ' + toneStyle.color + ';color:' + toneStyle.color + ';flex-shrink:0;">'
+        + toneStyle.label + '</span>'
+        + '</div></div>'
+
+        // Hook de abertura — destaque total
+        + '<div style="background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);border-radius:4px;padding:20px;margin-bottom:20px;">'
+        + '<div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:3px;color:rgba(201,168,76,0.6);margin-bottom:10px;">🎣 THE HOOK</div>'
+        + '<div style="font-size:16px;color:#e8e0d0;line-height:1.7;font-style:italic;">' + hook + '</div>'
+        + '</div>'
+
+        // Grid: antagonista + localização
+        + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:16px;">'
+
+        + '<div style="' + S + '">'
+        + '<div style="' + T + '">🎭 ANTAGONIST</div>'
+        + '<div style="font-family:Cinzel,serif;font-size:15px;color:#e8e0d0;margin-bottom:6px;">' + antagonist.name + '</div>'
+        + '<div style="' + ROW + '"><span style="' + LBL + '">MOTIVE</span>' + antagonist.motive + '</div>'
+        + '<div style="' + ROW + 'border:none;"><span style="' + LBL + '">METHOD</span>' + antagonist.method + '</div>'
+        + '</div>'
+
+        + '<div style="' + S + '">'
+        + '<div style="' + T + '">📍 LOCATION</div>'
+        + '<div style="font-family:Cinzel,serif;font-size:15px;color:#e8e0d0;margin-bottom:8px;">' + location.name + '</div>'
+        + '<div style="font-size:14px;color:#8a8070;font-style:italic;line-height:1.6;">' + location.desc + '</div>'
+        + '</div>'
+
+        + '</div>'
+
+        // Objetivo + complicação
+        + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:16px;">'
+
+        + '<div style="' + S + '">'
+        + '<div style="' + T + '">🎯 OBJECTIVE</div>'
+        + '<div style="font-size:15px;color:#e8e0d0;line-height:1.6;">' + objective + '</div>'
+        + '</div>'
+
+        + '<div style="' + S + 'border-color:rgba(192,57,43,0.2);">'
+        + '<div style="' + T + 'color:rgba(192,57,43,0.6);border-color:rgba(192,57,43,0.15);">⚠️ COMPLICATION</div>'
+        + '<div style="font-size:15px;color:#e8e0d0;line-height:1.6;">' + complication + '</div>'
+        + '</div>'
+
+        + '</div>'
+
+        // Urgência
+        + '<div style="background:rgba(192,57,43,0.06);border:1px solid rgba(192,57,43,0.2);border-radius:4px;padding:16px;margin-bottom:16px;">'
+        + '<div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:3px;color:rgba(192,57,43,0.7);margin-bottom:8px;">⏳ WHY NOW</div>'
+        + '<div style="font-size:15px;color:#e8e0d0;line-height:1.6;">' + urgency + '</div>'
+        + '</div>'
+
+        // Conexões + recompensa
+        + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:16px;">'
+
+        + '<div style="' + S + '">'
+        + '<div style="' + T + '">🔗 THREADS TO PULL</div>'
+        + sideHooks.map((h, i) =>
+            '<div style="' + ROW + (i === sideHooks.length-1 ? 'border:none;' : '') + 'display:flex;gap:10px;">'
+            + '<span style="color:#c9a84c;font-family:Cinzel,serif;flex-shrink:0;">' + (i+1) + '.</span>'
+            + '<span>' + h + '</span></div>'
+        ).join('')
+        + '</div>'
+
+        + '<div style="' + S + '">'
+        + '<div style="' + T + '">💰 REWARD</div>'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;' + ROW + '">'
+        + '<span style="' + LBL + 'margin:0;">GOLD</span>'
+        + '<span style="font-family:Cinzel,serif;font-size:18px;color:#c9a84c;">' + reward.gold + '</span>'
+        + '</div>'
+        + '<div style="' + ROW + 'border:none;">'
+        + '<span style="' + LBL + '">BONUS</span>'
+        + '<span style="font-size:14px;color:#e8e0d0;">' + rewardExtra + '</span>'
+        + '</div>'
+        + '</div>'
+
+        + '</div>'
+
+        // Botão
+        + '<button onclick="generatePlotHook()" style="width:100%;background:none;border:1px solid rgba(201,168,76,0.25);border-radius:2px;padding:12px;color:#c9a84c;font-family:Cinzel,serif;font-size:11px;letter-spacing:2px;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background=\'rgba(201,168,76,0.08)\'" onmouseout="this.style.background=\'none\'">🎲 GENERATE ANOTHER HOOK</button>';
+
+    result.innerHTML = html;
+}
+
+</script>
+    <script>
+// =============================================================
+// WEATHER & ENVIRONMENTAL CONDITIONS GENERATOR
+// =============================================================
+
+function wxPick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function wxPickN(arr, n) {
+    const copy = [...arr], res = [];
+    for (let i = 0; i < n && copy.length; i++) {
+        const idx = Math.floor(Math.random() * copy.length);
+        res.push(copy.splice(idx, 1)[0]);
+    }
+    return res;
+}
+
+// ---- TEMPERATURA por bioma + estação ----
+const TEMP_TABLE = {
+    forest:      { spring: "cool (8–14°C / 46–57°F)",    summer: "warm (18–26°C / 64–79°F)",  autumn: "cold (4–12°C / 39–54°F)",   winter: "freezing (−8–2°C / 18–36°F)"  },
+    mountain:    { spring: "cold (0–8°C / 32–46°F)",     summer: "cool (10–18°C / 50–64°F)",  autumn: "freezing (−5–5°C / 23–41°F)",winter: "brutal (−20–−5°C / −4–23°F)"  },
+    plains:      { spring: "mild (12–20°C / 54–68°F)",   summer: "hot (26–36°C / 79–97°F)",   autumn: "mild (8–18°C / 46–64°F)",   winter: "cold (−5–5°C / 23–41°F)"      },
+    swamp:       { spring: "warm (16–24°C / 61–75°F)",   summer: "humid (28–36°C / 82–97°F)", autumn: "cool (10–18°C / 50–64°F)",  winter: "cold (0–8°C / 32–46°F)"       },
+    desert:      { spring: "warm (22–32°C / 72–90°F)",   summer: "scorching (38–50°C / 100–122°F)", autumn: "warm (20–30°C / 68–86°F)", winter: "cold nights (2–18°C / 36–64°F)" },
+    arctic:      { spring: "freezing (−15–0°C / 5–32°F)",summer: "cold (−5–8°C / 23–46°F)",   autumn: "brutal (−20–−8°C / −4–18°F)",winter: "deadly (−40–−20°C / −40–−4°F)" },
+    coastal:     { spring: "mild (12–18°C / 54–64°F)",   summer: "warm (20–28°C / 68–82°F)",  autumn: "breezy (10–18°C / 50–64°F)",winter: "raw (2–10°C / 36–50°F)"        },
+    underground: { spring: "constant (10–14°C / 50–57°F)",summer: "constant (10–14°C / 50–57°F)",autumn: "constant (10–14°C / 50–57°F)",winter: "constant (10–14°C / 50–57°F)" },
+};
+
+// ---- CONDIÇÕES por bioma + intensidade ----
+const CONDITIONS = {
+    forest: {
+        calm:         ["Clear skies visible through the canopy","Gentle breeze rustling the leaves","Dappled sunlight filtering through branches","Morning mist lingering near the ground","A light drizzle pattering on the leaves above"],
+        unstable:     ["Overcast skies, light intermittent rain","Gusty wind bending the treetops","Thick fog reducing visibility between the trees","Sporadic heavy showers with rumbling thunder in the distance","Dark clouds moving fast, occasional drops"],
+        severe:       ["Heavy rain hammering through the canopy","Strong winds snapping branches overhead","Thick fog — can't see more than 30 feet","Thunderstorm directly overhead, lightning striking the tallest trees","Torrential downpour, ground turning to mud"],
+        catastrophic: ["Violent storm, trees uprooted around you","Flash flood surging through the forest floor","Lightning striking every few minutes — nowhere is safe under a tree","A wall of fire visible through the trees, driven by the wind","The canopy is gone — stripped by a past tornado, leaving exposed, broken ground"],
+    },
+    mountain: {
+        calm:         ["Crisp, clear air with stunning visibility","Light wind carrying the smell of pine","Thin clouds far below in the valleys","Morning frost on the rocks, already melting","Perfectly still — unnervingly so at this altitude"],
+        unstable:     ["Building cloud cover from the west","Intermittent gusts threatening to unbalance you","Light snow beginning to fall","Fog rolling in from the valley below","Hail beginning — small stones, not yet dangerous"],
+        severe:       ["Heavy snowfall, drifts forming on ledges","Blizzard-force wind howling through the passes","Black ice on every surface","Whiteout conditions — can't see the path ahead","Avalanche conditions — every loud sound is a risk"],
+        catastrophic: ["Complete whiteout, zero visibility","Avalanche in progress nearby — the ground is shaking","Lightning storm directly over the peaks — metal conducts","Wind so strong standing requires a DC 15 Strength check each round","The pass is buried. There is no way forward until this clears."],
+    },
+    plains: {
+        calm:         ["Endless blue sky, light breeze","Heat shimmer on the horizon","A single bank of cloud providing occasional shade","Golden light in late afternoon, shadows long","Still air, the grass barely moving"],
+        unstable:     ["Dark line of clouds approaching from the west","Wind picking up, grass flattening in waves","Pressure dropping — animals are restless","Scattered showers moving across the plain","A distant funnel cloud — not close, not yet"],
+        severe:       ["Thunderstorm with driving rain and near-zero visibility","Lightning striking the open ground around you","Wind making ranged attacks nearly impossible","Flash flood in the low ground — avoid the gullies","Hailstorm — golf-ball sized stones, 1d4 bludgeoning per round exposed"],
+        catastrophic: ["Tornado visible and moving. It is heading this way.","Firestorm moving across the dry grass — driven by wind","Flash flood turning the plain into a lake","Lightning striking every 10 seconds in a 300-foot radius","The sky has turned green. Experienced travelers are running."],
+    },
+    swamp: {
+        calm:         ["Thick, humid air hanging still over the water","Morning mist across the surface","The drone of insects, the occasional splash","Filtered grey light through the moss-draped trees","An eerie stillness broken only by frogs"],
+        unstable:     ["Building fog reducing visibility to 60 feet","Light rain dimpling the water's surface","Swamp gas — faint smell of rot, occasional flicker","Rising water — the paths you used to enter are now ankle-deep","Mist thickening as temperature drops"],
+        severe:       ["Dense fog — visibility 15 feet","Heavy rain turning the ground into sucking mud","The water level is rising. An hour ago it was knee-deep.","Electrical storm over the water — dangerous to be in or near it","Methane pockets igniting in the rain — random pillars of blue flame"],
+        catastrophic: ["Flash flood. The swamp is becoming a river.","Complete fog blackout — visibility zero beyond arm's reach","Toxic gas cloud moving through the area — DC 13 Con save or poisoned","Lightning igniting the methane — the swamp is on fire in patches","The ground is gone. Everything is water."],
+    },
+    desert: {
+        calm:         ["Blazing sun, no cloud cover","Heat shimmer making distances deceptive","A hot dry wind from the south","The silence of the deep desert — no insects, no birds","Stars beginning to appear — the temperature is already dropping"],
+        unstable:     ["High clouds providing brief, unreliable shade","Wind picking up, carrying fine sand","The horizon to the southwest has turned brown","Extreme heat — DC 10 Con save each hour or gain a level of exhaustion","Temperature swinging — hot in sun, cold in shadow"],
+        severe:       ["Sandstorm approaching — 30 minutes warning","Extreme heat wave — DC 13 Con save each hour","Wind carrying sand stripping exposed skin (1d4 slashing per round)","Sun blindness risk — unprotected eyes disadvantage on sight-based checks","Night temperature dropping below freezing — hypothermia risk"],
+        catastrophic: ["Full sandstorm — visibility zero, 2d6 slashing per round unprotected","Sun heat stroke — DC 15 Con save each 30 min or unconscious","The dunes are moving. A familiar landmark is now buried.","A haboob — a wall of sand 1,000 feet high moving at 60 mph","Navigation is impossible. All tracks are buried. The sun is hidden."],
+    },
+    arctic: {
+        calm:         ["Crisp, breathtaking clarity — visibility for miles","Snow crunching underfoot in the silence","Northern lights visible on the horizon","The sun low on the horizon, casting long blue shadows","Perfect stillness — the cold is almost beautiful"],
+        unstable:     ["Cloud cover building, temperature dropping","Spindrift — fine snow blowing across the surface","Wind chill making the effective temperature 15 degrees colder","Visibility dropping as snow begins","The cold is deepening. Breath comes harder."],
+        severe:       ["Blizzard — visibility 30 feet, wind 50 mph","Frostbite risk — DC 13 Con save each hour or one level exhaustion","Ice bridge ahead — DC 12 Athletics to cross safely","Whiteout — all direction is lost without landmarks","Temperature: exposure kills in two hours without shelter"],
+        catastrophic: ["Survival impossible without magical protection","Blizzard so severe sound doesn't carry — shouts lost at 5 feet","Ice collapse — the ground you're standing on may not be solid","Wind chill fatal in 30 minutes — DC 15 Con save each 10 min","Complete whiteout in all directions — up and down are unclear"],
+    },
+    coastal: {
+        calm:         ["Gentle sea breeze, smell of salt and kelp","Small waves, clear water reflecting the sky","Seabirds calling overhead","Low tide revealing rock pools and sand flats","Light haze on the horizon"],
+        unstable:     ["Chop on the water, stronger gusts","Dark clouds building over the sea","Waves increasing — spray reaching the cliff tops","Mist rolling in from the water","Pressure dropping fast — fishing boats heading back to port"],
+        severe:       ["Gale-force wind — ranged attacks at disadvantage","Heavy surf — swimming requires DC 15 Athletics","Sea spray reducing visibility to 60 feet","Thunder and lightning over the water","Waves crashing over the lower path — it may not be passable"],
+        catastrophic: ["Storm surge — the sea is 10 feet above normal","Hurricane-force winds — flying impossible, movement halved","Lightning striking the water every few seconds","The lower coastal path is gone — taken by the sea","Waterspout making landfall — treat as a tornado"],
+    },
+    underground: {
+        calm:         ["Still, cool air — completely silent","The sound of distant dripping water","Faint smell of minerals and wet stone","Total darkness beyond your light sources","The temperature is constant — neither warming nor cooling"],
+        unstable:     ["Air pressure changing — something large moved somewhere below","Sound of rushing water getting closer","A tremor — small, but enough to dislodge loose stone","Gas pocket ahead — smell of sulfur, candles guttering","The ceiling has lowered. You are moving deeper."],
+        severe:       ["Flooding — water rising 1 foot per minute","Rockfall — DC 13 Dex save or 2d8 bludgeoning","Toxic gas — DC 13 Con save each minute or poisoned","Complete darkness — even darkvision reduced by 30 feet in the thick air","Structural instability — movement triggers further collapse (DC 14 Dex)"],
+        catastrophic: ["Full cave-in in progress","Flash flood from underground river — 20 feet of water in 5 minutes","Volcanic gas — DC 15 Con save each round or incapacitated","The floor is gone — a new chasm has opened","Magma intrusion — heat dealing 2d10 fire per round within 30 feet"],
+    },
+};
+
+// ---- VISIBILIDADE ----
+const VISIBILITY = {
+    calm:         { range: "Normal (1 mile+)", note: "No penalties to Perception checks.", color: "#4caf7d" },
+    unstable:     { range: "Reduced (300 feet)", note: "Disadvantage on Perception checks beyond 300 feet.", color: "#e0a832" },
+    severe:       { range: "Poor (60 feet)", note: "Disadvantage on all Perception checks. Heavily obscured beyond 60 feet.", color: "#e07832" },
+    catastrophic: { range: "Zero (10 feet)", note: "Effectively blind beyond 10 feet. All attacks against unseen targets miss on 1–5.", color: "#e74c3c" },
+};
+
+// ---- EFEITOS MECÂNICOS por intensidade ----
+const MECHANICAL_EFFECTS = {
+    calm: [
+        "No mechanical penalties.",
+        "Advantage on Survival checks to track — conditions are ideal.",
+        "Normal movement speed.",
+        "No penalties to ranged attacks.",
+    ],
+    unstable: [
+        "Ranged attack rolls at −1 due to wind and poor light.",
+        "Survival (tracking) checks at disadvantage in rain.",
+        "Perception checks that rely on hearing at disadvantage.",
+        "Unprotected flames (torches) have 50% chance of going out each minute.",
+        "DC 10 Con save after each hour of travel or gain one level of exhaustion.",
+    ],
+    severe: [
+        "Ranged attack rolls at disadvantage.",
+        "All Perception checks at disadvantage.",
+        "Movement speed reduced by 10 feet.",
+        "Concentration spell saves have +2 to DC.",
+        "Flying creatures must succeed DC 13 Str save each round or be pushed 10 feet.",
+        "Unprotected flames extinguished immediately.",
+        "DC 12 Con save each hour or gain one level of exhaustion.",
+        "Stealth checks in open ground at advantage — noise and visibility work in your favor.",
+    ],
+    catastrophic: [
+        "Ranged attacks impossible beyond 30 feet.",
+        "All Perception checks at disadvantage; automatically fail if relying on sound.",
+        "Movement speed halved.",
+        "Flying impossible without magical means.",
+        "Concentration spells require DC 15 save each round.",
+        "DC 14 Con save each 30 minutes or gain one level of exhaustion.",
+        "Spells with verbal components require DC 12 Con save to cast.",
+        "Open flame impossible without magical means.",
+        "All ability checks made outdoors at disadvantage.",
+    ],
+};
+
+// ---- PERIGOS AMBIENTAIS ----
+const HAZARDS = {
+    forest: {
+        calm:         ["Slippery moss on rocks — DC 10 Acrobatics or fall prone","A downed tree across the path","Wasp nest disturbed by movement"],
+        unstable:     ["Falling branches — DC 12 Dex save or 1d6 bludgeoning","Flash flood risk in low ground","Poor footing in mud — movement costs 1 extra foot per foot"],
+        severe:       ["Uprooted trees blocking passage","Lightning striking the tallest trees — 30-foot radius, 4d8 lightning, DC 14 Dex half","Flash flood — 4d8 bludgeoning, swept 30 feet downstream"],
+        catastrophic: ["Wildfire driven by wind — 6d8 fire per round, spreads 30 feet/round","Tornado — 10d10 bludgeoning, flung 1d6×10 feet","Structural tree collapse — 4d10 bludgeoning in 20-foot radius"],
+    },
+    mountain: {
+        calm:         ["Loose scree — DC 11 Athletics or slide 10 feet","Thin air above 10,000 feet — DC 10 Con each hour","Hidden crevasse — DC 13 Perception to spot"],
+        unstable:     ["Ice patch — DC 12 Acrobatics or fall prone","Rock slide — DC 13 Dex save or 3d8 bludgeoning","Wind gust at exposed ridge — DC 13 Str save or pushed 10 feet"],
+        severe:       ["Avalanche — DC 15 Dex save or 8d8 bludgeoning and buried","Black ice — fall prone on any failed Dex check","Whiteout disorientation — party may travel in wrong direction"],
+        catastrophic: ["Avalanche — 10d10 bludgeoning, half DC 17 Dex, fully buried","Lightning at the summit — 8d8 lightning, DC 14 Dex half","Wind throws flying creatures into the mountain face — 6d6 bludgeoning"],
+    },
+    plains: {
+        calm:         ["Sun blindness — 4+ hours unprotected, disadvantage on sight checks","Hidden sinkhole — DC 12 Perception","Waist-high grass obscuring vision at ground level"],
+        unstable:     ["Lightning rod risk — metal armor DC 12 or struck for 3d10","Flash flooding in gullies — DC 13 Athletics to swim","Hail — 1d4 bludgeoning per round unprotected"],
+        severe:       ["Lightning strike — 6d8 lightning, 30-foot radius, DC 14 Dex half","Tornado on the horizon — 30 minutes before arrival","Flash flood — 6d6 bludgeoning, swept 60 feet"],
+        catastrophic: ["Direct tornado hit — 12d6 bludgeoning, flung 100 feet, DC 17 Str or incapacitated","Wildfire — 8d8 fire per round, spreads each round","Lightning strikes twice per round in 200-foot area — DC 14 Dex save or 6d8 lightning"],
+    },
+    swamp: {
+        calm:         ["Quicksand — DC 12 Perception, DC 13 Athletics to escape","Venomous snake — DC 12 Perception","Unstable ground — 50% chance of sinking ankle-deep each step"],
+        unstable:     ["Swamp gas ignition — DC 11 Perception, 3d6 fire in 10-foot radius","Rising water — paths closing off","Venomous insect cloud — DC 12 Con or poisoned 1 hour"],
+        severe:       ["Flash flood — 5d8 bludgeoning, swept 30 feet","Methane explosion — 4d10 fire, DC 14 Dex half, 20-foot radius","Toxic fog — DC 13 Con save each minute or poisoned"],
+        catastrophic: ["Complete flooding — swimming required, DC 13 Athletics each minute","Toxic gas cloud — DC 15 Con save or incapacitated","Fire on the water — burning methane, 6d8 fire per round"],
+    },
+    desert: {
+        calm:         ["Sunstroke — DC 10 Con each 2 hours or exhaustion","Mirage — DC 12 Insight to recognize","Scorpion in gear — DC 13 Perception when dressing"],
+        unstable:     ["Sand in mechanisms — ranged weapons malfunction on 1–2","Dehydration — water consumption doubled","Heat shimmer — disadvantage on Perception beyond 60 feet"],
+        severe:       ["Sandstorm — 2d6 slashing per round unprotected","Sun blindness — unprotected eyes, DC 13 Con or blinded 1d4 hours","Heat stroke — DC 13 Con each 30 min or unconscious"],
+        catastrophic: ["Full haboob — 4d8 slashing per round, zero visibility","Quicksand beneath drifting sand — DC 14 Perception","Heat stroke DC 15 Con each 10 minutes or unconscious"],
+    },
+    arctic: {
+        calm:         ["Snow blindness — DC 12 Con or disadvantage on sight checks","Thin ice — DC 13 Perception to spot, falls through","Frostbite on exposed extremities after 2 hours"],
+        unstable:     ["Ice crack — DC 12 Perception, falls into frozen water","Frostbite — DC 12 Con each hour or one level exhaustion","Avalanche risk — loud noises trigger DC 13 Dex save, 6d8 bludgeoning"],
+        severe:       ["Hypothermia — DC 13 Con each 30 min or one level exhaustion","Blizzard disorientation — may walk in wrong direction","Frostbite — DC 14 Con save or lose feeling in extremity (−2 to attack rolls)"],
+        catastrophic: ["Exposure kills in 30 min without shelter — DC 15 Con each 10 min","Ice collapse — ground gives way, 30 feet of freezing water below","Avalanche — 10d10 bludgeoning, fully buried, DC 17 Dex half"],
+    },
+    coastal: {
+        calm:         ["Slippery rocks — DC 10 Acrobatics","Unexpected wave — DC 11 Str save or knocked prone","Jellyfish in swimming area"],
+        unstable:     ["Rogue wave — DC 13 Str save or swept 20 feet","Sea mist — disadvantage on sight-based Perception","Cliff erosion — DC 12 Perception to notice unstable edge"],
+        severe:       ["Storm surge — 15-foot wave, DC 15 Str or swept away","Lightning on water — 5d8 lightning, 30-foot radius, DC 14 Dex half","Cliff collapse — 6d8 bludgeoning, DC 14 Dex half"],
+        catastrophic: ["Hurricane wave — 20-foot wall of water, 8d10 bludgeoning","Waterspout — treat as tornado on water","Storm surge flooding coastal areas — swimming required"],
+    },
+    underground: {
+        calm:         ["Unstable ceiling — DC 12 Perception to notice","Hidden drop — DC 13 Perception","Bat colony disturbed — swarm attack"],
+        unstable:     ["Partial collapse — 3d8 bludgeoning, DC 13 Dex half","Gas pocket — DC 12 Con or poisoned","Rising water — 1 foot per 10 minutes"],
+        severe:       ["Rockfall — 5d8 bludgeoning, DC 14 Dex half, 20-foot radius","Flash flood — 4d8 bludgeoning, swept 30 feet","Toxic gas — DC 14 Con save each round or incapacitated"],
+        catastrophic: ["Full cave-in — 8d10 bludgeoning, DC 16 Dex half, passage blocked","Magma flow — 4d10 fire per round within 30 feet","Explosive gas — 10d8 fire, DC 15 Dex half, 40-foot radius"],
+    },
+};
+
+// ---- EFEITOS TÁTICOS EM COMBATE ----
+const TACTICAL_EFFECTS = {
+    calm:         ["No combat modifiers.","Natural light (if outdoors, daytime).","Normal initiative and positioning."],
+    unstable:     ["Ranged attackers roll at −1 to hit.","Torches and lamp have 50% chance extinguishing each round.","Light sources flickering — dim light extends 5 feet less than normal.","Sound-based detection impaired — Stealth at advantage against hearing-only."],
+    severe:       ["All ranged attack rolls at disadvantage.","Melee in open ground: Str saving throws for footing each round (DC 11) or −5 ft movement.","Flying movement requires Str save (DC 13) each round or pushed 10 feet.","Concentration save DC +2 from wind and noise.","Difficult terrain everywhere outdoors.","Burning spells extinguished by rain — DM's discretion."],
+    catastrophic: ["Ranged attacks impossible beyond 30 feet.","Flying impossible without magical means.","All outdoor movement is difficult terrain.","Verbal spell components require DC 12 Con save.","Concentration saves required every round (DC 12) from environment alone.","Visibility-dependent abilities (sneak attack, etc.) severely limited.","Every creature outdoors must Str save (DC 14) each round or be knocked prone."],
+};
+
+// ---- PROGRESSÃO CLIMÁTICA ----
+const PROGRESSION = {
+    forest: {
+        calm:         ["The clouds are building to the west. Rain likely within 4–6 hours.","Conditions will hold through the morning, then cloud over.","This calm is unusual for the season — it won't last long."],
+        unstable:     ["The storm will either break into heavy rain or clear within 2 hours.","Conditions deteriorating — severe weather by nightfall.","A short window of calm is coming, then it worsens."],
+        severe:       ["The worst should pass in 3–4 hours. Mud and fallen trees will remain.","This front is slow-moving. Expect 8–12 hours of severe conditions.","A brief lull is coming, then another wave hits."],
+        catastrophic: ["Conditions will ease in 2 hours, but the forest is transformed.","This storm may last through the night.","The eye is passing over — you have 20 minutes of calm before it returns."],
+    },
+    mountain: {
+        calm:         ["Weather window closing — clouds building on the far peaks.","Two good days of travel before the next front arrives.","The calm will hold until afternoon, then deteriorate rapidly."],
+        unstable:     ["Snow likely within 2 hours at this altitude.","The pass may close if this front moves faster than expected.","A brief clearing at dawn, then worsening through the day."],
+        severe:       ["Blizzard conditions for 6–10 hours. The pass will be impassable.","The storm peaks at nightfall, then slowly eases by dawn.","Conditions will not improve until the temperature drops another 5 degrees — paradoxically, that means morning."],
+        catastrophic: ["This is a multi-day event. Survival is the only priority.","The storm breaks at dawn — if everyone is still alive.","Avalanche probability increasing each hour. Get off the open slope."],
+    },
+    plains: {
+        calm:         ["A storm line is visible on the horizon — 6+ hours away.","Tomorrow will be hotter. The day after, a break.","This is the last calm day before a week of storms."],
+        unstable:     ["Tornado watch conditions. Watch the sky.","The storm front passes in 3 hours — then it clears.","Conditions cycling — calm for 30 minutes, severe for 30, repeat."],
+        severe:       ["Lightning risk for another 2–3 hours, then clearing.","The storm is stalling — may stay for 12 hours.","Conditions ease by nightfall, but the ground will be flooded."],
+        catastrophic: ["The tornado will pass in 10–15 minutes. Survive first.","Storm will break at dawn. It is currently 11 pm.","This is a seasonal event — it will be over in 4 hours and nothing will be the same."],
+    },
+    swamp: {
+        calm:         ["The stillness won't last — water levels are rising slowly.","A storm is building to the north. The swamp will flood by nightfall.","Mist will thicken at sunset — navigation will be very difficult."],
+        unstable:     ["Heavy rain will arrive within the hour — flooding imminent.","The fog is thickening. In two hours, visibility will be near zero.","The gas levels are rising. This will get dangerous soon."],
+        severe:       ["Flooding peaks in 3 hours, then slowly recedes over 12.","The toxic fog will thin at dawn when temperatures rise.","Conditions will remain severe through the night."],
+        catastrophic: ["The swamp is reclaiming everything. Find high ground.","Flooding will peak and then recede within 6 hours.","This is a seasonal flood. The swamp will be unrecognizable for a week."],
+    },
+    desert: {
+        calm:         ["A sandstorm is forming 50 miles south — arrival in 4–6 hours.","The heat will peak in 2 hours, then ease slightly at sunset.","Night temperatures will drop 25 degrees. Prepare for both extremes."],
+        unstable:     ["Sandstorm will arrive in 1–2 hours. Find shelter now.","Heat will intensify for another 3 hours before breaking.","The wind is shifting — conditions will change unpredictably."],
+        severe:       ["The storm will pass in 3–4 hours. Do not move during it.","Heat will break at sunset — 4 hours away.","A second sandstorm is forming behind the first."],
+        catastrophic: ["The haboob will last 6–8 hours. There is no safe movement.","Temperatures will drop 30 degrees in the next hour — new danger.","The storm is circular — you may be at the center."],
+    },
+    arctic: {
+        calm:         ["A blizzard front is 24 hours away. Make distance while you can.","This window will close by tomorrow morning.","The aurora suggests a magnetic storm — navigation will be unreliable tomorrow."],
+        unstable:     ["Full blizzard within 2 hours. Find or build shelter now.","Conditions deteriorating through the night — worst before dawn.","Temperature will drop another 15 degrees by midnight."],
+        severe:       ["The blizzard will break at dawn — 8 hours away.","Conditions cycling — brief reprieves every 2 hours.","A second cold front is arriving behind this one."],
+        catastrophic: ["This is a multi-day Arctic storm. Shelter is survival.","Conditions ease in 6 hours. That is a very long time.","The storm shows no signs of breaking."],
+    },
+    coastal: {
+        calm:         ["A squall line is forming offshore — 4–6 hours before it arrives.","The tide is coming in. Low paths will be submerged within 2 hours.","This is the last calm before the seasonal storm season."],
+        unstable:     ["The squall will hit within the hour. Secure anything loose.","Conditions worsening rapidly — full storm by nightfall.","The tide and the storm are arriving together. That is bad."],
+        severe:       ["The storm peaks in 2 hours, then clears over 4–6.","High tide in 3 hours — combined with the surge, this will be severe.","The storm is tracking along the coast — it won't end quickly."],
+        catastrophic: ["Hurricane conditions for 8–12 hours. No safe movement.","The eye will pass in 2 hours — brief calm before it returns.","Storm surge will peak at high tide in 90 minutes."],
+    },
+    underground: {
+        calm:         ["Water levels are rising slowly — something has changed above.","Air pressure dropping — structural instability likely within hours.","The temperature is dropping slightly — unusual. Something is different."],
+        unstable:     ["Flooding will reach this level in 2–3 hours.","Tremors increasing — full collapse risk within hours.","Gas levels building — evacuation recommended."],
+        severe:       ["Flooding will peak and stabilize in 1 hour, then hold.","Tremors will ease — or the structure will fully collapse. No middle ground.","Gas will dissipate once the flood opens new passages."],
+        catastrophic: ["There is no 'waiting this out.' Find an exit.","The collapse is ongoing — every minute of delay is dangerous.","The magma intrusion will seal this passage permanently within 30 minutes."],
+    },
+};
+
+// ---- SINAIS DA NATUREZA (ranger/druida) ----
+const NATURE_SIGNS = {
+    forest: [
+        "Birds have gone silent — something disturbed them recently, or a predator is near",
+        "Deer tracks heading downhill fast — they're moving away from something",
+        "The moss on the north side of trees is unusually thick — moisture building, rain coming",
+        "Insects are flying low — pressure dropping, storm incoming within hours",
+        "Mushrooms have bloomed overnight — unusual humidity spike",
+        "Squirrels are caching food aggressively — they sense a harsh period coming",
+        "The bark beetles are active — healthy trees, stable environment",
+        "Lichen on the rocks is dry and curling — extended dry period before this",
+    ],
+    mountain: [
+        "Snow crystals are forming on the leeward side of rocks — wind direction has shifted",
+        "The snowpack sounds hollow underfoot — avalanche risk is elevated",
+        "Eagles are not flying — wind updrafts that birds trust have failed",
+        "The rock faces have fresh cracks — freeze-thaw cycle, ice expanding in fissures",
+        "Lichen growth patterns show this path floods seasonally — be cautious",
+        "Chamois are descending — they go down before storms arrive",
+        "The snow has a hard crust with soft powder beneath — unstable layering",
+        "Ice formations on the south face are unusually thick — colder than expected",
+    ],
+    plains: [
+        "Horses and cattle are facing the same direction — wind-reading behavior before storms",
+        "Swallows are flying very low — insects hugging the ground, pressure dropping",
+        "The grass is bending in inconsistent directions — wind shear at altitude",
+        "Ant mounds have fresh earthwork piled high — they build up before flooding",
+        "A ring around the moon last night — ice crystals, front incoming",
+        "The smell of rain is carried from the wrong direction — storm wrapping around",
+        "Ground squirrels have sealed their burrows — something serious is coming",
+        "Static electricity in your hair and equipment — lightning risk is very high",
+    ],
+    swamp: [
+        "Frogs are calling unusually loud — pressure drop, rain incoming",
+        "Fish rising to the surface — oxygen dropping in the water, flood upstream",
+        "The water is discolored brown upstream — heavy rain somewhere above",
+        "Alligators have moved to higher ground — they know something",
+        "Dead fish floating — gas pocket or pollution upstream",
+        "Herons are not feeding — something has disturbed the water system",
+        "The smell of sulfur is stronger than usual — gas pressure building",
+        "Cypress roots are higher than normal — water table has risen recently",
+    ],
+    desert: [
+        "Scorpions are emerging in daylight — temperature flux disturbing their cycle",
+        "Sand is moving in thin streams at ground level with no visible wind — deep pressure shift",
+        "Birds are not present at all — they evacuated before the conditions you're experiencing",
+        "The sand near rocks is unusually soft — moisture from below, aquifer nearby",
+        "Camel spiders are active — temperature within their tolerance, but rising fast",
+        "The horizon has a brown tinge — suspended sand at altitude, storm incoming",
+        "Animal tracks lead toward the same distant location — they know where water is",
+        "The temperature dropped 10 degrees in the last hour — a front is moving through",
+    ],
+    arctic: [
+        "Sea ice is cracking in unusual patterns — temperature is rising unexpectedly",
+        "Polar bears are moving inland — instability in the ice shelf",
+        "The aurora is unusually bright — magnetic storm affecting navigation",
+        "Snow crystals are forming in the air above you — temperature inversion, storm likely",
+        "Ptarmigan are burrowing into snow — they insulate before blizzards",
+        "The ice makes a deep groaning sound — large mass shifting",
+        "Seal breathing holes are freshly used — the ice is still stable here",
+        "Wind-packed snow on the windward side of obstacles — sustained prevailing wind direction",
+    ],
+    coastal: [
+        "Seabirds are flying inland and low — they don't like what's offshore",
+        "The tide is behaving unusually — arriving late or early signals pressure changes",
+        "Dolphins are swimming unusually deep — they go down before storms",
+        "The sea has an oily, flat look despite wind — surface tension change before a front",
+        "Kelp washed ashore with its holdfast intact — unusual wave action offshore",
+        "The fishing boats went out and came back within the hour — experienced sailors read the signs",
+        "Sand fleas are jumping higher than usual — barometric pressure dropping",
+        "Cloud formations over the water are organized in bands — severe weather organizing offshore",
+    ],
+    underground: [
+        "Bats are not returning to their roost — something has disturbed the cave system",
+        "The air current has reversed direction — something has opened or closed a passage",
+        "Cave crickets are gathering near exits — they flee flooding before it arrives",
+        "Fresh mineral deposits on the ceiling — water table has been higher recently",
+        "The sound of water is louder than before — an underground stream is rising",
+        "Glowing fungi have dimmed — they respond to chemical changes in the air",
+        "Blind fish are swimming toward you — they're fleeing something downstream",
+        "The temperature has dropped two degrees — new air source, possibly an opening or danger",
+    ],
+};
+
+// ---- DESCRIÇÕES ATMOSFÉRICAS (read-aloud) ----
+const READ_ALOUD = {
+    forest: {
+        calm:         ["The forest is quiet in the way that feels like held breath — not peaceful, just paused. Pale light filters through the canopy in shifting columns, and the smell of moss and wet bark hangs in the cool air. Somewhere above, a bird calls once and stops.","Morning dew still clings to every leaf and cobweb in sight. The canopy diffuses the light into something green and soft, and the only sound is the slow creak of old wood somewhere to your left.","Late afternoon light turns the forest amber and copper. The air has cooled since midday and carries the smell of earth and pine resin. The trees here are old enough to have names."],
+        unstable:     ["The forest is restless. Wind moves through the upper canopy in waves you can hear before you feel them, and the light has taken on a grey, flat quality that makes depth hard to judge. Rain is coming.","Leaves skitter across the path without apparent cause. The forest smells of rain that hasn't fallen yet, and the birds are unusually quiet. Something about the light is wrong.","Intermittent drops fall from above — not yet rain, just the forest exhaling moisture. The air pressure has changed and the trees are bending at the tops in a wind you can barely feel down here."],
+        severe:       ["The rain is relentless. It hammers the canopy and falls in sheets where the trees open up, and the ground is giving way underfoot into something between mud and soup. You can't hear anything beyond 20 feet.","The forest roars. The canopy is a chaos of sound and movement, branches snapping somewhere above you with alarming regularity. The path is gone — replaced by a muddy, leaf-strewn stream bed.","Visibility ends at the next tree. The wind has found a way down through the branches and it's cold and directionless and brings with it the smell of torn wood and wet earth."],
+        catastrophic: ["The forest is being dismantled around you. Trees you could not have pushed over this morning are being uprooted with a sound like cannon fire. The sky — what you can see of it — is the color of a bruise.","There is no path. There is no forest as you knew it. There is wind and wood and water and the sound of something massive falling nearby every few minutes. The noise makes it hard to think.","Lightning strikes a tree 40 feet away with a crack that stops your heart, and the immediate smell of scorched wood fills your lungs. The forest is on fire in three places you can see."],
+    },
+    mountain: {
+        calm:         ["The air up here is thin and tastes of nothing, which is its own kind of cleanness. Below, the valleys are filled with cloud, and above, the sky is a shade of blue that doesn't exist at lower elevations. Your breath comes slightly harder than it should.","The summit is in view for the first time in days. The silence is physical — the kind that presses against your ears. Your footsteps on the scree are the only sound in the world.","Late light turns the rock faces orange and red, and the shadows in the gullies are already deep blue. The temperature drops another degree with every 100 feet of altitude."],
+        unstable:     ["Cloud has moved in from the west and is eating the peaks above you. The wind is steady now and cold, and the rock faces have taken on a damp sheen that makes every handhold suspect.","Snow is falling in a way that doesn't feel serious yet — the flakes are fine and dry and almost ornamental. The wind is building. Your instincts say this will not stay ornamental.","The pass ahead is intermittently visible as the cloud moves through it. When it clears, the view is extraordinary. When it doesn't, there's nothing but grey-white and the sound of wind."],
+        severe:       ["The blizzard has arrived in full. Snow is horizontal, the wind is a physical force, and the path — if there is one — is buried under six inches that fell in the last two hours. The cold is comprehensive.","Visibility is one tree length. Every surface is white, every sound is the wind, and the cold is the kind that gets inside regardless of what you're wearing. The summit is not happening today.","Ice has formed on everything. Your gear is stiff, your exposed skin is burning, and the gusts at the ridge were strong enough to make you genuinely uncertain of your footing."],
+        catastrophic: ["The mountain is trying to kill you. This is not dramatic language — avalanche debris has crossed the path twice in the last hour, the wind is strong enough to throw a person, and the cold is already past the threshold of comfortable survival.","The pass is gone. Not blocked — gone, buried under new snowpack and hidden in a whiteout. You are on a mountain in a blizzard with no clear way forward and no clear way back.","Lightning has struck the ridge above you twice. The rock is conducting the charge. Metal equipment is warm to the touch in a way that is not natural. The wind has reached the pitch that experienced mountaineers describe as 'the sound that means run.'"],
+    },
+    plains: {
+        calm:         ["The grass runs to every horizon, and the sky takes up three-quarters of the world. The wind is gentle and warm and smells of dry earth and wildflowers, and the only vertical thing in sight is you.","Heat shimmer makes the middle distance dance and distort, turning distant trees into mirages and blurring the line between plain and sky. The silence is enormous.","The light is extraordinary at this hour — horizontal and golden and very long. Your shadow reaches halfway to the horizon, and the grass is lit from the side like a painting."],
+        unstable:     ["A dark line has appeared in the west that wasn't there an hour ago. The wind has changed direction twice in the last half-hour. The horses are restless in a way that experienced riders read as weather.","The sky is doing something architectural — enormous clouds building vertically with the speed of things that have real power behind them. The air smells of iron.","Light and shadow move across the plain in patches as the cloud cover shifts. The wind carries the smell of rain from somewhere close."],
+        severe:       ["The thunderstorm is directly overhead. Lightning is hitting the open ground every minute or so, and the thunder arrives at the same moment — no safe distance between flash and sound. The rain is blinding.","The plain is a lake. Water is flowing across it in sheets, and what were solid paths an hour ago are now ankle-deep channels. Standing water reflects lightning from above.","The wind is trying to take you somewhere. It's not a figure of speech — an upright person needs to lean into it to maintain position. The grass is completely flat."],
+        catastrophic: ["The tornado is real and it is close and it is large. The air pressure has dropped so suddenly your ears have popped. Debris is visible in the column. There is no good option, only less bad ones.","The plain is on fire. Driven by the wind, the fire line moves faster than a horse at full gallop. The smoke column is visible for fifty miles. The air is orange and getting warm.","The sky is green. There is no scientific reassurance available for this. Experienced travelers are prostrate in a ditch. You should find a ditch."],
+    },
+    swamp: {
+        calm:         ["The swamp breathes. You can hear it — the slow exhalation of gas from somewhere below the surface, the drip of moisture from hanging moss, the distant percussion of a heron landing. The smell is rich and rotten and completely alive.","Morning mist lies flat on the water and catches the filtered light in a way that would be beautiful if it weren't also completely disorienting. The trees emerge from it like columns in a flooded temple.","The air is thick enough to wear. It clings to everything, and the smell of organic decay is constant — not unpleasant once you've been here a while, just present. The water is perfectly still."],
+        unstable:     ["The mist has thickened since morning and the landmarks you were using are no longer visible. The water level has risen slightly — you noticed when your boot went in further than before.","Something has changed in the smell. It was earth and rot before; now there's a sharper note under it, something chemical. The gas levels are up. Keep flames low.","The frogs have stopped. That happened about twenty minutes ago and everything has been subtly wrong since."],
+        severe:       ["The water is at your knees and still rising. What was a path through the swamp is now a navigational memory. The rain is heavy and constant and indistinguishable from the water already everywhere.","The fog is absolute. You can see your hand at arm's length and nothing else. You can hear things moving in the water around you but you cannot see them.","A blue flame appeared in the water 30 feet to the left and burned for six seconds, then vanished. The methane gas is at levels that make open flame genuinely dangerous."],
+        catastrophic: ["The swamp is a river. Everything you came in on — path, landmark, dry ground — is submerged under moving water. The current is gentle but constant and pulling south.","You cannot see. The fog has exceeded fog and become something else — a wet darkness that absorbs your light source at 10 feet. Sound works differently here. Sound from very close seems very far.","The gas caught. Three separate spots on the water are burning with a pale blue flame that the rain cannot extinguish. The area smells of burnt swamp gas and the light it produces is deeply wrong."],
+    },
+    desert: {
+        calm:         ["The desert is everything they said. The silence is geological — the kind that's been here for millions of years and has outlasted every creature that crossed it. The heat is immediate and comprehensive and the light off the sand is white.","At this hour the desert is almost cool and completely still, and the rocks throw shadows that are exact and surgical. In two hours this will be unbearable. Right now it is nearly beautiful.","The dunes move. Not quickly — you'd have to watch for minutes to see it — but they're moving, and the tracks you made an hour ago are already half-filled with blown sand."],
+        unstable:     ["The horizon to the southwest is the wrong color. Sand at altitude, carried by wind you can't feel yet at ground level. It will arrive. The question is when.","The heat shimmer has become something else — a distortion that makes distances unreliable and the horizon seem to breathe. Real mirages are forming in the middle distance.","The wind has picked up and with it comes fine sand that finds every gap in fabric and armor. It's not a sandstorm yet. It might become one."],
+        severe:       ["The sandstorm was theoretical an hour ago. It's not theoretical now. The air is a moving wall of particulate that strips exposed skin and makes breathing without cover inadvisable. The sand is in everything.","Heat this intense becomes abstract. The air itself has temperature in a physical sense — moving through it is like moving through a medium. The rocks are hot to the touch and will burn you.","The visibility is 30 feet and degrading. Sand is moving horizontally fast enough to sting. Somewhere in the distance, something large and geological is howling."],
+        catastrophic: ["The haboob is a wall. From a distance it was impressive; inside it, it is one of the more definitive experiences of your life. There is sand in your lungs with every breath. There is no sky. There are no directions. There is only sand.","The temperature reads as a number, but numbers lose meaning here. The air actively damages you. The ground is hot through your boots. Every breath is an act of commitment.","Navigation has ended. The dunes you used as landmarks are different shapes than they were two hours ago. The sun is not visible. The wind has changed direction four times. You are somewhere in the desert."],
+    },
+    arctic: {
+        calm:         ["The arctic is loud with silence. Every footstep is audible, every breath, every adjustment of gear. The sky is a color only found at these latitudes — a blue so deep it approaches violet at the zenith. The cold is clean.","The northern lights move overhead in a way that requires you to stop and watch them, even now. Green and pale violet, they shift in curtains that don't quite behave like light should.","Snow stretches in every direction to every horizon and beyond, unmarked by anything except your footprints and the occasional jutting rock. The beauty is absolute and completely indifferent."],
+        unstable:     ["The cloud is moving in from the north and taking the light with it. The temperature has dropped four degrees in the last hour. The wind has found a new direction and it brings nothing good.","Spindrift — fine snow carried across the surface by wind — is beginning. It catches the last of the light like smoke. The experienced read this as a warning.","The sky is still clear directly above but the horizon in three directions is grey-white and indistinct. The storm is building its boundaries around you."],
+        severe:       ["The blizzard is a single continuous condition. Wind, snow, cold — they're not separate things here, they're aspects of one overwhelming fact. The fact is that you need shelter.","The exposed skin on your face has lost feeling. That happened about 20 minutes ago and you should have noted it sooner. The wind makes any direction feel like the wrong one.","Visibility is measured in yards. The wind is strong enough that walking into it requires deliberate forward lean. The snow is horizontal and getting into everything."],
+        catastrophic: ["Survival is a project. Not in a dramatic sense — in a practical, methodical, moment-to-moment sense. The storm is a magnitude above severe and there is no comfortable frame for it.","The wind chill takes the ambient temperature and makes it academic. The effective temperature is the kind that kills in thirty minutes of exposure. You have no time for bad decisions.","The whiteout is complete. Up and down are theoretical. The horizon is everywhere and nowhere. The only real things are the sound of the wind and the people close enough to touch."],
+    },
+    coastal: {
+        calm:         ["The sea is doing what the sea does — moving, always moving, but quietly today. Low waves fold onto sand with a regularity that's almost hypnotic. The smell of salt and kelp is strong.","The tide is going out and leaving behind a landscape of rock pools and gleaming sand and stranded seaweed, and the light catches everything differently at the waterline.","Sea haze softens the horizon into something approximate. Ships would be visible if there were ships. The beach is a line between the certain and the merely probable."],
+        unstable:     ["The sea has changed character. The waves are longer and more deliberate, and there's a swell under them that wasn't there this morning. The horizon has vanished into cloud.","Spray from the rocks is reaching places spray doesn't normally reach. The wind is doing something organized — not gusting randomly, but building to something. The seabirds are gone.","The barometric pressure has done something the old sailors would have noticed immediately. The sea looks flat and oily in a way that precedes storms, not follows them."],
+        severe:       ["The gale is full. The sea is a chaos of white water and the spray is cold enough to take the breath. Anything unsecured is already gone. The noise is continuous and absolute.","The waves are coming over the breakwater. That wasn't supposed to be possible but it is happening. The lower coastal path is already submerged. The storm has arrived and it means business.","The lightning over the water is constant — 10-second intervals, give or take. The thunder arrives almost simultaneously. You are standing in the tallest things on the coast. That is a problem."],
+        catastrophic: ["The storm surge has changed the geography. Where there was beach there is sea. The waves are structural — not water moving horizontally but walls of water moving vertically, each one a renegotiation of what the coast is.","Hurricane. The word existed as a concept before now. Now it's a physical fact you're inside. The rain is horizontal. The sound is beyond weather and into something geological.","The waterspout came ashore 200 yards north of your position. It is not gone. It has simply become a different problem — a tornado moving south along the coast, and you are south."],
+    },
+    underground: {
+        calm:         ["The cave breathes. A slow, constant movement of air that you can feel on the back of your neck and can't locate. The silence is a different kind from the surface — not absent sound, but the sound of stone.","Your light sources reach their limits and beyond those limits the darkness is absolute — not dim, not shadowy, absolute. The ceiling is lost above you and the walls are where they are.","The sound of dripping water marks time in the deep. Everything else is still. The temperature is the same it was at the entrance and will be the same wherever this leads."],
+        unstable:     ["Something has changed. The air pressure shifted about an hour ago — subtle, but your ears registered it. The dripping has become a trickle somewhere close. The cave is responding to something you can't see.","A tremor — small, brief, but real — sent a shower of fine grit from the ceiling 20 minutes ago. Nothing structural moved. But the geology is active here.","The smell of sulfur is new. It wasn't present when you entered. The candles are burning slightly differently."],
+        severe:       ["Water is coming from somewhere above and pooling on the floor. It's ankle-deep and still rising. The source is not visible but the rate is.","The rockfall came without warning — a section of ceiling gave way in an area you had passed safely 10 minutes before. The dust hasn't settled. Moving carefully is no longer enough to be safe.","The air quality has changed enough to notice. Breathing requires slightly more effort. The flames of your light sources are smaller than they should be."],
+        catastrophic: ["The collapse is ongoing. The sound is a continuous deep groan punctuated by sharp cracks. Dust fills the air to the point of impairing vision and breathing. The passage you came in on no longer exists.","The water is at waist height and moving. This is not pooling — this is an underground flood, and it has current, and it knows where it's going even if you don't.","The heat from the magma intrusion is measurable 60 feet away. The rock near the flow glows. The air is hot enough to blister exposed skin at 30 feet. Every second of debate is a second of damage."],
+    },
+};
+
+// ---- MAIN ----
+function generateWeather() {
+    const biome     = document.getElementById('wx-biome').value;
+    const season    = document.getElementById('wx-season').value;
+    const intensity = document.getElementById('wx-intensity').value;
+    const result    = document.getElementById('weatherResult');
+
+    const temp        = TEMP_TABLE[biome][season];
+    const condition   = wxPick(CONDITIONS[biome][intensity]);
+    const readAloud   = wxPick(READ_ALOUD[biome][intensity]);
+    const visibility  = VISIBILITY[intensity];
+    const mechanics   = wxPickN(MECHANICAL_EFFECTS[intensity], Math.min(MECHANICAL_EFFECTS[intensity].length, intensity === 'calm' ? 2 : 4));
+    const hazards     = wxPickN(HAZARDS[biome][intensity], intensity === 'calm' ? 2 : 3);
+    const tactical    = wxPickN(TACTICAL_EFFECTS[intensity], Math.min(TACTICAL_EFFECTS[intensity].length, intensity === 'calm' ? 2 : 3));
+    const progression = wxPick(PROGRESSION[biome][intensity]);
+    const natureSigns = wxPickN(NATURE_SIGNS[biome], 2);
+
+    const INTENSITY_STYLES = {
+        calm:         { color: '#4caf7d', icon: '🌤️', label: 'CALM'         },
+        unstable:     { color: '#e0a832', icon: '🌩️', label: 'UNSTABLE'     },
+        severe:       { color: '#e07832', icon: '⛈️', label: 'SEVERE'       },
+        catastrophic: { color: '#e74c3c', icon: '🌪️', label: 'CATASTROPHIC' },
+    };
+    const BIOME_LABELS = {
+        forest: '🌲 Forest', mountain: '⛰️ Mountain', plains: '🌾 Plains',
+        swamp: '🌿 Swamp', desert: '🏜️ Desert', arctic: '❄️ Arctic',
+        coastal: '🌊 Coastal', underground: '🪨 Underground',
+    };
+    const SEASON_LABELS = { spring: '🌸 Spring', summer: '☀️ Summer', autumn: '🍂 Autumn', winter: '❄️ Winter' };
+
+    const style = INTENSITY_STYLES[intensity];
+    const S  = 'background:#1c1c22;border:1px solid rgba(201,168,76,0.12);border-radius:4px;padding:20px;';
+    const T  = 'font-family:Cinzel,serif;font-size:10px;letter-spacing:3px;color:rgba(201,168,76,0.5);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(201,168,76,0.1);';
+    const LI = 'padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:14px;color:#e8e0d0;line-height:1.5;';
+    const LBL= 'font-size:11px;font-family:Cinzel,serif;letter-spacing:1px;color:#8a8070;display:block;margin-bottom:2px;';
+
+    let html =
+        // Header
+        '<div style="' + S + 'border-color:rgba(201,168,76,0.3);margin-bottom:20px;">'
+        + '<div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;">'
+        + '<div>'
+        + '<div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:3px;color:rgba(201,168,76,0.5);margin-bottom:6px;">'
+        + BIOME_LABELS[biome] + ' &nbsp;·&nbsp; ' + SEASON_LABELS[season]
+        + '</div>'
+        + '<div style="font-family:Cinzel,serif;font-size:26px;font-weight:700;color:' + style.color + ';line-height:1.2;">'
+        + style.icon + ' ' + condition
+        + '</div>'
+        + '<div style="font-size:14px;color:#8a8070;margin-top:6px;">' + temp + '</div>'
+        + '</div>'
+        + '<span style="font-family:Cinzel,serif;font-size:9px;letter-spacing:1px;padding:4px 12px;border-radius:2px;border:1px solid ' + style.color + ';color:' + style.color + ';flex-shrink:0;">'
+        + style.label + '</span>'
+        + '</div></div>'
+
+        // Read-aloud
+        + '<div style="background:rgba(201,168,76,0.04);border-left:3px solid rgba(201,168,76,0.4);border-radius:0 4px 4px 0;padding:16px 20px;margin-bottom:20px;">'
+        + '<div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:3px;color:rgba(201,168,76,0.5);margin-bottom:10px;">📖 READ ALOUD</div>'
+        + '<div style="font-size:15px;color:#e8e0d0;line-height:1.8;font-style:italic;">' + readAloud + '</div>'
+        + '</div>'
+
+        // Grid: visibilidade + temperatura
+        + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-bottom:16px;">'
+
+        + '<div style="' + S + '">'
+        + '<div style="' + T + '">👁️ VISIBILITY</div>'
+        + '<div style="font-family:Cinzel,serif;font-size:18px;color:' + visibility.color + ';margin-bottom:8px;">' + visibility.range + '</div>'
+        + '<div style="font-size:13px;color:#8a8070;line-height:1.5;">' + visibility.note + '</div>'
+        + '</div>'
+
+        + '<div style="' + S + '">'
+        + '<div style="' + T + '">🌡️ CONDITIONS</div>'
+        + '<div style="' + LBL + '">TEMPERATURE</div>'
+        + '<div style="font-size:14px;color:#e8e0d0;margin-bottom:10px;">' + temp + '</div>'
+        + '<div style="' + LBL + '">CURRENT WEATHER</div>'
+        + '<div style="font-size:14px;color:#e8e0d0;">' + condition + '</div>'
+        + '</div>'
+
+        + '</div>'
+
+        // Efeitos mecânicos + táticos
+        + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:16px;">'
+
+        + '<div style="' + S + '">'
+        + '<div style="' + T + '">⚙️ MECHANICAL EFFECTS</div>'
+        + mechanics.map((m,i) => '<div style="' + LI + (i===mechanics.length-1?'border:none;':'') + 'display:flex;gap:8px;"><span style="color:' + style.color + ';flex-shrink:0;">▸</span><span>' + m + '</span></div>').join('')
+        + '</div>'
+
+        + '<div style="' + S + '">'
+        + '<div style="' + T + '">⚔️ COMBAT EFFECTS</div>'
+        + tactical.map((t,i) => '<div style="' + LI + (i===tactical.length-1?'border:none;':'') + 'display:flex;gap:8px;"><span style="color:' + style.color + ';flex-shrink:0;">▸</span><span>' + t + '</span></div>').join('')
+        + '</div>'
+
+        + '</div>'
+
+        // Perigos
+        + '<div style="' + S + 'margin-bottom:16px;border-color:rgba(192,57,43,0.2);">'
+        + '<div style="' + T + 'color:rgba(192,57,43,0.6);border-color:rgba(192,57,43,0.15);">⚠️ ENVIRONMENTAL HAZARDS</div>'
+        + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:4px;">'
+        + hazards.map(h => '<div style="' + LI + 'border:none;display:flex;gap:8px;padding:8px 0;"><span style="color:#e74c3c;flex-shrink:0;">⚠</span><span>' + h + '</span></div>').join('')
+        + '</div></div>'
+
+        // Progressão + sinais da natureza
+        + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:16px;">'
+
+        + '<div style="' + S + '">'
+        + '<div style="' + T + '">🕐 WHAT HAPPENS NEXT</div>'
+        + '<div style="font-size:14px;color:#e8e0d0;line-height:1.6;">' + progression + '</div>'
+        + '</div>'
+
+        + '<div style="' + S + '">'
+        + '<div style="' + T + '">🌿 NATURE SIGNS (DC 13 Survival)</div>'
+        + natureSigns.map((s,i) => '<div style="' + LI + (i===natureSigns.length-1?'border:none;':'') + 'display:flex;gap:8px;"><span style="color:#4caf7d;flex-shrink:0;">◆</span><span>' + s + '</span></div>').join('')
+        + '</div>'
+
+        + '</div>'
+
+        // Botão
+        + '<button onclick="generateWeather()" style="width:100%;background:none;border:1px solid rgba(201,168,76,0.25);border-radius:2px;padding:12px;color:#c9a84c;font-family:Cinzel,serif;font-size:11px;letter-spacing:2px;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background=\'rgba(201,168,76,0.08)\'" onmouseout="this.style.background=\'none\'">🎲 GENERATE NEW CONDITIONS</button>';
+
+    result.innerHTML = html;
+}
+
+</script>
     <script src="/static/script.js?v=17"></script>
 <script src="/static/auth.js?v=5"></script>
 <script>

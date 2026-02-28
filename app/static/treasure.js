@@ -2,13 +2,13 @@
 // TREASURE GENERATOR — D&D 5e
 // =============================================================
 
-function rollDice(count, sides) {
+function treasureRollDice(count, sides) {
     let total = 0;
     for (let i = 0; i < count; i++) total += Math.floor(Math.random() * sides) + 1;
     return total;
 }
-function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-function pickN(arr, n) {
+function treasurePick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function treasurePickN(arr, n) {
     const copy = [...arr], result = [];
     for (let i = 0; i < n && copy.length; i++) {
         const idx = Math.floor(Math.random() * copy.length);
@@ -336,56 +336,210 @@ const THEMED_ITEMS = {
 // ---- COINS ----
 function generateCoins(cr, type) {
     const h = type === 'hoard';
-    if (cr <= 4) return h ? {cp:rollDice(6,6)*100, sp:rollDice(3,6)*100, gp:rollDice(2,6)*10} : {cp:rollDice(5,6), sp:rollDice(4,6), gp:rollDice(3,6)};
-    if (cr <= 10) return h ? {cp:rollDice(2,6)*100, sp:rollDice(2,6)*1000, gp:rollDice(6,6)*100, pp:rollDice(3,6)*10} : {sp:rollDice(4,6)*10, gp:rollDice(2,6)*10};
-    if (cr <= 16) return h ? {gp:rollDice(4,6)*1000, pp:rollDice(5,6)*100} : {sp:rollDice(4,6)*10, gp:rollDice(4,6)*10, pp:rollDice(2,6)};
-    return h ? {gp:rollDice(12,6)*1000, pp:rollDice(8,6)*1000} : {gp:rollDice(2,6)*25, pp:rollDice(1,6)*25};
+    // Tabelas do DMG 5e — Individual e Hoard por faixa de CR
+    if (cr <= 4) {
+        if (h) return {
+            cp: treasureRollDice(6,6) * 100,
+            sp: treasureRollDice(3,6) * 100,
+            gp: treasureRollDice(2,6) * 10,
+        };
+        // Individual: monstro fraco carrega pouco
+        const roll = treasureRollDice(1,100);
+        if (roll <= 30) return { cp: treasureRollDice(5,6) };
+        if (roll <= 60) return { sp: treasureRollDice(4,6) };
+        if (roll <= 70) return { cp: treasureRollDice(3,6), sp: treasureRollDice(2,6) };
+        if (roll <= 95) return { gp: treasureRollDice(3,6) };
+        return { gp: treasureRollDice(1,6), pp: treasureRollDice(1,4) };
+    }
+    if (cr <= 10) {
+        if (h) return {
+            cp: treasureRollDice(2,6) * 100,
+            sp: treasureRollDice(2,6) * 1000,
+            gp: treasureRollDice(6,6) * 100,
+            pp: treasureRollDice(3,6) * 10,
+        };
+        const roll = treasureRollDice(1,100);
+        if (roll <= 30) return { cp: treasureRollDice(4,6)*10, sp: treasureRollDice(1,6)*10 };
+        if (roll <= 60) return { sp: treasureRollDice(6,6)*10, gp: treasureRollDice(2,6)*10 };
+        if (roll <= 70) return { gp: treasureRollDice(3,6)*10, sp: treasureRollDice(2,6)*10 };
+        if (roll <= 95) return { gp: treasureRollDice(4,6)*10 };
+        return { gp: treasureRollDice(2,6)*10, pp: treasureRollDice(3,6) };
+    }
+    if (cr <= 16) {
+        if (h) return {
+            gp:  treasureRollDice(4,6) * 1000,
+            pp:  treasureRollDice(5,6) * 100,
+        };
+        const roll = treasureRollDice(1,100);
+        if (roll <= 20) return { sp: treasureRollDice(4,6)*100, gp: treasureRollDice(1,6)*100 };
+        if (roll <= 35) return { gp: treasureRollDice(1,6)*100, pp: treasureRollDice(1,6)*10 };
+        if (roll <= 75) return { gp: treasureRollDice(2,6)*100, pp: treasureRollDice(1,6)*10 };
+        if (roll <= 95) return { gp: treasureRollDice(2,6)*100, pp: treasureRollDice(2,6)*10 };
+        return { gp: treasureRollDice(3,6)*100, pp: treasureRollDice(2,6)*10 };
+    }
+    // CR 17+
+    if (h) return {
+        gp: treasureRollDice(12,6) * 1000,
+        pp: treasureRollDice(8,6)  * 100,   // DMG usa *100, não *1000
+    };
+    const roll = treasureRollDice(1,100);
+    if (roll <= 15) return { gp: treasureRollDice(2,6)*1000, pp: treasureRollDice(8,6)*100 };
+    if (roll <= 55) return { gp: treasureRollDice(2,6)*1000, pp: treasureRollDice(8,6)*100 };
+    if (roll <= 70) return { gp: treasureRollDice(1,6)*1000, pp: treasureRollDice(1,6)*100 };
+    if (roll <= 95) return { gp: treasureRollDice(1,6)*1000, pp: treasureRollDice(2,6)*100 };
+    return { gp: treasureRollDice(2,6)*1000, pp: treasureRollDice(3,6)*100 };
 }
 
 // ---- GEMS & ART ----
 function generateGemsAndArt(cr, type) {
     const h = type === 'hoard';
     const items = [];
-    if (!h && cr < 5) return items;
     const gpVal = g => GEMS_10GP.includes(g)?'10 gp':GEMS_50GP.includes(g)?'50 gp':GEMS_100GP.includes(g)?'100 gp':GEMS_500GP.includes(g)?'500 gp':GEMS_1000GP.includes(g)?'1,000 gp':'5,000 gp';
+    const addGems = (pool, n) => { for(let i=0;i<n;i++){const g=treasurePick(pool);items.push({type:'gem',name:g,value:gpVal(g)});} };
+    const addArt  = (pool, val, n) => { for(let i=0;i<n;i++) items.push({type:'art',name:treasurePick(pool),value:val}); };
+
+    const roll = treasureRollDice(1,100);
+
     if (cr <= 4) {
-        if (Math.random()<.5) { const n=rollDice(h?2:1,6); for(let i=0;i<n;i++) items.push({type:'gem',name:pick(GEMS_10GP),value:'10 gp'}); }
-        if (h&&Math.random()<.4) { const n=rollDice(1,6); for(let i=0;i<n;i++) items.push({type:'art',name:pick(ART_25GP),value:'25 gp'}); }
-    } else if (cr<=10) {
-        const pool=[...GEMS_10GP,...GEMS_50GP,...GEMS_100GP]; const n=rollDice(h?3:1,6);
-        for(let i=0;i<n;i++){const g=pick(pool);items.push({type:'gem',name:g,value:gpVal(g)});}
-        if(h){const n2=rollDice(2,4);for(let i=0;i<n2;i++)items.push({type:'art',name:pick(ART_250GP),value:'250 gp'});}
-    } else if (cr<=16) {
-        const pool=[...GEMS_100GP,...GEMS_500GP,...GEMS_1000GP]; const n=rollDice(h?4:2,6);
-        for(let i=0;i<n;i++){const g=pick(pool);items.push({type:'gem',name:g,value:gpVal(g)});}
-        if(h){const n2=rollDice(2,4);for(let i=0;i<n2;i++){const p=Math.random()<.5?ART_750GP:ART_2500GP;items.push({type:'art',name:pick(p),value:p===ART_750GP?'750 gp':'2,500 gp'});}}
+        if (h) {
+            // Hoard CR 1-4: gemas baratas + arte simples
+            if (roll <= 30) addGems(GEMS_10GP, treasureRollDice(2,6));
+            else if (roll <= 60) addGems(GEMS_50GP, treasureRollDice(2,4));
+            else if (roll <= 80) { addGems(GEMS_10GP, treasureRollDice(2,6)); addArt(ART_25GP, '25 gp', treasureRollDice(2,4)); }
+            else { addGems(GEMS_50GP, treasureRollDice(1,6)); addArt(ART_25GP, '25 gp', treasureRollDice(1,6)); }
+        } else {
+            // Individual CR 1-4: chance de 1 gema pequena
+            if (roll <= 40) addGems(GEMS_10GP, 1);
+            else if (roll <= 60) addGems(GEMS_50GP, 1);
+            // 40% sem gema
+        }
+    } else if (cr <= 10) {
+        if (h) {
+            if (roll <= 20) addGems(GEMS_100GP, treasureRollDice(2,4));
+            else if (roll <= 40) addArt(ART_25GP, '25 gp', treasureRollDice(2,4));
+            else if (roll <= 50) addArt(ART_250GP, '250 gp', treasureRollDice(2,4));
+            else if (roll <= 60) { addGems(GEMS_50GP, treasureRollDice(2,6)); addArt(ART_250GP, '250 gp', treasureRollDice(2,4)); }
+            else if (roll <= 70) { addGems(GEMS_100GP, treasureRollDice(3,6)); addArt(ART_250GP, '250 gp', treasureRollDice(2,4)); }
+            else if (roll <= 80) addGems(GEMS_100GP, treasureRollDice(3,6));
+            else if (roll <= 90) addArt(ART_250GP, '250 gp', treasureRollDice(2,4));
+            else { addGems(GEMS_100GP, treasureRollDice(4,6)); addArt(ART_250GP, '250 gp', treasureRollDice(2,4)); }
+        } else {
+            // Individual CR 5-10: 1-3 gemas, sem arte
+            if (roll <= 25) addGems(GEMS_10GP, treasureRollDice(2,4));
+            else if (roll <= 50) addGems(GEMS_50GP, treasureRollDice(1,4));
+            else if (roll <= 75) addGems(GEMS_100GP, treasureRollDice(1,4));
+            else if (roll <= 90) { addGems(GEMS_50GP, 1); addArt(ART_25GP, '25 gp', 1); }
+            // 10% sem nada
+        }
+    } else if (cr <= 16) {
+        if (h) {
+            if (roll <= 20) addArt(ART_250GP, '250 gp', treasureRollDice(2,4));
+            else if (roll <= 30) addGems(GEMS_500GP, treasureRollDice(2,4));
+            else if (roll <= 40) { addArt(ART_750GP, '750 gp', treasureRollDice(2,4)); addGems(GEMS_500GP, treasureRollDice(2,4)); }
+            else if (roll <= 50) addArt(ART_750GP, '750 gp', treasureRollDice(2,4));
+            else if (roll <= 60) { addGems(GEMS_1000GP, treasureRollDice(2,4)); addArt(ART_2500GP, '2,500 gp', treasureRollDice(2,4)); }
+            else if (roll <= 70) addGems(GEMS_1000GP, treasureRollDice(2,4));
+            else if (roll <= 80) addArt(ART_2500GP, '2,500 gp', treasureRollDice(2,4));
+            else { addGems(GEMS_1000GP, treasureRollDice(2,4)); addArt(ART_2500GP, '2,500 gp', treasureRollDice(2,4)); }
+        } else {
+            // Individual CR 11-16: gemas médias + chance de arte
+            if (roll <= 30) addGems(GEMS_100GP, treasureRollDice(1,4));
+            else if (roll <= 55) addGems(GEMS_500GP, treasureRollDice(1,4));
+            else if (roll <= 70) addGems(GEMS_1000GP, 1);
+            else if (roll <= 85) { addGems(GEMS_500GP, 1); addArt(ART_250GP, '250 gp', 1); }
+            else { addGems(GEMS_1000GP, 1); addArt(ART_750GP, '750 gp', 1); }
+        }
     } else {
-        const n=rollDice(h?6:2,6);for(let i=0;i<n;i++)items.push({type:'gem',name:pick(GEMS_5000GP),value:'5,000 gp'});
-        if(h){const n2=rollDice(3,4);for(let i=0;i<n2;i++)items.push({type:'art',name:pick(ART_7500GP),value:'7,500 gp'});}
+        // CR 17+
+        if (h) {
+            if (roll <= 15) addArt(ART_2500GP, '2,500 gp', treasureRollDice(2,4));
+            else if (roll <= 30) addGems(GEMS_5000GP, treasureRollDice(2,4));
+            else if (roll <= 45) { addArt(ART_7500GP, '7,500 gp', treasureRollDice(2,4)); addGems(GEMS_5000GP, treasureRollDice(2,4)); }
+            else if (roll <= 60) addArt(ART_7500GP, '7,500 gp', treasureRollDice(2,4));
+            else if (roll <= 75) { addGems(GEMS_5000GP, treasureRollDice(2,4)); addArt(ART_2500GP, '2,500 gp', treasureRollDice(2,4)); }
+            else if (roll <= 90) { addGems(GEMS_5000GP, treasureRollDice(3,6)); addArt(ART_7500GP, '7,500 gp', treasureRollDice(2,4)); }
+            else { addGems(GEMS_5000GP, treasureRollDice(3,6)); addArt(ART_7500GP, '7,500 gp', treasureRollDice(3,4)); }
+        } else {
+            if (roll <= 25) addGems(GEMS_1000GP, treasureRollDice(1,4));
+            else if (roll <= 50) addGems(GEMS_5000GP, treasureRollDice(1,4));
+            else if (roll <= 70) { addGems(GEMS_5000GP, 1); addArt(ART_2500GP, '2,500 gp', 1); }
+            else if (roll <= 90) { addGems(GEMS_5000GP, 1); addArt(ART_7500GP, '7,500 gp', 1); }
+            else { addGems(GEMS_5000GP, treasureRollDice(1,4)); addArt(ART_7500GP, '7,500 gp', treasureRollDice(1,4)); }
+        }
     }
     return items;
 }
 
 // ---- MAGIC ITEMS ----
 function generateMagicItems(cr, type, monsterType) {
-    const h = type === 'hoard';
+    const h    = type === 'hoard';
     const items = [];
-    const roll = Math.random()*100;
-    let pools = [];
-    if (cr<=4) {
-        if(!h&&roll>60) return items;
-        pools = h ? [{pool:MAGIC_COMMON,count:rollDice(1,6)},...(roll>50?[{pool:MAGIC_UNCOMMON,count:rollDice(1,4)}]:[]) ] : [{pool:MAGIC_COMMON,count:1}];
-    } else if(cr<=10) {
-        if(!h&&roll>40) return items;
-        pools = h ? [{pool:MAGIC_UNCOMMON,count:rollDice(1,6)},...(roll>30?[{pool:MAGIC_RARE,count:rollDice(1,4)}]:[])] : [{pool:roll<50?MAGIC_COMMON:MAGIC_UNCOMMON,count:1}];
-    } else if(cr<=16) {
-        if(!h&&roll>25) return items;
-        pools = h ? [{pool:MAGIC_UNCOMMON,count:rollDice(1,4)},{pool:MAGIC_RARE,count:rollDice(1,6)},...(roll>40?[{pool:MAGIC_VERY_RARE,count:rollDice(1,4)}]:[])] : [{pool:roll<33?MAGIC_UNCOMMON:roll<66?MAGIC_RARE:MAGIC_VERY_RARE,count:1}];
+    const roll  = treasureRollDice(1,100);
+
+    // Tabelas do DMG: chance e quantidade por CR
+    if (cr <= 4) {
+        if (h) {
+            // Hoard CR 1-4: rolagem de tabela A (common/uncommon)
+            if (roll <= 60) items.push(...treasurePickN(MAGIC_COMMON, treasureRollDice(1,6)));
+            else if (roll <= 90) items.push(...treasurePickN(MAGIC_UNCOMMON, treasureRollDice(1,4)));
+            else { items.push(...treasurePickN(MAGIC_COMMON, treasureRollDice(1,4))); items.push(...treasurePickN(MAGIC_UNCOMMON, 1)); }
+        } else {
+            // Individual CR 1-4: 25% chance de 1 item common
+            if (roll <= 25) items.push(treasurePick(MAGIC_COMMON));
+        }
+    } else if (cr <= 10) {
+        if (h) {
+            // Hoard CR 5-10: tabela B/C
+            if (roll <= 40) items.push(...treasurePickN(MAGIC_UNCOMMON, treasureRollDice(1,6)));
+            else if (roll <= 60) { items.push(...treasurePickN(MAGIC_UNCOMMON, treasureRollDice(1,4))); items.push(...treasurePickN(MAGIC_RARE, 1)); }
+            else if (roll <= 75) items.push(...treasurePickN(MAGIC_RARE, treasureRollDice(1,4)));
+            else if (roll <= 90) { items.push(...treasurePickN(MAGIC_RARE, treasureRollDice(1,4))); items.push(...treasurePickN(MAGIC_UNCOMMON, treasureRollDice(1,4))); }
+            else { items.push(...treasurePickN(MAGIC_RARE, treasureRollDice(1,6))); items.push(...treasurePickN(MAGIC_VERY_RARE, 1)); }
+        } else {
+            // Individual CR 5-10: 40% chance, uncommon ou raro
+            if (roll <= 20) items.push(treasurePick(MAGIC_COMMON));
+            else if (roll <= 40) items.push(treasurePick(MAGIC_UNCOMMON));
+        }
+    } else if (cr <= 16) {
+        if (h) {
+            // Hoard CR 11-16: tabela D/E
+            if (roll <= 20) items.push(...treasurePickN(MAGIC_UNCOMMON, treasureRollDice(1,4)));
+            else if (roll <= 35) items.push(...treasurePickN(MAGIC_RARE, treasureRollDice(1,6)));
+            else if (roll <= 55) { items.push(...treasurePickN(MAGIC_RARE, treasureRollDice(1,4))); items.push(...treasurePickN(MAGIC_UNCOMMON, treasureRollDice(1,6))); }
+            else if (roll <= 70) { items.push(...treasurePickN(MAGIC_RARE, treasureRollDice(1,4))); items.push(...treasurePickN(MAGIC_VERY_RARE, 1)); }
+            else if (roll <= 85) items.push(...treasurePickN(MAGIC_VERY_RARE, treasureRollDice(1,4)));
+            else { items.push(...treasurePickN(MAGIC_VERY_RARE, treasureRollDice(1,4))); items.push(...treasurePickN(MAGIC_RARE, treasureRollDice(1,4))); }
+        } else {
+            // Individual CR 11-16: 50% chance
+            if (roll <= 20) items.push(treasurePick(MAGIC_UNCOMMON));
+            else if (roll <= 40) items.push(treasurePick(MAGIC_RARE));
+            else if (roll <= 50) items.push(treasurePick(MAGIC_VERY_RARE));
+        }
     } else {
-        pools = h ? [{pool:MAGIC_RARE,count:rollDice(1,4)},{pool:MAGIC_VERY_RARE,count:rollDice(1,6)},{pool:MAGIC_LEGENDARY,count:rollDice(1,4)},...(roll>70?[{pool:MAGIC_ARTIFACTS,count:1}]:[])] : [{pool:roll<33?MAGIC_RARE:roll<66?MAGIC_VERY_RARE:MAGIC_LEGENDARY,count:1}];
+        // CR 17+
+        if (h) {
+            // Hoard CR 17+: tabela F/G/H/I
+            if (roll <= 15) items.push(...treasurePickN(MAGIC_RARE, treasureRollDice(1,4)));
+            else if (roll <= 30) { items.push(...treasurePickN(MAGIC_RARE, treasureRollDice(1,4))); items.push(...treasurePickN(MAGIC_VERY_RARE, treasureRollDice(1,4))); }
+            else if (roll <= 45) items.push(...treasurePickN(MAGIC_VERY_RARE, treasureRollDice(1,4)));
+            else if (roll <= 60) { items.push(...treasurePickN(MAGIC_VERY_RARE, treasureRollDice(1,4))); items.push(...treasurePickN(MAGIC_LEGENDARY, 1)); }
+            else if (roll <= 75) items.push(...treasurePickN(MAGIC_LEGENDARY, treasureRollDice(1,4)));
+            else if (roll <= 90) { items.push(...treasurePickN(MAGIC_LEGENDARY, treasureRollDice(1,4))); items.push(...treasurePickN(MAGIC_VERY_RARE, treasureRollDice(1,4))); }
+            else { items.push(...treasurePickN(MAGIC_LEGENDARY, treasureRollDice(1,4))); items.push(...treasurePickN(MAGIC_ARTIFACTS, 1)); }
+        } else {
+            // Individual CR 17+: sempre alguma coisa boa
+            if (roll <= 20) items.push(treasurePick(MAGIC_RARE));
+            else if (roll <= 50) items.push(treasurePick(MAGIC_VERY_RARE));
+            else if (roll <= 80) items.push(treasurePick(MAGIC_LEGENDARY));
+            else { items.push(treasurePick(MAGIC_LEGENDARY)); items.push(treasurePick(MAGIC_VERY_RARE)); }
+        }
     }
-    for(const {pool,count} of pools) items.push(...pickN(pool,count));
-    if(monsterType!=='any'&&THEMED_ITEMS[monsterType]&&Math.random()>.4) items.push(pick(THEMED_ITEMS[monsterType]));
+
+    // Item temático do tipo de monstro (chance menor para não inflar)
+    if (monsterType !== 'any' && THEMED_ITEMS[monsterType] && Math.random() < 0.35) {
+        items.push(treasurePick(THEMED_ITEMS[monsterType]));
+    }
+
     return items;
 }
 
@@ -400,65 +554,117 @@ function getRarity(item) {
 }
 
 // ---- MAIN ----
+
 function generateTreasure() {
-    const cr = parseInt(document.getElementById('tr-cr').value)||5;
-    const type = document.getElementById('tr-type').value;
-    const monsterType = document.getElementById('tr-monster').value;
-    const result = document.getElementById('treasureResult');
+    const cr           = parseInt(document.getElementById('tr-cr').value) || 5;
+    const treasureType = document.getElementById('tr-type').value;
+    const monsterType  = document.getElementById('tr-monster').value;
+    const result       = document.getElementById('treasureResult');
 
-    const coins = generateCoins(cr, type);
-    const gemsArt = generateGemsAndArt(cr, type);
-    const magicItems = generateMagicItems(cr, type, monsterType);
-    const gems = gemsArt.filter(i=>i.type==='gem');
-    const art = gemsArt.filter(i=>i.type==='art');
+    // --- gerar dados ---
+    const coins      = generateCoins(cr, treasureType);
+    const gemsArt    = generateGemsAndArt(cr, treasureType);
+    const magicItems = generateMagicItems(cr, treasureType, monsterType);
+    const gems       = gemsArt.filter(i => i.type === 'gem');
+    const art        = gemsArt.filter(i => i.type === 'art');
 
-    const parseGP = v => parseInt((v||'0').replace(/,/g,''))||0;
-    const coinGP = (coins.cp||0)/100+(coins.sp||0)/10+(coins.ep||0)/2+(coins.gp||0)+(coins.pp||0)*10;
-    const gemGP = gems.reduce((s,g)=>s+parseGP(g.value),0);
-    const artGP = art.reduce((s,a)=>s+parseGP(a.value),0);
-    const totalGP = Math.round(coinGP+gemGP+artGP);
+    // --- calcular total em GP ---
+    function parseVal(v) { return parseInt(String(v || '0').replace(/[^0-9]/g, '')) || 0; }
+    const coinGP  = (coins.cp||0)/100 + (coins.sp||0)/10 + (coins.ep||0)/2 + (coins.gp||0) + (coins.pp||0)*10;
+    const gemGP   = gems.reduce((s, g) => s + parseVal(g.value), 0);
+    const artGP   = art.reduce((s, a) => s + parseVal(a.value), 0);
+    const totalGP = Math.round(coinGP + gemGP + artGP);
 
-    const CS = {
-        cp:{color:'#b87333',bg:'rgba(184,115,51,0.15)',border:'rgba(184,115,51,0.3)',label:'CP',name:'Copper'},
-        sp:{color:'#aaa',bg:'rgba(170,170,170,0.1)',border:'rgba(170,170,170,0.2)',label:'SP',name:'Silver'},
-        ep:{color:'#c0c080',bg:'rgba(192,192,128,0.1)',border:'rgba(192,192,128,0.2)',label:'EP',name:'Electrum'},
-        gp:{color:'#c9a84c',bg:'rgba(201,168,76,0.12)',border:'rgba(201,168,76,0.3)',label:'GP',name:'Gold'},
-        pp:{color:'#b0a0d0',bg:'rgba(176,160,208,0.1)',border:'rgba(176,160,208,0.25)',label:'PP',name:'Platinum'},
-    };
+    // --- HTML das moedas ---
+    const COIN_DEFS = [
+        { key: 'cp', label: 'CP', name: 'Copper',   color: '#b87333' },
+        { key: 'sp', label: 'SP', name: 'Silver',   color: '#aaaaaa' },
+        { key: 'ep', label: 'EP', name: 'Electrum', color: '#c0c080' },
+        { key: 'gp', label: 'GP', name: 'Gold',     color: '#c9a84c' },
+        { key: 'pp', label: 'PP', name: 'Platinum', color: '#b0a0d0' },
+    ];
 
-    const coinHTML = Object.entries(coins).map(([t,amt])=>{
-        const s=CS[t];
-        return `<div class="coin-row"><div class="coin-icon" style="background:${s.bg};border:1px solid ${s.border};color:${s.color};">${s.label}</div><div style="flex:1;font-family:'Cinzel',serif;font-size:12px;color:${s.color};">${s.name} Pieces</div><div style="font-family:'Cinzel',serif;font-size:16px;color:${s.color};">${amt.toLocaleString()}</div></div>`;
-    }).join('');
+    let coinRows = '';
+    for (const def of COIN_DEFS) {
+        if (!coins[def.key]) continue;
+        coinRows += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);">'
+            + '<div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:10px;font-weight:700;flex-shrink:0;background:rgba(0,0,0,0.2);border:1px solid ' + def.color + ';color:' + def.color + ';">' + def.label + '</div>'
+            + '<div style="flex:1;color:' + def.color + ';font-family:Cinzel,serif;font-size:12px;">' + def.name + ' Pieces</div>'
+            + '<div style="font-family:Cinzel,serif;font-size:18px;font-weight:700;color:' + def.color + ';">' + coins[def.key].toLocaleString() + '</div>'
+            + '</div>';
+    }
 
-    const gemsHTML = gems.length ? gems.map(g=>`<div class="treasure-item"><div class="treasure-item-name">💎 ${g.name}</div><div class="treasure-item-value">${g.value}</div></div>`).join('') : '<div style="color:var(--text-muted);font-style:italic;font-size:14px;">No gems</div>';
+    // --- HTML das gemas ---
+    let gemRows = gems.length ? '' : '<div style="color:#8a8070;font-style:italic;font-size:14px;">None</div>';
+    for (const g of gems) {
+        gemRows += '<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);gap:8px;">'
+            + '<div style="font-size:14px;color:#e8e0d0;">💎 ' + g.name + '</div>'
+            + '<div style="font-family:Cinzel,serif;font-size:12px;color:#c9a84c;flex-shrink:0;">' + g.value + '</div>'
+            + '</div>';
+    }
 
-    const artHTML = art.length ? art.map(a=>`<div class="treasure-item"><div class="treasure-item-name">🎨 ${a.name}</div><div class="treasure-item-value">${a.value}</div></div>`).join('') : '<div style="color:var(--text-muted);font-style:italic;font-size:14px;">No art objects</div>';
+    // --- HTML das obras de arte ---
+    let artRows = art.length ? '' : '<div style="color:#8a8070;font-style:italic;font-size:14px;">None</div>';
+    for (const a of art) {
+        artRows += '<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);gap:8px;">'
+            + '<div style="font-size:14px;color:#e8e0d0;">🎨 ' + a.name + '</div>'
+            + '<div style="font-family:Cinzel,serif;font-size:12px;color:#c9a84c;flex-shrink:0;">' + a.value + '</div>'
+            + '</div>';
+    }
 
-    const magicHTML = magicItems.length ? magicItems.map(item=>{
-        if(item.isThemed) return `<div class="treasure-item" style="flex-direction:column;gap:4px;"><div style="display:flex;justify-content:space-between;"><div class="treasure-item-name">✨ ${item.name}</div><div class="treasure-item-value">${item.value}</div></div><div class="treasure-item-desc">${item.desc}</div></div>`;
-        const r=getRarity(item);
-        return `<div class="treasure-item" style="flex-direction:column;align-items:flex-start;gap:6px;"><div style="display:flex;justify-content:space-between;width:100%;align-items:center;gap:8px;"><div class="treasure-item-name">⚗️ ${item.name}</div><div style="display:flex;gap:6px;align-items:center;flex-shrink:0;">${item.attunement?'<span style="font-family:\'Cinzel\',serif;font-size:9px;letter-spacing:1px;padding:2px 6px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.15);border-radius:2px;color:var(--gold);">ATTUNE</span>':''}<span class="rarity-badge ${r.cls}" style="background:transparent;border:1px solid currentColor;">${r.label}</span></div></div><div class="treasure-item-desc">${item.desc}</div></div>`;
-    }).join('') : '<div style="color:var(--text-muted);font-style:italic;font-size:14px;">No magic items</div>';
+    // --- HTML dos itens mágicos ---
+    const RARITY_COLOR = { COMMON:'#aaa', UNCOMMON:'#4caf7d', RARE:'#4a90c9', 'VERY RARE':'#9b59b6', LEGENDARY:'#e0a832', ARTIFACT:'#e74c3c' };
+    let magicRows = magicItems.length ? '' : '<div style="color:#8a8070;font-style:italic;font-size:14px;">None</div>';
+    for (const item of magicItems) {
+        const r   = getRarity(item);
+        const col = RARITY_COLOR[r.label] || '#aaa';
+        if (item.isThemed) {
+            magicRows += '<div style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);">'
+                + '<div style="display:flex;justify-content:space-between;gap:8px;">'
+                + '<div style="font-size:14px;color:#e8e0d0;">✨ ' + item.name + '</div>'
+                + '<div style="font-family:Cinzel,serif;font-size:12px;color:#c9a84c;flex-shrink:0;">' + item.value + '</div>'
+                + '</div>'
+                + '<div style="font-size:12px;color:#8a8070;font-style:italic;margin-top:3px;">' + item.desc + '</div>'
+                + '</div>';
+        } else {
+            magicRows += '<div style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);">'
+                + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">'
+                + '<div style="font-size:14px;color:#e8e0d0;">⚗️ ' + item.name + '</div>'
+                + '<div style="display:flex;gap:6px;align-items:center;flex-shrink:0;">'
+                + (item.attunement ? '<span style="font-family:Cinzel,serif;font-size:9px;letter-spacing:1px;padding:2px 6px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);border-radius:2px;color:#c9a84c;">ATTUNE</span>' : '')
+                + '<span style="font-family:Cinzel,serif;font-size:9px;letter-spacing:1px;padding:2px 8px;border-radius:2px;border:1px solid ' + col + ';color:' + col + ';">' + r.label + '</span>'
+                + '</div></div>'
+                + '<div style="font-size:12px;color:#8a8070;font-style:italic;margin-top:4px;">' + item.desc + '</div>'
+                + '</div>';
+        }
+    }
 
-    result.innerHTML = `
-        <div style="background:var(--dark-3);border:1px solid rgba(201,168,76,0.2);border-radius:4px;padding:20px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
-            <div>
-                <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:rgba(201,168,76,0.5);">TOTAL VALUE (APPROX)</div>
-                <div style="font-family:'Cinzel',serif;font-size:32px;color:var(--gold);font-weight:700;">${totalGP.toLocaleString()} GP</div>
-            </div>
-            <div style="display:flex;gap:16px;flex-wrap:wrap;">
-                <div style="text-align:center;"><div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;color:var(--text-muted);">GEMS</div><div style="font-family:'Cinzel',serif;font-size:20px;color:var(--text);">${gems.length}</div></div>
-                <div style="text-align:center;"><div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;color:var(--text-muted);">ART OBJECTS</div><div style="font-family:'Cinzel',serif;font-size:20px;color:var(--text);">${art.length}</div></div>
-                <div style="text-align:center;"><div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;color:var(--text-muted);">MAGIC ITEMS</div><div style="font-family:'Cinzel',serif;font-size:20px;color:var(--text);">${magicItems.length}</div></div>
-            </div>
-        </div>
-        <div class="treasure-grid">
-            <div class="treasure-card"><div class="treasure-card-title">🪙 COINS</div>${coinHTML}</div>
-            <div class="treasure-card"><div class="treasure-card-title">💎 GEMS</div>${gemsHTML}</div>
-            <div class="treasure-card"><div class="treasure-card-title">🎨 ART OBJECTS</div>${artHTML}</div>
-        </div>
-        <div class="treasure-card" style="margin-bottom:20px;"><div class="treasure-card-title">⚗️ MAGIC ITEMS</div>${magicHTML}</div>
-        <button class="btn btn-outline" onclick="generateTreasure()" style="width:100%;margin-top:4px;">🎲 GENERATE ANOTHER</button>
-    `;
+    // --- montar HTML final ---
+    const CARD = 'background:#1c1c22;border:1px solid rgba(201,168,76,0.12);border-radius:4px;padding:20px;';
+    const TITLE = 'font-family:Cinzel,serif;font-size:10px;letter-spacing:3px;color:rgba(201,168,76,0.5);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid rgba(201,168,76,0.1);';
+
+    result.innerHTML =
+        // Resumo total
+        '<div style="' + CARD + 'display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:20px;border-color:rgba(201,168,76,0.25);">'
+        + '<div>'
+        + '<div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:3px;color:rgba(201,168,76,0.5);">TOTAL VALUE (APPROX)</div>'
+        + '<div style="font-family:Cinzel,serif;font-size:36px;font-weight:700;color:#c9a84c;">' + totalGP.toLocaleString() + ' GP</div>'
+        + '</div>'
+        + '<div style="display:flex;gap:20px;flex-wrap:wrap;">'
+        + '<div style="text-align:center;"><div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:1px;color:#8a8070;">GEMS</div><div style="font-family:Cinzel,serif;font-size:22px;color:#e8e0d0;">' + gems.length + '</div></div>'
+        + '<div style="text-align:center;"><div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:1px;color:#8a8070;">ART</div><div style="font-family:Cinzel,serif;font-size:22px;color:#e8e0d0;">' + art.length + '</div></div>'
+        + '<div style="text-align:center;"><div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:1px;color:#8a8070;">MAGIC ITEMS</div><div style="font-family:Cinzel,serif;font-size:22px;color:#e8e0d0;">' + magicItems.length + '</div></div>'
+        + '</div></div>'
+
+        // Grid 3 colunas: moedas / gemas / arte
+        + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-bottom:16px;">'
+        + '<div style="' + CARD + '"><div style="' + TITLE + '">🪙 COINS</div>' + coinRows + '</div>'
+        + '<div style="' + CARD + '"><div style="' + TITLE + '">💎 GEMS</div>' + gemRows + '</div>'
+        + '<div style="' + CARD + '"><div style="' + TITLE + '">🎨 ART OBJECTS</div>' + artRows + '</div>'
+        + '</div>'
+
+        // Itens mágicos (largura total)
+        + '<div style="' + CARD + 'margin-bottom:16px;"><div style="' + TITLE + '">⚗️ MAGIC ITEMS</div>' + magicRows + '</div>'
+
+        + '<button onclick="generateTreasure()" style="width:100%;background:none;border:1px solid rgba(201,168,76,0.25);border-radius:2px;padding:12px;color:#c9a84c;font-family:Cinzel,serif;font-size:11px;letter-spacing:2px;cursor:pointer;">🎲 GENERATE ANOTHER</button>';
 }
