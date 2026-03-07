@@ -963,6 +963,261 @@
         ::-webkit-scrollbar-thumb:hover { background: rgba(201,168,76,0.4); }
     </style>
 </head>
+
+<style>
+/* ── Botão flutuante ── */
+#donate-btn {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #b8912a, #c9a84c, #b8912a);
+    background-size: 200% 100%;
+    border: none;
+    border-radius: 3px;
+    padding: 11px 18px;
+    color: #0d0d0f;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    cursor: pointer;
+    box-shadow:
+        0 0 0 1px rgba(201,168,76,0.3),
+        0 8px 32px rgba(0,0,0,0.5),
+        0 0 20px rgba(201,168,76,0.15);
+    transition: all 0.3s ease;
+    animation: donate-pulse 3s ease-in-out infinite;
+}
+
+#donate-btn:hover {
+    background-position: 100% 0;
+    box-shadow:
+        0 0 0 1px rgba(201,168,76,0.6),
+        0 12px 40px rgba(0,0,0,0.6),
+        0 0 30px rgba(201,168,76,0.3);
+    transform: translateY(-2px);
+    animation: none;
+}
+
+#donate-btn .donate-icon {
+    font-size: 15px;
+    filter: drop-shadow(0 0 4px rgba(0,0,0,0.3));
+}
+
+@keyframes donate-pulse {
+    0%, 100% { box-shadow: 0 0 0 1px rgba(201,168,76,0.3), 0 8px 32px rgba(0,0,0,0.5), 0 0 20px rgba(201,168,76,0.15); }
+    50%       { box-shadow: 0 0 0 1px rgba(201,168,76,0.5), 0 8px 32px rgba(0,0,0,0.5), 0 0 35px rgba(201,168,76,0.3); }
+}
+
+/* ── Overlay / Modal ── */
+#donate-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(6px);
+    animation: fadeIn 0.2s ease;
+}
+
+#donate-overlay.open {
+    display: flex;
+}
+
+#donate-modal {
+    background: #141418;
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 4px;
+    padding: 40px 36px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    position: relative;
+    box-shadow:
+        0 0 0 1px rgba(201,168,76,0.08),
+        0 30px 80px rgba(0,0,0,0.7),
+        inset 0 1px 0 rgba(201,168,76,0.1);
+    animation: fadeUp 0.25s ease;
+}
+
+/* cantos decorativos */
+#donate-modal::before,
+#donate-modal::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-color: rgba(201,168,76,0.4);
+    border-style: solid;
+}
+#donate-modal::before { top: 8px; left: 8px; border-width: 2px 0 0 2px; }
+#donate-modal::after  { bottom: 8px; right: 8px; border-width: 0 2px 2px 0; }
+
+.donate-close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: none;
+    border: none;
+    color: rgba(201,168,76,0.4);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px 8px;
+    transition: color 0.2s;
+    line-height: 1;
+}
+.donate-close:hover { color: var(--gold); }
+
+.donate-coin {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 4px;
+    filter: drop-shadow(0 0 16px rgba(201,168,76,0.4));
+    animation: coin-spin 0.6s ease 0.1s both;
+}
+
+@keyframes coin-spin {
+    from { transform: rotateY(90deg) scale(0.5); opacity: 0; }
+    to   { transform: rotateY(0deg)  scale(1);   opacity: 1; }
+}
+
+.donate-title {
+    font-family: 'Cinzel', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #c9a84c;
+    letter-spacing: 4px;
+    margin-bottom: 8px;
+}
+
+.donate-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 14px 0 18px;
+}
+.donate-divider::before,
+.donate-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(201,168,76,0.3));
+}
+.donate-divider::after {
+    background: linear-gradient(to left, transparent, rgba(201,168,76,0.3));
+}
+.donate-divider span { color: rgba(201,168,76,0.5); font-size: 14px; }
+
+.donate-text {
+    font-family: 'Crimson Text', serif;
+    font-size: 16px;
+    color: #8a8070;
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+.donate-text strong {
+    color: #e8e0d0;
+}
+
+.donate-pix-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #b8912a, #c9a84c, #b8912a);
+    background-size: 200% 100%;
+    border: none;
+    border-radius: 3px;
+    padding: 14px 28px;
+    color: #0d0d0f;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+.donate-pix-btn:hover {
+    background-position: 100% 0;
+    box-shadow: 0 0 24px rgba(201,168,76,0.35), 0 6px 20px rgba(0,0,0,0.4);
+    transform: translateY(-1px);
+}
+
+.donate-footer {
+    margin-top: 16px;
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: rgba(201,168,76,0.25);
+}
+
+@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeUp  {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<!-- Botão flutuante -->
+<button id="donate-btn" onclick="openDonate()">
+    <span class="donate-icon">🪙</span>
+    APOIAR
+</button>
+
+<!-- Modal -->
+<div id="donate-overlay" onclick="closeDonateOverlay(event)">
+    <div id="donate-modal">
+        <button class="donate-close" onclick="closeDonate()">✕</button>
+
+        <span class="donate-coin">🏆</span>
+        <div class="donate-title">APOIE O PROJETO</div>
+
+        <div class="donate-divider"><span>⚔</span></div>
+
+        <p class="donate-text">
+            O RPG Tools é <strong>gratuito e feito com dedicação</strong>
+            para mestres e aventureiros.<br><br>
+            Se ele ajudou nas suas sessões, considere deixar uma
+            moeda de ouro na taverna. ✨
+        </p>
+
+        <a class="donate-pix-btn"
+           href="https://linkpix.pro/Rpg_Tools/Campos_Dos_Goyt/3a00958a-66bf-49e6-9789-b640b35a0d6b/_/_/2935"
+           target="_blank" rel="noopener"
+           onclick="closeDonate()">
+            🪙 FAZER DOAÇÃO VIA PIX
+        </a>
+
+        <div class="donate-footer">MAY YOUR DICE ROLL TRUE ✦ RPG TOOLS</div>
+    </div>
+</div>
+
+<script>
+function openDonate() {
+    document.getElementById('donate-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+function closeDonate() {
+    document.getElementById('donate-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+}
+function closeDonateOverlay(e) {
+    if (e.target === document.getElementById('donate-overlay')) closeDonate();
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDonate(); });
+</script>
+
 <body>
 
 <canvas id="bgCanvas"></canvas>

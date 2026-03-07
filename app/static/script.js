@@ -46,7 +46,6 @@ async function rollDice() {
         `;
         resultEl.classList.add("visible");
 
-        // Adicionar ao histórico
         rollHistory.unshift({ expression, rolls: data.rolls, modifier: data.modifier, total: data.total });
         if (rollHistory.length > MAX_HISTORY) rollHistory.pop();
         renderHistory();
@@ -120,7 +119,7 @@ function renderNPC(npc, containerId) {
                 </div>
                 <div class="npc-field">
                     <label>Class</label>
-                    <span>${npc.class || npc.class_name}</span>
+                    <span>${npc.class_name}</span>
                 </div>
                 <div class="npc-field">
                     <label>Trait</label>
@@ -145,7 +144,7 @@ async function saveNPC() {
         const payload = {
             name: currentNPC.name,
             race: currentNPC.race,
-            class_name: currentNPC.class || currentNPC.class_name,
+            class_name: currentNPC.class_name,
             trait: currentNPC.trait,
             goal: currentNPC.goal,
             backstory: currentNPC.backstory || null
@@ -181,7 +180,6 @@ async function showMyNPCs() {
     const container = document.getElementById("myNpcsList");
     container.innerHTML = `<div style="color:var(--text-muted);font-style:italic;padding:20px">Loading your adventurers...</div>`;
 
-    // Resetar busca
     const search = document.getElementById('npcSearch');
     const count = document.getElementById('searchCount');
     if (search) search.value = '';
@@ -209,8 +207,11 @@ async function showMyNPCs() {
                     <p>No adventurers saved yet.<br>Generate and save your first NPC!</p>
                 </div>
             `;
+            if (count) count.textContent = '0 adventurers';
             return;
         }
+
+        if (count) count.textContent = `${npcs.length} adventurer${npcs.length !== 1 ? 's' : ''}`;
 
         container.innerHTML = `<div class="my-npcs-grid"></div>`;
         const grid = container.querySelector('.my-npcs-grid');
@@ -281,7 +282,6 @@ function deleteNPC(id) {
 
 // Modal de confirmação
 function showConfirm(message, onConfirm) {
-    // Remove modal existente se houver
     const existing = document.getElementById('confirm-modal');
     if (existing) existing.remove();
 
@@ -346,12 +346,7 @@ function showConfirm(message, onConfirm) {
     `;
 
     document.body.appendChild(modal);
-
-    // Fechar ao clicar fora
-    modal.addEventListener('click', e => {
-        if (e.target === modal) modal.remove();
-    });
-
+    modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
     document.getElementById('confirm-btn').addEventListener('click', () => {
         modal.remove();
         onConfirm();
@@ -367,7 +362,7 @@ function logoutDashboard() {
 }
 
 // -----------------------------
-// Editar NPC
+// Edit NPC
 // -----------------------------
 function editNPC(id, name, race, class_name, trait, goal, backstory) {
     const existing = document.getElementById('edit-modal');
@@ -485,7 +480,7 @@ async function saveEditNPC(id) {
 }
 
 // -----------------------------
-// Busca e filtro de NPCs
+// NPC Search
 // -----------------------------
 function filterNPCs() {
     const query = document.getElementById('npcSearch').value.toLowerCase().trim();
@@ -505,7 +500,7 @@ function filterNPCs() {
 
     const count = document.getElementById('searchCount');
     if (count) {
-        count.textContent = query ? `${visible} found` : `${cards.length} adventurers`;
+        count.textContent = query ? `${visible} found` : `${cards.length} adventurer${cards.length !== 1 ? 's' : ''}`;
     }
 }
 
@@ -566,10 +561,15 @@ function scheduleNoteSave() {
 // -----------------------------
 let allCampaignsData = [];
 let currentCampaignFilter = 'ALL';
+let campaignSearchTimer = null;
 
 async function loadCampaigns() {
     const container = document.getElementById('campaignsList');
     container.innerHTML = `<div style="color:var(--text-muted);font-style:italic;padding:20px">Loading campaigns...</div>`;
+
+    // Reset search
+    const searchEl = document.getElementById('campaignSearch');
+    if (searchEl) searchEl.value = '';
 
     try {
         const [campRes, npcRes] = await Promise.all([
@@ -600,19 +600,40 @@ function filterCampaigns(status) {
     renderCampaigns();
 }
 
+function searchCampaigns() {
+    clearTimeout(campaignSearchTimer);
+    campaignSearchTimer = setTimeout(renderCampaigns, 250);
+}
+
 function renderCampaigns() {
     const container = document.getElementById('campaignsList');
     const { campaigns, npcs } = allCampaignsData;
 
-    const filtered = currentCampaignFilter === 'ALL'
+    const searchEl = document.getElementById('campaignSearch');
+    const query = searchEl ? searchEl.value.toLowerCase().trim() : '';
+
+    let filtered = currentCampaignFilter === 'ALL'
         ? campaigns
         : campaigns.filter(c => c.status === currentCampaignFilter);
+
+    if (query) {
+        filtered = filtered.filter(c =>
+            c.name.toLowerCase().includes(query) ||
+            (c.description || '').toLowerCase().includes(query) ||
+            (c.location || '').toLowerCase().includes(query)
+        );
+    }
 
     if (filtered.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
                 <span class="empty-icon">🗺️</span>
-                <p>${campaigns.length === 0 ? 'No campaigns yet.<br>Create your first adventure!' : 'No campaigns with this status.'}</p>
+                <p>${campaigns.length === 0
+                    ? 'No campaigns yet.<br>Create your first adventure!'
+                    : query
+                        ? 'No campaigns match your search.'
+                        : 'No campaigns with this status.'
+                }</p>
             </div>`;
         return;
     }
@@ -636,6 +657,19 @@ function renderCampaignCard(c, allNpcs, grid) {
     const card = document.createElement('div');
     card.className = 'campaign-card';
     card.id = `campaign-${c.id}`;
+
+    const sessionCount = c.session_count ?? 0;
+    const sessionLabel = `${sessionCount} session${sessionCount !== 1 ? 's' : ''}`;
+
+    // Last session info
+    let lastSessionInfo = '';
+    if (c.last_session_title) {
+        const dateStr = c.last_session_date ? ` · ${formatSessionDate(c.last_session_date)}` : '';
+        lastSessionInfo = `
+            <span class="campaign-session" title="Last: ${c.last_session_title}${dateStr}" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                🗒️ ${c.last_session_title}${dateStr}
+            </span>`;
+    }
 
     const npcTags = c.npcs.map(n => `
         <span class="campaign-npc-tag">
@@ -661,16 +695,12 @@ function renderCampaignCard(c, allNpcs, grid) {
 
         <div class="campaign-meta">
             ${statusBadge(c.status)}
-            <span class="campaign-session">📖 SESSION ${c.current_session}</span>
+            <span class="campaign-session">📅 ${sessionLabel}</span>
             ${c.location ? `<span class="campaign-session">📍 ${c.location}</span>` : ''}
+            ${lastSessionInfo}
         </div>
 
         ${c.description ? `<div class="campaign-desc">${c.description}</div>` : ''}
-
-        ${c.session_notes ? `
-            <div class="campaign-section-label">SESSION NOTES</div>
-            <div class="campaign-session-notes">${c.session_notes}</div>
-        ` : ''}
 
         <div class="campaign-section-label">ADVENTURERS</div>
         <div class="campaign-npc-list">
@@ -688,7 +718,6 @@ function renderCampaignCard(c, allNpcs, grid) {
         ` : ''}
     `;
 
-    // Container de sessions (inicialmente oculto)
     const sessionsPanel = document.createElement('div');
     sessionsPanel.id = `sessions-panel-${c.id}`;
     sessionsPanel.style.cssText = 'display:none;margin-top:16px;border-top:1px solid rgba(201,168,76,0.1);padding-top:16px;';
@@ -739,10 +768,6 @@ function showCampaignModal(id = null) {
                         <option value="COMPLETED" ${c?.status === 'COMPLETED' ? 'selected' : ''}>✓ Completed</option>
                     </select>
                 </div>
-                <div>
-                    <label style="${labelStyle}">SESSION #</label>
-                    <input id="c-session" type="number" min="1" value="${c?.current_session || 1}" style="${fieldStyle}">
-                </div>
                 <div style="grid-column:1/-1;">
                     <label style="${labelStyle}">CURRENT LOCATION</label>
                     <input id="c-location" value="${c?.location || ''}" placeholder="e.g. The Tavern of the Broken Staff" style="${fieldStyle}">
@@ -750,10 +775,6 @@ function showCampaignModal(id = null) {
                 <div style="grid-column:1/-1;">
                     <label style="${labelStyle}">DESCRIPTION</label>
                     <textarea id="c-desc" style="${textareaStyle}resize:vertical;min-height:60px;">${c?.description || ''}</textarea>
-                </div>
-                <div style="grid-column:1/-1;">
-                    <label style="${labelStyle}">SESSION NOTES</label>
-                    <textarea id="c-notes" style="${textareaStyle}resize:vertical;min-height:80px;" placeholder="What happened this session?">${c?.session_notes || ''}</textarea>
                 </div>
             </div>
 
@@ -773,10 +794,8 @@ function getCampaignFormData() {
     return {
         name: document.getElementById('c-name').value.trim(),
         status: document.getElementById('c-status').value,
-        current_session: parseInt(document.getElementById('c-session').value) || 1,
         location: document.getElementById('c-location').value.trim() || null,
         description: document.getElementById('c-desc').value.trim() || null,
-        session_notes: document.getElementById('c-notes').value.trim() || null,
     };
 }
 
@@ -1009,8 +1028,17 @@ async function saveSession(campaignId, sessionId = null) {
 
         document.getElementById('session-modal').remove();
         toast.success(sessionId ? 'Session updated!' : 'Session recorded!');
-        showSessionsPanel(campaignId); // fecha
-        showSessionsPanel(campaignId); // reabre para recarregar
+
+        // Refresh sessions panel and campaign card's session count
+        showSessionsPanel(campaignId);
+        showSessionsPanel(campaignId);
+
+        // Reload campaigns to update session count on card
+        const campRes = await fetch('/campaigns', { headers: { 'Authorization': `Bearer ${getToken()}` } });
+        const campData = await campRes.json();
+        if (campData.success) {
+            allCampaignsData.campaigns = campData.data;
+        }
     } catch (e) {
         toast.error('Connection error.');
     }
@@ -1040,8 +1068,8 @@ async function deleteSession(campaignId, sessionId) {
             const data = await res.json();
             if (!data.success) { toast.error(data.detail || 'Error deleting session.'); return; }
             toast.success('Session deleted.');
-            showSessionsPanel(campaignId); // fecha
-            showSessionsPanel(campaignId); // reabre para recarregar
+            showSessionsPanel(campaignId);
+            showSessionsPanel(campaignId);
         } catch (e) {
             toast.error('Connection error.');
         }
@@ -1098,13 +1126,11 @@ async function loadProfile() {
 
         const d = data.data;
 
-        // Preencher campos
         document.getElementById('profile-email').value = d.email;
         document.getElementById('profile-username').value = d.username || '';
         currentRole = d.role;
         selectRole(d.role, false);
 
-        // Stats
         const statsEl = document.getElementById('profileStats');
         statsEl.innerHTML = `
             <div class="profile-stat">
@@ -1114,6 +1140,10 @@ async function loadProfile() {
             <div class="profile-stat">
                 <div class="profile-stat-value">${d.campaign_count}</div>
                 <div class="profile-stat-label">CAMPAIGNS</div>
+            </div>
+            <div class="profile-stat">
+                <div class="profile-stat-value">${d.session_count ?? 0}</div>
+                <div class="profile-stat-label">SESSIONS PLAYED</div>
             </div>
             <div class="profile-stat">
                 <div class="profile-stat-value" style="font-size:18px;padding-top:8px">${d.created_at}</div>
@@ -1151,7 +1181,6 @@ async function saveProfile() {
         if (!data.success) { toast.error(data.detail || "Error updating profile."); return; }
         toast.success("Profile updated!");
 
-        // Atualizar nome no sidebar
         const userInfoEl = document.getElementById('userInfo');
         if (userInfoEl) {
             const roleIcon = data.data.role === 'MASTER' ? '📖' : '⚔️';
@@ -1278,7 +1307,6 @@ function renderEncounter(enc) {
     const diffColor = difficultyColor(enc.difficulty_actual);
 
     result.innerHTML = `
-        <!-- Resumo -->
         <div style="background:var(--dark-3);border:1px solid rgba(201,168,76,0.15);border-radius:4px;padding:20px;margin-bottom:20px;">
             <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
                 <div style="font-family:'Cinzel',serif;font-size:14px;letter-spacing:2px;color:var(--gold);">ENCOUNTER SUMMARY</div>
@@ -1306,12 +1334,10 @@ function renderEncounter(enc) {
             </div>
         </div>
 
-        <!-- Monstros -->
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-bottom:20px;">
             ${monsterCards}
         </div>
 
-        <!-- Gerar novo -->
         <button class="btn btn-outline" onclick="generateEncounter()" style="width:100%;">🎲 GENERATE ANOTHER</button>
     `;
 }
@@ -1347,22 +1373,11 @@ function addCombatant() {
         initiative = parseInt(document.getElementById('cbt-init').value) || 0;
     }
 
-    combatants.push({
-        id: nextId++,
-        name,
-        initiative,
-        hp,
-        maxHp: hp,
-        ac,
-        type,
-        conditions: [],
-    });
+    combatants.push({ id: nextId++, name, initiative, hp, maxHp: hp, ac, type, conditions: [] });
 
-    // Re-sort by initiative (ties broken by player > monster)
     sortCombatants();
     renderInitiativeList();
 
-    // Limpar campos
     document.getElementById('cbt-name').value = '';
     document.getElementById('cbt-hp').value = '';
     document.getElementById('cbt-ac').value = '';
@@ -1374,7 +1389,6 @@ function addCombatant() {
 function sortCombatants() {
     combatants.sort((a, b) => {
         if (b.initiative !== a.initiative) return b.initiative - a.initiative;
-        // Desempate: players primeiro
         const order = { player: 0, ally: 1, monster: 2 };
         return (order[a.type] || 0) - (order[b.type] || 0);
     });
@@ -1383,7 +1397,6 @@ function sortCombatants() {
 function nextTurn() {
     if (combatants.length === 0) return;
 
-    // Pula mortos
     let next = (currentTurn + 1) % combatants.length;
     let attempts = 0;
     while (combatants[next].hp <= 0 && attempts < combatants.length) {
@@ -1401,7 +1414,6 @@ function nextTurn() {
     renderInitiativeList();
     updateTurnIndicator();
 
-    // Scroll para o combatente ativo
     const active = document.querySelector('.combatant-row.active-turn');
     if (active) active.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
@@ -1489,23 +1501,17 @@ function renderInitiativeList() {
 
         return `
             <div class="combatant-row ${isActive ? 'active-turn' : ''} ${isDead ? 'dead' : ''}" id="cbt-row-${c.id}">
-                <!-- Initiative -->
                 <div class="initiative-badge">${c.initiative}</div>
-
-                <!-- Name + type + HP bar -->
                 <div>
                     <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
                         <span class="combatant-name">${c.name}</span>
                         ${getTypeBadge(c.type)}
                         <span style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;" class="${status.cls}">${status.label}</span>
                     </div>
-                    <!-- HP Bar -->
                     <div style="height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;max-width:200px;">
                         <div style="height:100%;width:${hpPct}%;background:${hpPct > 66 ? '#4caf7d' : hpPct > 33 ? '#e0a832' : '#e74c3c'};transition:width 0.3s;border-radius:2px;"></div>
                     </div>
                 </div>
-
-                <!-- HP Tracker -->
                 <div class="hp-tracker">
                     <button class="hp-btn" onclick="changeHp(${c.id}, -1)" title="−1 HP">−</button>
                     <button class="hp-btn" onclick="changeHp(${c.id}, -5)" title="−5 HP" style="font-size:11px;">−5</button>
@@ -1518,17 +1524,11 @@ function renderInitiativeList() {
                     <button class="hp-btn" onclick="changeHp(${c.id}, +5)" title="+5 HP" style="font-size:11px;">+5</button>
                     <button class="hp-btn" onclick="changeHp(${c.id}, +1)" title="+1 HP">+</button>
                 </div>
-
-                <!-- AC -->
                 <div class="ac-display">
                     <div style="font-size:9px;letter-spacing:1px;font-family:'Cinzel',serif;color:var(--text-muted);">AC</div>
                     <div style="font-size:16px;color:var(--blue);">${c.ac}</div>
                 </div>
-
-                <!-- Ação de turno atual -->
                 ${isActive ? `<button class="btn btn-gold" onclick="nextTurn()" style="padding:6px 12px;font-size:10px;flex-shrink:0;">▶ END TURN</button>` : '<div></div>'}
-
-                <!-- Remover -->
                 <button class="delete-btn" onclick="removeCombatant(${c.id})" title="Remove" style="padding:4px 8px;font-size:10px;">✕</button>
             </div>
         `;
@@ -1537,7 +1537,6 @@ function renderInitiativeList() {
     updateTurnIndicator();
 }
 
-// Inicializar renderização quando a seção abre
 document.addEventListener('DOMContentLoaded', () => {
     renderInitiativeList();
 });

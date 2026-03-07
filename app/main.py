@@ -6,6 +6,8 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional
+from collections import defaultdict
+import time
 
 from .database import Base, engine, get_db
 from . import auth, dice, npc
@@ -18,9 +20,24 @@ templates = Jinja2Templates(directory="app/templates")
 security = HTTPBearer()
 
 
-# -------------------------------
-# Dependência: Usuário atual
-# -------------------------------
+# ─── Simple in-memory rate limiter ────────────────────────────────────────────
+# Limits auth endpoints to 10 attempts per IP per minute
+_rate_store: dict[str, list[float]] = defaultdict(list)
+
+def check_rate_limit(request: Request, max_calls: int = 10, window: int = 60):
+    ip = request.client.host if request.client else "unknown"
+    now = time.time()
+    calls = [t for t in _rate_store[ip] if now - t < window]
+    if len(calls) >= max_calls:
+        raise HTTPException(
+            status_code=429,
+            detail="Too many attempts. Please wait a minute and try again."
+        )
+    calls.append(now)
+    _rate_store[ip] = calls
+
+
+# ─── Auth dependency ──────────────────────────────────────────────────────────
 def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
@@ -32,11 +49,14 @@ def get_current_user(
     return user
 
 
-# -------------------------------
-# Auth
-# -------------------------------
+# ─── Auth ─────────────────────────────────────────────────────────────────────
 @app.post("/register")
-def register(request: RegisterRequest, db: Session = Depends(get_db)):
+def register(request: RegisterRequest, http_request: Request, db: Session = Depends(get_db)):
+    check_rate_limit(http_request)
+    if len(request.username) < 3:
+        return JSONResponse(content={"success": False, "detail": "Username must be at least 3 characters"})
+    if len(request.password) < 6:
+        return JSONResponse(content={"success": False, "detail": "Password must be at least 6 characters"})
     if db.query(User).filter(User.email == request.email).first():
         return JSONResponse(content={"success": False, "detail": "Email already registered"})
     if db.query(User).filter(User.username == request.username).first():
@@ -55,7 +75,8 @@ def register(request: RegisterRequest, db: Session = Depends(get_db)):
 
 
 @app.post("/login")
-def login(request: LoginRequest, db: Session = Depends(get_db)):
+def login(request: LoginRequest, http_request: Request, db: Session = Depends(get_db)):
+    check_rate_limit(http_request)
     user = db.query(User).filter(User.email == request.email).first()
     if not user or not auth.verify_password(request.password, user.password):
         return JSONResponse(content={"success": False, "detail": "Invalid email or password"})
@@ -63,9 +84,7 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
     return JSONResponse(content={"success": True, "detail": "Login successful", "access_token": token})
 
 
-# -------------------------------
-# Páginas HTML
-# -------------------------------
+# ─── Pages ────────────────────────────────────────────────────────────────────
 @app.get("/login", response_class=HTMLResponse)
 def login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
@@ -83,9 +102,7 @@ def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
-# -------------------------------
-# Usuário atual
-# -------------------------------
+# ─── Me ───────────────────────────────────────────────────────────────────────
 @app.get("/me")
 def me(current_user: User = Depends(get_current_user)):
     return JSONResponse(content={
@@ -98,9 +115,7 @@ def me(current_user: User = Depends(get_current_user)):
     })
 
 
-# -------------------------------
-# Dice Roller
-# -------------------------------
+# ─── Dice ─────────────────────────────────────────────────────────────────────
 @app.post("/roll", response_model=RollResponse)
 def roll(request: RollRequest):
     try:
@@ -110,9 +125,7 @@ def roll(request: RollRequest):
         return JSONResponse(content={"success": False, "detail": str(e)})
 
 
-# -------------------------------
-# Notes
-# -------------------------------
+# ─── Notes ────────────────────────────────────────────────────────────────────
 class NoteRequest(BaseModel):
     content: str
 
@@ -137,9 +150,7 @@ def save_notes(
     return JSONResponse(content={"success": True, "detail": "Notes saved!"})
 
 
-# -------------------------------
-# NPC
-# -------------------------------
+# ─── NPC ──────────────────────────────────────────────────────────────────────
 @app.get("/npc")
 def create_npc(current_user: User = Depends(get_current_user)):
     npc_data = npc.generate_npc()
@@ -166,34 +177,15 @@ def save_npc(
         db.refresh(new_npc)
         return JSONResponse(content={
             "success": True,
-            "data": {
-                "id": new_npc.id,
-                "name": new_npc.name,
-                "race": new_npc.race,
-                "class_name": new_npc.class_name,
-                "trait": new_npc.trait,
-                "goal": new_npc.goal,
-                "backstory": new_npc.backstory
-            }
+            "data": _npc_to_dict(new_npc)
         })
     except Exception as e:
         return JSONResponse(content={"success": False, "detail": str(e)})
 
 @app.get("/npc/my")
 def my_npcs(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    npcs = db.query(NPC).filter(NPC.owner_id == current_user.id).all()
-    return JSONResponse(content={
-        "success": True,
-        "data": [{
-            "id": n.id,
-            "name": n.name,
-            "race": n.race,
-            "class_name": n.class_name,
-            "trait": n.trait,
-            "goal": n.goal,
-            "backstory": n.backstory
-        } for n in npcs]
-    })
+    npcs = db.query(NPC).filter(NPC.owner_id == current_user.id).order_by(NPC.id.desc()).all()
+    return JSONResponse(content={"success": True, "data": [_npc_to_dict(n) for n in npcs]})
 
 @app.put("/npc/{npc_id}")
 def update_npc(
@@ -205,26 +197,15 @@ def update_npc(
     n = db.query(NPC).filter(NPC.id == npc_id, NPC.owner_id == current_user.id).first()
     if not n:
         return JSONResponse(content={"success": False, "detail": "NPC not found"})
-    n.name = npc_data.name
-    n.race = npc_data.race
+    n.name       = npc_data.name
+    n.race       = npc_data.race
     n.class_name = npc_data.class_name
-    n.trait = npc_data.trait
-    n.goal = npc_data.goal
-    n.backstory = npc_data.backstory
+    n.trait      = npc_data.trait
+    n.goal       = npc_data.goal
+    n.backstory  = npc_data.backstory
     db.commit()
     db.refresh(n)
-    return JSONResponse(content={
-        "success": True,
-        "data": {
-            "id": n.id,
-            "name": n.name,
-            "race": n.race,
-            "class_name": n.class_name,
-            "trait": n.trait,
-            "goal": n.goal,
-            "backstory": n.backstory
-        }
-    })
+    return JSONResponse(content={"success": True, "data": _npc_to_dict(n)})
 
 @app.delete("/npc/{npc_id}")
 def delete_npc(
@@ -239,42 +220,63 @@ def delete_npc(
     db.commit()
     return JSONResponse(content={"success": True, "detail": "NPC deleted"})
 
+def _npc_to_dict(n: NPC) -> dict:
+    return {
+        "id":         n.id,
+        "name":       n.name,
+        "race":       n.race,
+        "class_name": n.class_name,
+        "trait":      n.trait,
+        "goal":       n.goal,
+        "backstory":  n.backstory,
+    }
 
-# -------------------------------
-# Campaigns
-# -------------------------------
+
+# ─── Campaigns ────────────────────────────────────────────────────────────────
 class CampaignRequest(BaseModel):
     name: str
     description: Optional[str] = None
     status: Optional[str] = "ACTIVE"
-    current_session: Optional[int] = 1
     location: Optional[str] = None
-    session_notes: Optional[str] = None
 
 class AddNPCRequest(BaseModel):
     npc_id: int
 
-def campaign_to_dict(c: Campaign):
+def campaign_to_dict(c: Campaign) -> dict:
+    sessions = c.sessions or []
+    last_session = sessions[-1] if sessions else None
     return {
-        "id": c.id,
-        "name": c.name,
-        "description": c.description,
-        "status": c.status.value if c.status else "ACTIVE",
-        "current_session": c.current_session or 1,
-        "location": c.location,
-        "session_notes": c.session_notes,
-        "npc_count": len(c.npcs),
+        "id":           c.id,
+        "name":         c.name,
+        "description":  c.description,
+        "status":       c.status.value if c.status else "ACTIVE",
+        "location":     c.location,
+        "session_count": len(sessions),
+        "last_session_date": last_session.date if last_session else None,
+        "last_session_title": last_session.title if last_session else None,
+        "created_at":   c.created_at.isoformat() if c.created_at else None,
+        "npc_count":    len(c.npcs),
         "npcs": [{
-            "id": n.id,
-            "name": n.name,
-            "race": n.race,
+            "id":         n.id,
+            "name":       n.name,
+            "race":       n.race,
             "class_name": n.class_name
         } for n in c.npcs]
     }
 
 @app.get("/campaigns")
-def list_campaigns(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    campaigns = db.query(Campaign).filter(Campaign.owner_id == current_user.id).all()
+def list_campaigns(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+    search: Optional[str] = None,
+    status: Optional[str] = None,
+):
+    query = db.query(Campaign).filter(Campaign.owner_id == current_user.id)
+    if status and status in ("ACTIVE", "PAUSED", "COMPLETED"):
+        query = query.filter(Campaign.status == CampaignStatus(status))
+    if search:
+        query = query.filter(Campaign.name.ilike(f"%{search}%"))
+    campaigns = query.order_by(Campaign.created_at.desc()).all()
     return JSONResponse(content={"success": True, "data": [campaign_to_dict(c) for c in campaigns]})
 
 @app.post("/campaigns")
@@ -283,14 +285,14 @@ def create_campaign(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    if not request.name.strip():
+        return JSONResponse(content={"success": False, "detail": "Campaign name is required"})
     status = CampaignStatus(request.status) if request.status else CampaignStatus.ACTIVE
     campaign = Campaign(
-        name=request.name,
+        name=request.name.strip(),
         description=request.description,
         status=status,
-        current_session=request.current_session or 1,
         location=request.location,
-        session_notes=request.session_notes,
         owner_id=current_user.id
     )
     db.add(campaign)
@@ -311,156 +313,13 @@ def update_campaign(
     ).first()
     if not campaign:
         return JSONResponse(content={"success": False, "detail": "Campaign not found"})
-
-    campaign.name = request.name
+    campaign.name        = request.name.strip()
     campaign.description = request.description
-    campaign.status = CampaignStatus(request.status) if request.status else CampaignStatus.ACTIVE
-    campaign.current_session = request.current_session or 1
-    campaign.location = request.location
-    campaign.session_notes = request.session_notes
+    campaign.status      = CampaignStatus(request.status) if request.status else CampaignStatus.ACTIVE
+    campaign.location    = request.location
     db.commit()
     db.refresh(campaign)
     return JSONResponse(content={"success": True, "data": campaign_to_dict(campaign)})
-
-
-# -------------------------------
-# Campaign Sessions
-# -------------------------------
-class SessionRequest(BaseModel):
-    number: Optional[int] = None
-    date: Optional[str] = None
-    title: str
-    summary: Optional[str] = None
-    npcs_involved: Optional[str] = None
-    loot: Optional[str] = None
-    next_hook: Optional[str] = None
-
-def session_to_dict(s: CampaignSession):
-    return {
-        "id": s.id,
-        "number": s.number,
-        "date": s.date,
-        "title": s.title,
-        "summary": s.summary,
-        "npcs_involved": s.npcs_involved,
-        "loot": s.loot,
-        "next_hook": s.next_hook,
-        "created_at": str(s.created_at),
-    }
-
-@app.get("/campaigns/{campaign_id}/sessions")
-def list_sessions(
-    campaign_id: str,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    campaign = db.query(Campaign).filter(
-        Campaign.id == campaign_id,
-        Campaign.owner_id == current_user.id
-    ).first()
-    if not campaign:
-        return JSONResponse(content={"success": False, "detail": "Campaign not found"})
-    sessions = db.query(CampaignSession).filter(
-        CampaignSession.campaign_id == campaign_id
-    ).order_by(CampaignSession.number).all()
-    return JSONResponse(content={"success": True, "data": [session_to_dict(s) for s in sessions]})
-
-@app.post("/campaigns/{campaign_id}/sessions")
-def create_session(
-    campaign_id: str,
-    request: SessionRequest,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    campaign = db.query(Campaign).filter(
-        Campaign.id == campaign_id,
-        Campaign.owner_id == current_user.id
-    ).first()
-    if not campaign:
-        return JSONResponse(content={"success": False, "detail": "Campaign not found"})
-
-    # Auto-numero se não fornecido
-    if not request.number:
-        last = db.query(CampaignSession).filter(
-            CampaignSession.campaign_id == campaign_id
-        ).order_by(CampaignSession.number.desc()).first()
-        number = (last.number + 1) if last else 1
-    else:
-        number = request.number
-
-    session = CampaignSession(
-        campaign_id=campaign_id,
-        number=number,
-        date=request.date,
-        title=request.title,
-        summary=request.summary,
-        npcs_involved=request.npcs_involved,
-        loot=request.loot,
-        next_hook=request.next_hook,
-    )
-    db.add(session)
-    # Atualizar current_session na campanha
-    campaign.current_session = number + 1
-    db.commit()
-    db.refresh(session)
-    return JSONResponse(content={"success": True, "data": session_to_dict(session)})
-
-@app.put("/campaigns/{campaign_id}/sessions/{session_id}")
-def update_session(
-    campaign_id: str,
-    session_id: int,
-    request: SessionRequest,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    campaign = db.query(Campaign).filter(
-        Campaign.id == campaign_id,
-        Campaign.owner_id == current_user.id
-    ).first()
-    if not campaign:
-        return JSONResponse(content={"success": False, "detail": "Campaign not found"})
-
-    s = db.query(CampaignSession).filter(
-        CampaignSession.id == session_id,
-        CampaignSession.campaign_id == campaign_id
-    ).first()
-    if not s:
-        return JSONResponse(content={"success": False, "detail": "Session not found"})
-
-    s.date = request.date
-    s.title = request.title
-    s.summary = request.summary
-    s.npcs_involved = request.npcs_involved
-    s.loot = request.loot
-    s.next_hook = request.next_hook
-    db.commit()
-    db.refresh(s)
-    return JSONResponse(content={"success": True, "data": session_to_dict(s)})
-
-@app.delete("/campaigns/{campaign_id}/sessions/{session_id}")
-def delete_session(
-    campaign_id: str,
-    session_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    campaign = db.query(Campaign).filter(
-        Campaign.id == campaign_id,
-        Campaign.owner_id == current_user.id
-    ).first()
-    if not campaign:
-        return JSONResponse(content={"success": False, "detail": "Campaign not found"})
-
-    s = db.query(CampaignSession).filter(
-        CampaignSession.id == session_id,
-        CampaignSession.campaign_id == campaign_id
-    ).first()
-    if not s:
-        return JSONResponse(content={"success": False, "detail": "Session not found"})
-
-    db.delete(s)
-    db.commit()
-    return JSONResponse(content={"success": True, "detail": "Session deleted"})
 
 @app.delete("/campaigns/{campaign_id}")
 def delete_campaign(
@@ -478,6 +337,130 @@ def delete_campaign(
     db.commit()
     return JSONResponse(content={"success": True, "detail": "Campaign deleted"})
 
+
+# ─── Campaign Sessions ────────────────────────────────────────────────────────
+class SessionRequest(BaseModel):
+    number: Optional[int] = None
+    date: Optional[str] = None
+    title: str
+    summary: Optional[str] = None
+    npcs_involved: Optional[str] = None
+    loot: Optional[str] = None
+    next_hook: Optional[str] = None
+
+def session_to_dict(s: CampaignSession) -> dict:
+    return {
+        "id":            s.id,
+        "number":        s.number,
+        "date":          s.date,
+        "title":         s.title,
+        "summary":       s.summary,
+        "npcs_involved": s.npcs_involved,
+        "loot":          s.loot,
+        "next_hook":     s.next_hook,
+        "created_at":    str(s.created_at),
+    }
+
+def _get_campaign_or_404(campaign_id: str, user_id: int, db: Session):
+    c = db.query(Campaign).filter(
+        Campaign.id == campaign_id,
+        Campaign.owner_id == user_id
+    ).first()
+    if not c:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    return c
+
+@app.get("/campaigns/{campaign_id}/sessions")
+def list_sessions(
+    campaign_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    _get_campaign_or_404(campaign_id, current_user.id, db)
+    sessions = db.query(CampaignSession).filter(
+        CampaignSession.campaign_id == campaign_id
+    ).order_by(CampaignSession.number).all()
+    return JSONResponse(content={"success": True, "data": [session_to_dict(s) for s in sessions]})
+
+@app.post("/campaigns/{campaign_id}/sessions")
+def create_session(
+    campaign_id: str,
+    request: SessionRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    _get_campaign_or_404(campaign_id, current_user.id, db)
+    if not request.title.strip():
+        return JSONResponse(content={"success": False, "detail": "Session title is required"})
+
+    if not request.number:
+        last = db.query(CampaignSession).filter(
+            CampaignSession.campaign_id == campaign_id
+        ).order_by(CampaignSession.number.desc()).first()
+        number = (last.number + 1) if last else 1
+    else:
+        number = request.number
+
+    session = CampaignSession(
+        campaign_id=campaign_id,
+        number=number,
+        date=request.date,
+        title=request.title.strip(),
+        summary=request.summary,
+        npcs_involved=request.npcs_involved,
+        loot=request.loot,
+        next_hook=request.next_hook,
+    )
+    db.add(session)
+    db.commit()
+    db.refresh(session)
+    return JSONResponse(content={"success": True, "data": session_to_dict(session)})
+
+@app.put("/campaigns/{campaign_id}/sessions/{session_id}")
+def update_session(
+    campaign_id: str,
+    session_id: int,
+    request: SessionRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    _get_campaign_or_404(campaign_id, current_user.id, db)
+    s = db.query(CampaignSession).filter(
+        CampaignSession.id == session_id,
+        CampaignSession.campaign_id == campaign_id
+    ).first()
+    if not s:
+        return JSONResponse(content={"success": False, "detail": "Session not found"})
+    s.date          = request.date
+    s.title         = request.title.strip()
+    s.summary       = request.summary
+    s.npcs_involved = request.npcs_involved
+    s.loot          = request.loot
+    s.next_hook     = request.next_hook
+    db.commit()
+    db.refresh(s)
+    return JSONResponse(content={"success": True, "data": session_to_dict(s)})
+
+@app.delete("/campaigns/{campaign_id}/sessions/{session_id}")
+def delete_session(
+    campaign_id: str,
+    session_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    _get_campaign_or_404(campaign_id, current_user.id, db)
+    s = db.query(CampaignSession).filter(
+        CampaignSession.id == session_id,
+        CampaignSession.campaign_id == campaign_id
+    ).first()
+    if not s:
+        return JSONResponse(content={"success": False, "detail": "Session not found"})
+    db.delete(s)
+    db.commit()
+    return JSONResponse(content={"success": True, "detail": "Session deleted"})
+
+
+# ─── Campaign NPCs ────────────────────────────────────────────────────────────
 @app.post("/campaigns/{campaign_id}/npcs")
 def add_npc_to_campaign(
     campaign_id: str,
@@ -485,23 +468,15 @@ def add_npc_to_campaign(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    campaign = db.query(Campaign).filter(
-        Campaign.id == campaign_id,
-        Campaign.owner_id == current_user.id
-    ).first()
-    if not campaign:
-        return JSONResponse(content={"success": False, "detail": "Campaign not found"})
-
+    campaign = _get_campaign_or_404(campaign_id, current_user.id, db)
     npc_obj = db.query(NPC).filter(
         NPC.id == request.npc_id,
         NPC.owner_id == current_user.id
     ).first()
     if not npc_obj:
         return JSONResponse(content={"success": False, "detail": "NPC not found"})
-
     if npc_obj in campaign.npcs:
         return JSONResponse(content={"success": False, "detail": "NPC already in campaign"})
-
     campaign.npcs.append(npc_obj)
     db.commit()
     db.refresh(campaign)
@@ -514,25 +489,16 @@ def remove_npc_from_campaign(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    campaign = db.query(Campaign).filter(
-        Campaign.id == campaign_id,
-        Campaign.owner_id == current_user.id
-    ).first()
-    if not campaign:
-        return JSONResponse(content={"success": False, "detail": "Campaign not found"})
-
+    campaign = _get_campaign_or_404(campaign_id, current_user.id, db)
     npc_obj = db.query(NPC).filter(NPC.id == npc_id).first()
     if not npc_obj or npc_obj not in campaign.npcs:
         return JSONResponse(content={"success": False, "detail": "NPC not in campaign"})
-
     campaign.npcs.remove(npc_obj)
     db.commit()
     return JSONResponse(content={"success": True, "detail": "NPC removed from campaign"})
 
 
-# -------------------------------
-# Profile
-# -------------------------------
+# ─── Profile ──────────────────────────────────────────────────────────────────
 class ProfileUpdateRequest(BaseModel):
     username: Optional[str] = None
     current_password: Optional[str] = None
@@ -541,18 +507,24 @@ class ProfileUpdateRequest(BaseModel):
 
 @app.get("/profile")
 def get_profile(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    npc_count = db.query(NPC).filter(NPC.owner_id == current_user.id).count()
+    npc_count      = db.query(NPC).filter(NPC.owner_id == current_user.id).count()
     campaign_count = db.query(Campaign).filter(Campaign.owner_id == current_user.id).count()
-
+    session_count  = (
+        db.query(CampaignSession)
+        .join(Campaign, Campaign.id == CampaignSession.campaign_id)
+        .filter(Campaign.owner_id == current_user.id)
+        .count()
+    )
     return JSONResponse(content={
         "success": True,
         "data": {
-            "username": current_user.username,
-            "email": current_user.email,
-            "role": current_user.role.value,
-            "created_at": current_user.created_at.strftime("%B %d, %Y") if current_user.created_at else "Unknown",
-            "npc_count": npc_count,
+            "username":      current_user.username,
+            "email":         current_user.email,
+            "role":          current_user.role.value,
+            "created_at":    current_user.created_at.strftime("%B %d, %Y") if current_user.created_at else "Unknown",
+            "npc_count":     npc_count,
             "campaign_count": campaign_count,
+            "session_count": session_count,
         }
     })
 
@@ -562,14 +534,14 @@ def update_profile(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    # Trocar username
     if request.username and request.username != current_user.username:
+        if len(request.username) < 3:
+            return JSONResponse(content={"success": False, "detail": "Username must be at least 3 characters"})
         existing = db.query(User).filter(User.username == request.username).first()
         if existing:
             return JSONResponse(content={"success": False, "detail": "Username already taken"})
         current_user.username = request.username
 
-    # Trocar senha
     if request.new_password:
         if not request.current_password:
             return JSONResponse(content={"success": False, "detail": "Current password is required"})
@@ -579,27 +551,23 @@ def update_profile(
             return JSONResponse(content={"success": False, "detail": "New password must be at least 6 characters"})
         current_user.password = auth.hash_password(request.new_password)
 
-    # Trocar role
     if request.role:
         current_user.role = Role.MASTER if request.role == "MASTER" else Role.PLAYER
 
     db.commit()
     db.refresh(current_user)
-
     return JSONResponse(content={
         "success": True,
         "detail": "Profile updated successfully",
         "data": {
             "username": current_user.username,
-            "email": current_user.email,
-            "role": current_user.role.value,
+            "email":    current_user.email,
+            "role":     current_user.role.value,
         }
     })
 
 
-# -------------------------------
-# Encounter Generator
-# -------------------------------
+# ─── Encounter Generator ──────────────────────────────────────────────────────
 from .encounter import get_monsters_for_encounter
 
 class EncounterRequest(BaseModel):
@@ -626,5 +594,4 @@ def generate_encounter(
         difficulty=request.difficulty,
         environment=request.environment
     )
-
     return JSONResponse(content={"success": True, "data": result})
