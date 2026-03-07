@@ -8,6 +8,7 @@ from fastapi import HTTPException
 
 # ─── Config ───────────────────────────────────────────────────────────────────
 SECRET_KEY = os.getenv("SECRET_KEY", "supersecretkey")
+print(f"DEBUG AUTH SECRET_KEY='{SECRET_KEY}'", flush=True)
 ALGORITHM  = "HS256"
 
 # Default: 8 hours (good for a full game session)
