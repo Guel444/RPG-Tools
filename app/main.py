@@ -42,7 +42,9 @@ def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
+    print(f"DEBUG token: {credentials.credentials[:30]}...", flush=True)
     payload = auth.decode_token(credentials.credentials)
+    print(f"DEBUG payload: {payload}", flush=True)
     user = db.query(User).filter(User.id == payload["sub"]).first()
     if not user:
         raise HTTPException(status_code=401, detail="User not found")
