@@ -97,6 +97,11 @@ def register_page(request: Request):
 def dashboard_page(request: Request):
     return templates.TemplateResponse("dashboard.html", {"request": request})
 
+@app.head("/")
+def home_head():
+    from fastapi.responses import Response
+    return Response()
+
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
