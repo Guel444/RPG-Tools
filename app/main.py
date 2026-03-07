@@ -45,7 +45,7 @@ def get_current_user(
     print(f"DEBUG token: {credentials.credentials[:30]}...", flush=True)
     payload = auth.decode_token(credentials.credentials)
     print(f"DEBUG payload: {payload}", flush=True)
-    user = db.query(User).filter(User.id == payload["sub"]).first()
+    user = db.query(User).filter(User.id == int(payload["sub"])).first()
     if not user:
         raise HTTPException(status_code=401, detail="User not found")
     return user
@@ -82,7 +82,7 @@ def login(request: LoginRequest, http_request: Request, db: Session = Depends(ge
     user = db.query(User).filter(User.email == request.email).first()
     if not user or not auth.verify_password(request.password, user.password):
         return JSONResponse(content={"success": False, "detail": "Invalid email or password"})
-    token = auth.create_access_token({"sub": user.id})
+    token = auth.create_access_token({"sub": str(user.id)})
     return JSONResponse(content={"success": True, "detail": "Login successful", "access_token": token})
 
 
